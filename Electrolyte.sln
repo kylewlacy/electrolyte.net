@@ -3,19 +3,25 @@ Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Electrolyte.Core", "Electrolyte.Core\Electrolyte.Core.csproj", "{CF6CF5BB-DC12-4950-B13F-6370AE4488E7}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Electrolyte.CLI", "Electrolyte.CLI\Electrolyte.CLI.csproj", "{8D7C20E9-E2C0-4D8D-92D8-572233C88AD2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8D7C20E9-E2C0-4D8D-92D8-572233C88AD2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8D7C20E9-E2C0-4D8D-92D8-572233C88AD2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8D7C20E9-E2C0-4D8D-92D8-572233C88AD2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8D7C20E9-E2C0-4D8D-92D8-572233C88AD2}.Release|Any CPU.Build.0 = Release|Any CPU
 		{CF6CF5BB-DC12-4950-B13F-6370AE4488E7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{CF6CF5BB-DC12-4950-B13F-6370AE4488E7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CF6CF5BB-DC12-4950-B13F-6370AE4488E7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CF6CF5BB-DC12-4950-B13F-6370AE4488E7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
-		StartupItem = Electrolyte.Core\Electrolyte.Core.csproj
+		StartupItem = Electrolyte.CLI\Electrolyte.CLI.csproj
 		Policies = $0
 		$0.TextStylePolicy = $1
 		$1.FileWidth = 120
