@@ -3,7 +3,8 @@ using System;
 namespace Electrolyte.CLI {
 	static class Program {
 		public static void Main(string[] args) {
-			Console.WriteLine("Hello World!");
+			Console.Write("Enter an address: ");
+			Address address = new Address(Console.ReadLine());
 
 			Pause();
 		}
