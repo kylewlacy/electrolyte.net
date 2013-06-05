@@ -38,17 +38,17 @@
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <ItemGroup>
-    <Reference Include="mscorlib">
-      <HintPath>..\..\..\..\..\..\..\Library\Frameworks\Mono.framework\Versions\Current\lib\mono\4.0\mscorlib.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Core">
-      <HintPath>..\..\..\..\..\..\..\Library\Frameworks\Mono.framework\Versions\Current\lib\mono\4.0\System.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="System">
-      <HintPath>..\..\..\Deps\Silly DLL References\System.dll</HintPath>
-    </Reference>
+    <Folder Include="Extensions\" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Extensions\" />
+    <Reference Include="System">
+      <HintPath>..\..\..\..\..\..\..\Library\Frameworks\Mono.framework\Versions\3.0.10\lib\mono\4.0\System.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Core">
+      <HintPath>..\..\..\..\..\..\..\Library\Frameworks\Mono.framework\Versions\3.0.10\lib\mono\4.0\System.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="mscorlib">
+      <HintPath>..\..\..\..\..\..\..\Library\Frameworks\Mono.framework\Versions\3.0.10\lib\mono\4.0\mscorlib.dll</HintPath>
+    </Reference>
   </ItemGroup>
 </Project>
