@@ -7,7 +7,8 @@ namespace Electrolyte {
 	public class InvalidAddressException : Exception { }
 
 	public class Address {
-		protected static Regex Pattern = new Regex(@"\A^[13][1-9A-Za-z][^OIl]{20,40}\Z");
+		// HACK: Magic numbers (should be {27,34}
+		protected static Regex Pattern = new Regex(@"\A^[13][1-9A-Za-z][^OIl]{20,32}\Z");
 
 		private string _id;
 		public string ID {
