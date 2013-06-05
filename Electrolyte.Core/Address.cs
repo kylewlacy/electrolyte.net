@@ -8,7 +8,7 @@ namespace Electrolyte {
 
 	public class Address {
 		// HACK: Magic numbers (should be {27,34}
-		protected static Regex Pattern = new Regex(@"\A^[13][1-9A-Za-z][^OIl]{20,32}\Z");
+		protected static Regex Pattern = new Regex(@"^[13][1-9A-Za-z][^OIl]{27,32}$");
 
 		private string _id;
 		public string ID {
