@@ -46,7 +46,12 @@ Global
 		$2.MethodBraceStyle = EndOfLine
 		$2.ConstructorBraceStyle = EndOfLine
 		$2.DestructorBraceStyle = EndOfLine
+		$2.ElseNewLinePlacement = NewLine
 		$2.ElseIfNewLinePlacement = SameLine
+		$2.CatchNewLinePlacement = NewLine
+		$2.FinallyNewLinePlacement = NewLine
+		$2.WhileNewLinePlacement = DoNotCare
+		$2.ArrayInitializerWrapping = DoNotChange
 		$2.BeforeMethodDeclarationParentheses = False
 		$2.BeforeMethodCallParentheses = False
 		$2.BeforeConstructorDeclarationParentheses = False
@@ -69,5 +74,14 @@ Global
 		$0.StandardHeader = $3
 		$3.Text = 
 		$3.IncludeInNewFiles = True
+		$0.DotNetNamingPolicy = $4
+		$4.DirectoryNamespaceAssociation = PrefixedHierarchical
+		$4.ResourceNamePolicy = FileFormatDefault
+		$0.TextStylePolicy = $5
+		$5.FileWidth = 120
+		$5.TabsToSpaces = False
+		$5.inheritsSet = VisualStudio
+		$5.inheritsScope = text/plain
+		$5.scope = text/plain
 	EndGlobalSection
 EndGlobal

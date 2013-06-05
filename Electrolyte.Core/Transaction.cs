@@ -1,7 +1,7 @@
 using System;
 using System.Linq;
 using System.Collections.Generic;
-using System.Runtime.Serialization;
+// using Electrolyte.Extensions;
 
 namespace Electrolyte {
 	public class Transaction {
@@ -31,7 +31,13 @@ namespace Electrolyte {
 		public List<Output> Outputs;
 
 		public UInt64 Value {
-			get { return Outputs.Select(o => o.Value).Sum(); }
+			get {
+				// TODO: Fix extension methods
+				// return Outputs.Select(o => o.Value).Sum();
+				UInt64 total = 0;
+				foreach(Output output in Outputs) { total += output.Value; }
+				return total;
+			}
 		}
 
 		public Transaction() {
