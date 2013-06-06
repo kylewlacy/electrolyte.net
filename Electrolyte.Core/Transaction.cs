@@ -5,9 +5,9 @@ using System.Collections.Generic;
 
 namespace Electrolyte {
 	public class Transaction {
-		public static Int32 CurrentVersion = 1;
+		public static UInt32 CurrentVersion = 1;
 
-		public struct Input {
+		public class Input {
 			//public Script ScriptSig;
 			public Output Output;
 
@@ -16,7 +16,7 @@ namespace Electrolyte {
 			}
 		}
 
-		public struct Output {
+		public class Output {
 			//public Script ScriptPubKey;
 			public UInt64 Value;
 
@@ -25,7 +25,7 @@ namespace Electrolyte {
 			}
 		}
 
-		public Int32 Version;
+		public UInt32 Version;
 
 		public List<Input> Inputs;
 		public List<Output> Outputs;
