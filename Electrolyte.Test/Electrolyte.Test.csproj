@@ -37,6 +37,7 @@
     <Compile Include="AddressTest.cs" />
     <Compile Include="VarIntTest.cs" />
     <Compile Include="MessageHeaderTest.cs" />
+    <Compile Include="VarStringTest.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
