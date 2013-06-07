@@ -36,6 +36,7 @@
   <ItemGroup>
     <Compile Include="AddressTest.cs" />
     <Compile Include="VarIntTest.cs" />
+    <Compile Include="MessageHeaderTest.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -43,5 +44,8 @@
       <Project>{CF6CF5BB-DC12-4950-B13F-6370AE4488E7}</Project>
       <Name>Electrolyte.Core</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Extensions\" />
   </ItemGroup>
 </Project>
