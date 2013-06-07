@@ -1,8 +1,7 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
 
-namespace Electrolyte {
+namespace Electrolyte.Primitives {
 	public class VarInt {
 		public UInt64 Value;
 

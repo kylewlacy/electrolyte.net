@@ -1,9 +1,8 @@
 using System;
-using System.Linq;
 using System.Collections.Generic;
 // using Electrolyte.Extensions;
 
-namespace Electrolyte {
+namespace Electrolyte.Messages {
 	public class Transaction {
 		public static UInt32 CurrentVersion = 1;
 

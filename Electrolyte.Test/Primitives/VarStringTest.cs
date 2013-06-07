@@ -3,9 +3,9 @@ using System.IO;
 using System.Text;
 using System.Collections.Generic;
 using NUnit.Framework;
-using Electrolyte;
+using Electrolyte.Primitives;
 
-namespace Electrolyte.Test {
+namespace Electrolyte.Test.Primitives {
 	[TestFixture]
 	public class VarStringTest {
 		[Test]

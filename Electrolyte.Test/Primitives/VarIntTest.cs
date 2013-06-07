@@ -1,9 +1,9 @@
 using System;
 using System.IO;
 using NUnit.Framework;
-using Electrolyte;
+using Electrolyte.Primitives;
 
-namespace Electrolyte.Test {
+namespace Electrolyte.Test.Primitives {
 	[TestFixture]
 	public class VarIntTest {
 		[Test]

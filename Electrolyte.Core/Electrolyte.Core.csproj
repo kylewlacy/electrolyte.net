@@ -32,20 +32,22 @@
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Address.cs" />
-    <Compile Include="Transaction.cs" />
     <Compile Include="Extensions\IEnumerableExtensions.cs" />
     <Compile Include="Extensions\BinaryReaderExtensions.cs" />
-    <Compile Include="MessageHeader.cs" />
     <Compile Include="Helpers\UnixTimeHelpers.cs" />
-    <Compile Include="VarInt.cs" />
-    <Compile Include="VarString.cs" />
-    <Compile Include="Message.cs" />
-    <Compile Include="VersionMessage.cs" />
+    <Compile Include="Primitives\VarString.cs" />
+    <Compile Include="Primitives\VarInt.cs" />
+    <Compile Include="Messages\Transaction.cs" />
+    <Compile Include="Messages\MessageHeader.cs" />
+    <Compile Include="Messages\Message.cs" />
+    <Compile Include="Messages\VersionMessage.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <ItemGroup>
     <Folder Include="Extensions\" />
     <Folder Include="Helpers\" />
+    <Folder Include="Primitives\" />
+    <Folder Include="Messages\" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System">

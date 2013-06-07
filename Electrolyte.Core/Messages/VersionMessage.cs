@@ -3,8 +3,9 @@ using System.IO;
 using System.Net;
 using System.Linq;
 using Electrolyte.Helpers;
+using Electrolyte.Primitives;
 
-namespace Electrolyte {
+namespace Electrolyte.Messages {
 	public class VersionMessage : Message {
 		// https://en.bitcoin.it/wiki/Protocol_specification#version
 		[Flags]

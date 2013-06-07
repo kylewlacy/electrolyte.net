@@ -1,9 +1,7 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Text;
 
-namespace Electrolyte {
+namespace Electrolyte.Primitives {
 	public class VarString {
 		public string Value;
 

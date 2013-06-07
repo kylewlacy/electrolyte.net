@@ -2,8 +2,9 @@ using System;
 using System.IO;
 using System.Net;
 using NUnit.Framework;
+using Electrolyte.Messages;
 
-namespace Electrolyte.Test {
+namespace Electrolyte.Test.Messages {
 	[TestFixture]
 	public class VersionMessageTest {
 		[Test]

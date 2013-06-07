@@ -2,7 +2,7 @@ using System;
 using System.IO;
 using System.Linq;
 
-namespace Electrolyte {
+namespace Electrolyte.Messages {
 	public class InvalidHeaderException : Exception { }
 
 	public class MessageHeader {

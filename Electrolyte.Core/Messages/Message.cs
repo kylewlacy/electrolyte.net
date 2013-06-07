@@ -1,7 +1,7 @@
 using System;
 using System.IO;
 
-namespace Electrolyte {
+namespace Electrolyte.Messages {
 	public abstract class Message {
 		public MessageHeader Header { get; private set; }
 

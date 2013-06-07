@@ -34,12 +34,12 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AddressTest.cs" />
-    <Compile Include="VarIntTest.cs" />
-    <Compile Include="MessageHeaderTest.cs" />
-    <Compile Include="VarStringTest.cs" />
-    <Compile Include="VersionMessageTest.cs" />
     <Compile Include="Helpers\UnixTimeHelpersTest.cs" />
+    <Compile Include="Primitives\VarStringTest.cs" />
+    <Compile Include="Primitives\VarIntTest.cs" />
+    <Compile Include="Messages\MessageHeaderTest.cs" />
+    <Compile Include="Messages\VersionMessageTest.cs" />
+    <Compile Include="AddressTest.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -50,5 +50,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Helpers\" />
+    <Folder Include="Primitives\" />
+    <Folder Include="Messages\" />
   </ItemGroup>
 </Project>

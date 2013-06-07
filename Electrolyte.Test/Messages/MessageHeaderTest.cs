@@ -1,8 +1,9 @@
 using System;
 using System.IO;
 using NUnit.Framework;
+using Electrolyte.Messages;
 
-namespace Electrolyte.Test {
+namespace Electrolyte.Test.Messages {
 	[TestFixture]
 	public class MessageHeaderTest {
 		[Test]
