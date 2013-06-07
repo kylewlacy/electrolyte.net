@@ -38,10 +38,6 @@ namespace Electrolyte.Messages {
 			}
 		}
 
-		protected override string Command {
-			get { return "version"; }
-		}
-
 		public Int32 Version;
 		public Services AvailableServices;
 		public DateTime Time;
@@ -65,6 +61,10 @@ namespace Electrolyte.Messages {
 			BlockHeight = reader.ReadInt32();
 
 			Relay = (Version >= 70001) ? reader.ReadBoolean() : false; // BIP 0037
+		}
+
+		public override bool CommandIsValid(string command) {
+			return command == "version";
 		}
 	}
 }

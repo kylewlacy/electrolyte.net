@@ -3,15 +3,22 @@ using System.IO;
 
 namespace Electrolyte.Messages {
 	public abstract class Message {
-		public MessageHeader Header { get; private set; }
-
-		protected abstract string Command { get; }
-
-		protected Message(BinaryReader reader) {
-			Header = new MessageHeader(reader);
-			if(Header.Command != Command)
-				throw new InvalidHeaderException();
+		protected MessageHeader _header;
+		public MessageHeader Header {
+			get { return _header; }
+			set {
+				if(!CommandIsValid(value.Command))
+					_header = value;
+			}
 		}
+
+		protected Message(MessageHeader header) {
+			Header = header;
+		}
+
+		protected Message(BinaryReader reader) : this(new MessageHeader(reader)) { }
+
+		public virtual bool CommandIsValid(string command) { return true; }
 	}
 }
 
