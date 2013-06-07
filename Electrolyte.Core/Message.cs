@@ -9,7 +9,7 @@ namespace Electrolyte {
 
 		protected Message(BinaryReader reader) {
 			Header = new MessageHeader(reader);
-			if(!(reader.BaseStream.Length == Header.PayloadLength && Header.Command == Command))
+			if(Header.Command != Command)
 				throw new InvalidHeaderException();
 		}
 	}

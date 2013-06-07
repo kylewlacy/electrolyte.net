@@ -38,6 +38,8 @@
     <Compile Include="VarIntTest.cs" />
     <Compile Include="MessageHeaderTest.cs" />
     <Compile Include="VarStringTest.cs" />
+    <Compile Include="VersionMessageTest.cs" />
+    <Compile Include="Helpers\UnixTimeHelpersTest.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -47,6 +49,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Extensions\" />
+    <Folder Include="Helpers\" />
   </ItemGroup>
 </Project>
