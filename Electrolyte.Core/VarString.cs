@@ -22,8 +22,6 @@ namespace Electrolyte {
 
 		public static VarString FromBinaryReader(BinaryReader reader, out UInt64 length) {
 			length = VarInt.FromBinaryReader(reader).Value;
-			Console.WriteLine(length);
-
 			return new VarString(reader.ReadChars((int)length));
 		}
 	}
