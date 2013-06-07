@@ -39,6 +39,7 @@
     <Compile Include="Helpers\UnixTimeHelpers.cs" />
     <Compile Include="VarInt.cs" />
     <Compile Include="VarString.cs" />
+    <Compile Include="Message.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <ItemGroup>
