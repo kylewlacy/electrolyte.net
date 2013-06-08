@@ -1,7 +1,6 @@
 // From https://gist.github.com/CodesInChaos/3175971
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Numerics;
 using System.Security.Cryptography;

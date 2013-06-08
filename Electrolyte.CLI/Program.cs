@@ -6,6 +6,8 @@ namespace Electrolyte.CLI {
 			Console.Write("Enter an address: ");
 			Address address = new Address(Console.ReadLine());
 
+			Console.WriteLine(address.ID);
+
 			Pause();
 		}
 
