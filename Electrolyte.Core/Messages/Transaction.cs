@@ -1,8 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.IO;
 using Electrolyte.Primitives;
-// using Electrolyte.Extensions;
+using Electrolyte.Extensions;
 
 namespace Electrolyte.Messages {
 	public class Transaction : Message {
@@ -41,13 +42,7 @@ namespace Electrolyte.Messages {
 		public List<Output> Outputs = new List<Output>();
 
 		public Int64 Value {
-			get {
-				// TODO: Fix extension methods
-				// return Outputs.Select(o => o.Value).Sum();
-				Int64 total = 0;
-				foreach(Output output in Outputs) { total += output.Value; }
-				return total;
-			}
+			get { return Outputs.Select(o => o.Value).Sum(); }
 		}
 
 		public UInt32 LockTime; // TODO: Use a struct
