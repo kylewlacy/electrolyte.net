@@ -4,6 +4,7 @@ using System.Net;
 using System.Linq;
 using Electrolyte.Helpers;
 using Electrolyte.Primitives;
+using Electrolyte.Extensions;
 
 namespace Electrolyte.Messages {
 	public class VersionMessage : Message {
@@ -33,7 +34,7 @@ namespace Electrolyte.Messages {
 			public static NetworkNode FromBinaryReader(BinaryReader reader) {
 				UInt64 availableServices = reader.ReadUInt64();
 				byte[] address = reader.ReadBytes(16);
-				UInt16 port = BitConverter.ToUInt16(reader.ReadBytes(2).Reverse().ToArray(), 0); // TODO: Big-endian extension/helper methods
+				UInt16 port = reader.ReadUInt16(Endian.Big);
 				return new NetworkNode(availableServices, address, port);
 			}
 		}
