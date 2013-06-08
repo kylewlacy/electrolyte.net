@@ -41,6 +41,8 @@
     <Compile Include="Messages\MessageHeader.cs" />
     <Compile Include="Messages\Message.cs" />
     <Compile Include="Messages\VersionMessage.cs" />
+    <Compile Include="Helpers\Base58Helpers.cs" />
+    <Compile Include="Helpers\ArrayHelpers.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <ItemGroup>
@@ -58,6 +60,9 @@
     </Reference>
     <Reference Include="mscorlib">
       <HintPath>..\..\..\..\..\..\..\Library\Frameworks\Mono.framework\Versions\3.0.10\lib\mono\4.0\mscorlib.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Numerics">
+      <HintPath>..\..\..\..\..\..\..\Library\Frameworks\Mono.framework\Versions\3.0.10\lib\mono\4.0\System.Numerics.dll</HintPath>
     </Reference>
   </ItemGroup>
 </Project>
