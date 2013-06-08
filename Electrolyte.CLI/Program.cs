@@ -1,19 +1,20 @@
 using System;
+using Electrolyte;
 
 namespace Electrolyte.CLI {
-	static class Program {
+	class MainClass {
 		public static void Main(string[] args) {
 			Console.Write("Enter an address: ");
 			Address address = new Address(Console.ReadLine());
 
-			Console.WriteLine(address.ID);
+			Console.WriteLine("Address is {0}", address.ID);
 
 			Pause();
 		}
 
-		// TODO: Test for platform-specifics
-		static void Pause() {
-			Console.WriteLine("Press any key to quit...");
+		public static void Pause() {
+			Console.WriteLine();
+			Console.WriteLine("Press any key to continue...");
 			Console.ReadKey();
 		}
 	}

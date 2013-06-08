@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Electrolyte.Core", "Electrolyte.Core\Electrolyte.Core.csproj", "{CF6CF5BB-DC12-4950-B13F-6370AE4488E7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Electrolyte.CLI", "Electrolyte.CLI\Electrolyte.CLI.csproj", "{8D7C20E9-E2C0-4D8D-92D8-572233C88AD2}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Electrolyte.Test", "Electrolyte.Test\Electrolyte.Test.csproj", "{7421B600-7A0A-48D5-844C-423DA6C881F6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Electrolyte.CLI", "Electrolyte.CLI\Electrolyte.CLI.csproj", "{D0119E53-54C2-41C3-8F6B-D965ED390D8C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,14 +17,14 @@ Global
 		{7421B600-7A0A-48D5-844C-423DA6C881F6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7421B600-7A0A-48D5-844C-423DA6C881F6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7421B600-7A0A-48D5-844C-423DA6C881F6}.Release|Any CPU.Build.0 = Release|Any CPU
-		{8D7C20E9-E2C0-4D8D-92D8-572233C88AD2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{8D7C20E9-E2C0-4D8D-92D8-572233C88AD2}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{8D7C20E9-E2C0-4D8D-92D8-572233C88AD2}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{8D7C20E9-E2C0-4D8D-92D8-572233C88AD2}.Release|Any CPU.Build.0 = Release|Any CPU
 		{CF6CF5BB-DC12-4950-B13F-6370AE4488E7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{CF6CF5BB-DC12-4950-B13F-6370AE4488E7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CF6CF5BB-DC12-4950-B13F-6370AE4488E7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CF6CF5BB-DC12-4950-B13F-6370AE4488E7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D0119E53-54C2-41C3-8F6B-D965ED390D8C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D0119E53-54C2-41C3-8F6B-D965ED390D8C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D0119E53-54C2-41C3-8F6B-D965ED390D8C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D0119E53-54C2-41C3-8F6B-D965ED390D8C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
 		StartupItem = Electrolyte.CLI\Electrolyte.CLI.csproj

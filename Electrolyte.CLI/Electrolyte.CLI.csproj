@@ -5,31 +5,31 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>10.0.0</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{8D7C20E9-E2C0-4D8D-92D8-572233C88AD2}</ProjectGuid>
+    <ProjectGuid>{D0119E53-54C2-41C3-8F6B-D965ED390D8C}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <RootNamespace>Electrolyte.CLI</RootNamespace>
     <AssemblyName>Electrolyte.CLI</AssemblyName>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug</OutputPath>
     <DefineConstants>DEBUG;</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <ConsolePause>false</ConsolePause>
     <Externalconsole>true</Externalconsole>
+    <NoStdLib>true</NoStdLib>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>full</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Externalconsole>true</Externalconsole>
+    <NoStdLib>true</NoStdLib>
   </PropertyGroup>
-  <ItemGroup>
-    <Reference Include="System" />
-  </ItemGroup>
   <ItemGroup>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -39,6 +39,25 @@
     <ProjectReference Include="..\Electrolyte.Core\Electrolyte.Core.csproj">
       <Project>{CF6CF5BB-DC12-4950-B13F-6370AE4488E7}</Project>
       <Name>Electrolyte.Core</Name>
+      <Private>False</Private>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+      <HintPath>..\..\..\..\..\..\..\Library\Frameworks\Mono.framework\Versions\3.0.10\lib\mono\4.0\mscorlib.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System.Core, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+      <HintPath>..\..\..\..\..\..\..\Library\Frameworks\Mono.framework\Versions\3.0.10\lib\mono\4.0\System.Core.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+      <HintPath>..\..\..\..\..\..\..\Library\Frameworks\Mono.framework\Versions\3.0.10\lib\mono\4.0\System.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System.Numerics, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+      <HintPath>..\..\..\..\..\..\..\Library\Frameworks\Mono.framework\Versions\3.0.10\lib\mono\4.0\System.Numerics.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
   </ItemGroup>
 </Project>
