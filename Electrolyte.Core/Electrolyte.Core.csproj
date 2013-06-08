@@ -52,21 +52,17 @@
     <Folder Include="Messages\" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-      <HintPath>..\..\..\..\..\..\..\Library\Frameworks\Mono.framework\Versions\3.0.10\lib\mono\4.0\mscorlib.dll</HintPath>
-      <Private>False</Private>
+    <Reference Include="System">
+      <HintPath>..\..\..\..\..\..\..\Library\Frameworks\Mono.framework\Versions\Current\lib\mono\4.0\System.dll</HintPath>
     </Reference>
-    <Reference Include="System.Core, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-      <HintPath>..\..\..\..\..\..\..\Library\Frameworks\Mono.framework\Versions\3.0.10\lib\mono\4.0\System.Core.dll</HintPath>
-      <Private>False</Private>
+    <Reference Include="System.Core">
+      <HintPath>..\..\..\..\..\..\..\Library\Frameworks\Mono.framework\Versions\Current\lib\mono\4.0\System.Core.dll</HintPath>
     </Reference>
-    <Reference Include="System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-      <HintPath>..\..\..\..\..\..\..\Library\Frameworks\Mono.framework\Versions\3.0.10\lib\mono\4.0\System.dll</HintPath>
-      <Private>False</Private>
+    <Reference Include="System.Numerics">
+      <HintPath>..\..\..\..\..\..\..\Library\Frameworks\Mono.framework\Versions\Current\lib\mono\4.0\System.Numerics.dll</HintPath>
     </Reference>
-    <Reference Include="System.Numerics, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-      <HintPath>..\..\..\..\..\..\..\Library\Frameworks\Mono.framework\Versions\3.0.10\lib\mono\4.0\System.Numerics.dll</HintPath>
-      <Private>False</Private>
+    <Reference Include="mscorlib">
+      <HintPath>..\..\..\..\..\..\..\Library\Frameworks\Mono.framework\Versions\Current\lib\mono\4.0\mscorlib.dll</HintPath>
     </Reference>
   </ItemGroup>
 </Project>

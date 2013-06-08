@@ -13,8 +13,7 @@ namespace Electrolyte.CLI {
 		}
 
 		public static void Pause() {
-			Console.WriteLine();
-			Console.WriteLine("Press any key to continue...");
+			Console.Write("\nPress any key to continue...");
 			Console.ReadKey();
 		}
 	}
