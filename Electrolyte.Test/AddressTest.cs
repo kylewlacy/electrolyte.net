@@ -8,23 +8,13 @@ namespace Electrolyte.Test {
 		[Test]
 		public void AddressFormatTest() {
 			Assert.DoesNotThrow(() => {
-				new Address("1dice8EMZmqKvrGE4Qc9bUFf9PX3xaYDp");
-				new Address("31uEbMgunupShBVTewXjtqbBv5MndwfXhb");
+				new Address("1JArS6jzE3AJ9sZ3aFij1BmTcpFGgN86hA");
+				new Address("1VayNert3x1KzbpzMGt2qdqrAThiRovi8");
 				new Address("1AGNa15ZQXAZUgFiqJ2i7Z2DPU2J6hW62i");
-				new Address("1dice8EMZmqKvrGE4Qc9bUFf9PX3xaYDp");
-				new Address("1dice8EMZmqKvrGE4Qc9bUFf9PX3xaYDp");
-				new Address("1dice8EMZmqKvrGE4Qc9bUFf9PX3xaYDpa");
 			});
 
-			Assert.Throws<InvalidAddressException>(() => { new Address("2AGNa15ZQXAZUgFiqJ2i7Z2DPU2J6hW62i"); });
-			Assert.Throws<InvalidAddressException>(() => { new Address("AGNa15ZQXAZUgFiqJ2i7Z2DPU2J6hW62i"); });
-			Assert.Throws<InvalidAddressException>(() => { new Address("1AGNa15ZQXAZUgFiqJ2i7Z2DPU2J6hW62I"); });
-			Assert.Throws<InvalidAddressException>(() => { new Address("2AGNa15ZQXAZUgFiqJ2i7Z2DPU2J6hW62O"); });
-			Assert.Throws<InvalidAddressException>(() => { new Address("2AGNa15ZQXAZUgFiqJ2i7Z2DPU2J6hW62l"); });
-			Assert.Throws<InvalidAddressException>(() => { new Address("1AGN"); });
-			Assert.Throws<InvalidAddressException>(() => { new Address("1AGNa15ZQXAZUgFiqJ2i7Z2DPU2J6hW62iiiiiiiiiiii"); });
-			Assert.Throws<InvalidAddressException>(() => { new Address("1dice8EMZmqKvrGE4Qc9bUFf9P"); });
-			Assert.Throws<InvalidAddressException>(() => { new Address("1dice8EMZmqKvrGE4Qc9bUFf9PX3xaYDpai"); });
+			Assert.Throws<FormatException>(() => { new Address("N2pGWAh65TWpWmEFrFssRQkQubbczJSKi9"); });
+			Assert.Throws<FormatException>(() => { new Address("1AGNa15ZQXAZUGFiqJ2i7Z2DPU2J6hW62i"); });
 		}
 	}
 }
