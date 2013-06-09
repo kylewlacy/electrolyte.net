@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Text;
 
 namespace Electrolyte.Messages {
 	public class InvalidHeaderException : Exception { }
@@ -21,6 +22,12 @@ namespace Electrolyte.Messages {
 			get { return PayloadLength + HeaderSize; }
 		}
 
+		public MessageHeader(string command, UInt32 payloadLength, byte[] checksum) {
+			Command = command;
+			PayloadLength = payloadLength;
+			ExpectedChecksum = checksum.Take(4).ToArray();
+		}
+
 		MessageHeader(BinaryReader reader) {
 			if(!reader.ReadBytes(4).SequenceEqual(MagicBytes) || reader.BaseStream.Length < HeaderSize)
 				throw new InvalidHeaderException();
@@ -34,7 +41,14 @@ namespace Electrolyte.Messages {
 		}
 
 		public void Write(BinaryWriter writer) {
-			throw new NotImplementedException();
+			writer.Write(MagicBytes);
+
+			byte[] command = Encoding.ASCII.GetBytes(Command);
+			Array.Resize(ref command, 12);
+			writer.Write(command);
+
+			writer.Write(PayloadLength);
+			writer.Write(ExpectedChecksum);
 		}
 	}
 }

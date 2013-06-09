@@ -7,7 +7,7 @@ namespace Electrolyte.Test.Messages {
 	[TestFixture]
 	public class MessageHeaderTest {
 		[Test]
-		public void TestMagicBytes() {
+		public void TestRead() {
 			byte[] goodHeader = {
 				0xF9, 0xBE, 0xB4, 0xD9,													// Magic
 				0x76, 0x65, 0x72, 0x73, 0x69, 0x6F, 0x6E, 0x00, 0x00, 0x00, 0x00, 0x00, // Message ("version     ")
@@ -41,6 +41,24 @@ namespace Electrolyte.Test.Messages {
 
 			using(BinaryReader reader = new BinaryReader(new MemoryStream(badSize)))
 				Assert.Throws<InvalidHeaderException>(() => { MessageHeader.Read(reader); });
+		}
+
+		[Test]
+		public void TestWrite() {
+			using(MemoryStream stream = new MemoryStream())
+			using(BinaryWriter writer = new BinaryWriter(stream)) {
+				byte[] expected = {
+					0xF9, 0xBE, 0xB4, 0xD9,													// Magic
+					0x76, 0x65, 0x72, 0x73, 0x69, 0x6F, 0x6E, 0x00, 0x00, 0x00, 0x00, 0x00, // Message ("version     ")
+					0x64, 0x00, 0x00, 0x00,													// Payload length (100 bytes)
+					0x35, 0x8D, 0x49, 0x32													// Payload checksum
+				};
+
+				MessageHeader header = new MessageHeader("version", 100, new byte[]{0x35, 0x8D, 0x49, 0x32, 0xAA});
+
+				header.Write(writer);
+				Assert.AreEqual(stream.ToArray(), expected);
+			}
 		}
 	}
 }
