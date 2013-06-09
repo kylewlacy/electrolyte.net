@@ -56,7 +56,7 @@ namespace Electrolyte.Messages {
 			Version = reader.ReadInt32();
 			AvailableServices = (Services)reader.ReadUInt64();
 
-			Time = UnixTimeHelpers.DateTimeFromUnixTime(reader.ReadInt64());
+			Time = UnixTime.DateTimeFromUnixTime(reader.ReadInt64());
 
 			Receiver = NetworkNode.FromBinaryReader(reader);
 			Sender = NetworkNode.FromBinaryReader(reader);

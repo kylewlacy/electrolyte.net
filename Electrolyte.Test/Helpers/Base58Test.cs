@@ -6,7 +6,7 @@ using Electrolyte.Helpers;
 
 namespace Electrolyte.Test.Helpers {
 	[TestFixture]
-	public class Base58HelpersTest {
+	public class Base58Test {
 		// Test cases from https://github.com/bitcoin/bitcoin/blob/master/src/test/base58_tests.cpp
 		Tuple<string, byte[]>[] testCases = new Tuple<string, byte[]>[] {
 			Tuple.Create("",new byte[]{}),
