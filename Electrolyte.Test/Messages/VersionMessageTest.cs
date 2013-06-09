@@ -8,7 +8,7 @@ namespace Electrolyte.Test.Messages {
 	[TestFixture]
 	public class VersionMessageTest {
 		[Test]
-		public void TestVersionInfo() {
+		public void Read() {
 			byte[] bytes = {
 				0xF9, 0xBE, 0xB4, 0xD9,																																		// Magic
 				0x76, 0x65, 0x72, 0x73, 0x69, 0x6F, 0x6E, 0x00, 0x00, 0x00, 0x00, 0x00, 																					// Message ("version     ")

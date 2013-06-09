@@ -6,7 +6,7 @@ namespace Electrolyte.Test.Helpers {
 	[TestFixture]
 	public class UnixTimeTest {
 		[Test]
-		public void TestConvertFromUnixTime() {
+		public void UnixTimeToDateTime() {
 			DateTime original = new DateTime(2012, 12, 19, 06, 12, 33, DateTimeKind.Utc);
 			DateTime conversion = UnixTime.DateTimeFromUnixTime(1355897553);
 
@@ -14,7 +14,7 @@ namespace Electrolyte.Test.Helpers {
 		}
 
 		[Test]
-		public void TestConvertToUnixTime() {
+		public void DateTimeToUnixTime() {
 			long original = 1370596465;
 			long conversion = UnixTime.UnixTimeFromDateTime(new DateTime(2013, 06, 07, 02, 14, 25));
 

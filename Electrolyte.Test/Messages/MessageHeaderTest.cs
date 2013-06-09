@@ -7,7 +7,7 @@ namespace Electrolyte.Test.Messages {
 	[TestFixture]
 	public class MessageHeaderTest {
 		[Test]
-		public void TestRead() {
+		public void Read() {
 			byte[] goodHeader = {
 				0xF9, 0xBE, 0xB4, 0xD9,													// Magic
 				0x76, 0x65, 0x72, 0x73, 0x69, 0x6F, 0x6E, 0x00, 0x00, 0x00, 0x00, 0x00, // Message ("version     ")

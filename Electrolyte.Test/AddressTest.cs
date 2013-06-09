@@ -6,7 +6,7 @@ namespace Electrolyte.Test {
 	[TestFixture]
 	public class AddressTest {
 		[Test]
-		public void AddressFormatTest() {
+		public void ParseAddress() {
 			Assert.DoesNotThrow(() => {
 				new Address("1JArS6jzE3AJ9sZ3aFij1BmTcpFGgN86hA");
 				new Address("1VayNert3x1KzbpzMGt2qdqrAThiRovi8");
