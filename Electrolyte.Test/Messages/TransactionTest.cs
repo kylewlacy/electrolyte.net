@@ -54,7 +54,7 @@ namespace Electrolyte.Test.Messages {
 			};
 
 			using(BinaryReader reader = new BinaryReader(new MemoryStream(bytes))) {
-				Transaction tx = new Transaction(reader);
+				Transaction tx = Transaction.Read(reader);
 
 				Assert.AreEqual(tx.Version, 1);
 

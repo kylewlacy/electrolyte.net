@@ -30,17 +30,17 @@ namespace Electrolyte.Test.Messages {
 			};
 
 			using(BinaryReader reader = new BinaryReader(new MemoryStream(goodHeader))) {
-				MessageHeader header = new MessageHeader(reader);
+				MessageHeader header = MessageHeader.Read(reader);
 				Assert.AreEqual(header.Command, "version");
 				Assert.AreEqual(header.PayloadLength, 100);
 				Assert.AreEqual(header.ExpectedChecksum, new byte[] {0x35, 0x8D, 0x49, 0x32});
 			}
 
 			using(BinaryReader reader = new BinaryReader(new MemoryStream(badMagic)))
-				Assert.Throws<InvalidHeaderException>(() => { new MessageHeader(reader); });
+				Assert.Throws<InvalidHeaderException>(() => { MessageHeader.Read(reader); });
 
 			using(BinaryReader reader = new BinaryReader(new MemoryStream(badSize)))
-				Assert.Throws<InvalidHeaderException>(() => { new MessageHeader(reader); });
+				Assert.Throws<InvalidHeaderException>(() => { MessageHeader.Read(reader); });
 		}
 	}
 }

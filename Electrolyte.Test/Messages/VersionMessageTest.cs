@@ -26,7 +26,7 @@ namespace Electrolyte.Test.Messages {
 			};
 
 			using(BinaryReader reader = new BinaryReader(new MemoryStream(bytes))) {
-				VersionMessage version = new VersionMessage(reader);
+				VersionMessage version = VersionMessage.Read(reader);
 
 				Assert.AreEqual(version.Version, 60002);
 				Assert.AreEqual(version.AvailableServices, VersionMessage.Services.NodeNetwork);

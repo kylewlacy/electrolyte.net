@@ -2,7 +2,7 @@ using System;
 using System.IO;
 
 namespace Electrolyte.Messages {
-	public abstract class Message {
+	public abstract class Message : IBinary {
 		protected MessageHeader _header;
 		public MessageHeader Header {
 			get { return _header; }
@@ -12,13 +12,13 @@ namespace Electrolyte.Messages {
 			}
 		}
 
-		protected Message(MessageHeader header) {
-			Header = header;
+		protected Message(BinaryReader reader) {
+			Header = MessageHeader.Read(reader);
 		}
 
-		protected Message(BinaryReader reader) : this(new MessageHeader(reader)) { }
-
 		public virtual bool CommandIsValid(string command) { return true; }
+
+		public abstract void Write(BinaryWriter writer);
 	}
 }
 

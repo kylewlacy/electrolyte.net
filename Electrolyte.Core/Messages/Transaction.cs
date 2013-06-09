@@ -47,7 +47,11 @@ namespace Electrolyte.Messages {
 
 		public UInt32 LockTime; // TODO: Use a struct
 
-		public Transaction(BinaryReader reader) : base(reader) {
+		public override bool CommandIsValid(string command) {
+			return command == "tx";
+		}
+
+		Transaction(BinaryReader reader) : base(reader) {
 			Version = reader.ReadUInt32();
 
 			UInt64 inputCount = VarInt.FromBinaryReader(reader).Value;
@@ -63,8 +67,12 @@ namespace Electrolyte.Messages {
 			LockTime = reader.ReadUInt32();
 		}
 
-		public override bool CommandIsValid(string command) {
-			return command == "tx";
+		public static Transaction Read(BinaryReader reader) {
+			return new Transaction(reader);
+		}
+
+		public override void Write(BinaryWriter writer) {
+			throw new NotImplementedException();
 		}
 	}
 }

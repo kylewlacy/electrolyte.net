@@ -43,6 +43,7 @@
     <Compile Include="Messages\VersionMessage.cs" />
     <Compile Include="Helpers\Base58Helpers.cs" />
     <Compile Include="Helpers\ArrayHelpers.cs" />
+    <Compile Include="IBinary.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <ItemGroup>

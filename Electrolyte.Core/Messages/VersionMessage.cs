@@ -48,7 +48,11 @@ namespace Electrolyte.Messages {
 		public Int32 BlockHeight;
 		public bool Relay;
 
-		public VersionMessage(BinaryReader reader) : base(reader) {
+		public override bool CommandIsValid(string command) {
+			return command == "version";
+		}
+
+		VersionMessage(BinaryReader reader) : base(reader) {
 			Version = reader.ReadInt32();
 			AvailableServices = (Services)reader.ReadUInt64();
 
@@ -64,8 +68,12 @@ namespace Electrolyte.Messages {
 			Relay = (Version >= 70001) ? reader.ReadBoolean() : false; // BIP 0037
 		}
 
-		public override bool CommandIsValid(string command) {
-			return command == "version";
+		public static VersionMessage Read(BinaryReader reader) {
+			return new VersionMessage(reader);
+		}
+
+		public override void Write(BinaryWriter writer) {
+			throw new NotImplementedException();
 		}
 	}
 }
