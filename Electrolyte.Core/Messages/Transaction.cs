@@ -17,7 +17,7 @@ namespace Electrolyte.Messages {
 			public Input(BinaryReader reader) {
 				reader.ReadBytes(36); 											// Outpoint
 
-				UInt64 scriptLength = VarInt.FromBinaryReader(reader).Value;	// Script length
+				UInt64 scriptLength = VarInt.Read(reader).Value;	// Script length
 				reader.ReadBytes((int)scriptLength);							// Script (TODO: read bytes as many time as needed to read all)
 
 				Sequence = reader.ReadUInt32();									// Sequence (unused)
@@ -31,7 +31,7 @@ namespace Electrolyte.Messages {
 			public Output(BinaryReader reader) {
 				Value = reader.ReadInt64();
 
-				UInt64 scriptLength = VarInt.FromBinaryReader(reader).Value;	// Script length
+				UInt64 scriptLength = VarInt.Read(reader).Value;	// Script length
 				reader.ReadBytes((int)scriptLength);							// Script (TODO: read bytes as many time as needed to read all)
 			}
 		}
@@ -54,12 +54,12 @@ namespace Electrolyte.Messages {
 		Transaction(BinaryReader reader) : base(reader) {
 			Version = reader.ReadUInt32();
 
-			UInt64 inputCount = VarInt.FromBinaryReader(reader).Value;
+			UInt64 inputCount = VarInt.Read(reader).Value;
 			for(ulong i = 0; i < inputCount; i++) {
 				Inputs.Add(new Input(reader));
 			}
 
-			UInt64 outputCount = VarInt.FromBinaryReader(reader).Value;
+			UInt64 outputCount = VarInt.Read(reader).Value;
 			for(ulong i = 0; i < outputCount; i++) {
 				Outputs.Add(new Output(reader));
 			}

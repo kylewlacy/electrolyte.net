@@ -13,13 +13,13 @@ namespace Electrolyte.Primitives {
 			Value = new String(value);
 		}
 
-		public static VarString FromBinaryReader(BinaryReader reader) {
+		public static VarString Read(BinaryReader reader) {
 			UInt64 length;
-			return FromBinaryReader(reader, out length);
+			return Read(reader, out length);
 		}
 
-		public static VarString FromBinaryReader(BinaryReader reader, out UInt64 length) {
-			length = VarInt.FromBinaryReader(reader).Value;
+		public static VarString Read(BinaryReader reader, out UInt64 length) {
+			length = VarInt.Read(reader).Value;
 			return new VarString(reader.ReadChars((int)length));
 		}
 	}

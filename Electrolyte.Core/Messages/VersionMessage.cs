@@ -62,7 +62,7 @@ namespace Electrolyte.Messages {
 			Sender = NetworkNode.FromBinaryReader(reader);
 
 			Nonce = reader.ReadUInt64();
-			UserAgent = VarString.FromBinaryReader(reader).Value;
+			UserAgent = VarString.Read(reader).Value;
 			BlockHeight = reader.ReadInt32();
 
 			Relay = (Version >= 70001) ? reader.ReadBoolean() : false; // BIP 0037

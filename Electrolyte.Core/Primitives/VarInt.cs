@@ -13,13 +13,13 @@ namespace Electrolyte.Primitives {
 			Value = (UInt64)value;
 		}
 
-		public static VarInt FromBinaryReader(BinaryReader reader) {
+		public static VarInt Read(BinaryReader reader) {
 			int length;
-			return FromBinaryReader(reader, out length);
+			return Read(reader, out length);
 		}
 
 		// http://code.google.com/p/bitcoinj/source/browse/core/src/main/java/com/google/bitcoin/core/VarInt.java
-		public static VarInt FromBinaryReader(BinaryReader reader, out int length) {
+		public static VarInt Read(BinaryReader reader, out int length) {
 			byte first = reader.ReadByte();
 			length = intLength(first);
 

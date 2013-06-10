@@ -28,7 +28,7 @@ namespace Electrolyte.Test.Primitives {
 				byte[] full = ArrayHelpers.ConcatArrays(str.Item2, Encoding.ASCII.GetBytes(str.Item1));
 
 				using(BinaryReader reader = new BinaryReader(new MemoryStream(full))) {
-					VarString v = VarString.FromBinaryReader(reader);
+					VarString v = VarString.Read(reader);
 					Assert.AreEqual(v.Value, str.Item1);
 				}
 			}
