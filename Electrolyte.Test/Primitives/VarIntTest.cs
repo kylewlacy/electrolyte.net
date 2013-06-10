@@ -6,65 +6,19 @@ using Electrolyte.Primitives;
 namespace Electrolyte.Test.Primitives {
 	[TestFixture]
 	public class VarIntTest {
-		[Test]
-		public void Test8Bit() {
-			byte[] bytes = {0xFC};
-
-			using(BinaryReader reader = new BinaryReader(new MemoryStream(bytes))) {
-				int length;
-				UInt64 value = VarInt.FromBinaryReader(reader, out length).Value;
-
-				Assert.AreEqual(length, 8);
-				Assert.AreEqual(value, 252);
-			}
-		}
+		Tuple<byte[], ulong>[] Numbers = new Tuple<byte[], ulong>[] {
+			Tuple.Create(new byte[] { 0xFC }, 252UL),
+			Tuple.Create(new byte[] { 0xFD, 0x98, 0xFF }, 65432UL),
+			Tuple.Create(new byte[] { 0xFE, 0x3F, 0xBD, 0xF7, 0xF4 }, 4109876543UL),
+			Tuple.Create(new byte[] { 0xFF, 0x2D, 0xF5, 0x98, 0xB2, 0x80, 0xBF, 0x00, 0xF5 }, 17654321098765432109UL)
+		};
 
 		[Test]
-		public void Test16Bit() {
-			byte[] numericBytes = BitConverter.GetBytes((ushort)65432);
-			byte[] bytes = {0xFD,
-				numericBytes[0], numericBytes[1]
-			};
-
-			using(BinaryReader reader = new BinaryReader(new MemoryStream(bytes))) {
-				int length;
-				UInt64 value = VarInt.FromBinaryReader(reader, out length).Value;
-
-				Assert.AreEqual(length, 16);
-				Assert.AreEqual(value, 65432);
-			}
-		}
-
-		[Test]
-		public void Test32Bit() {
-			byte[] numericBytes = BitConverter.GetBytes(4109876543U);
-			byte[] bytes = {0xFE,
-				numericBytes[0], numericBytes[1], numericBytes[2], numericBytes[3]
-			};
-
-			using(MemoryStream stream = new MemoryStream(bytes))
-			using(BinaryReader reader = new BinaryReader(stream)) {
-				int length;
-				UInt64 value = VarInt.FromBinaryReader(reader, out length).Value;
-
-				Assert.AreEqual(length, 32);
-				Assert.AreEqual(value, 4109876543);
-			}
-		}
-
-		[Test]
-		public void Test64Bit() {
-			byte[] numericBytes = BitConverter.GetBytes(17654321098765432109UL);
-			byte[] bytes = {0xFF,
-				numericBytes[0], numericBytes[1], numericBytes[2], numericBytes[3], numericBytes[4], numericBytes[5], numericBytes[6], numericBytes[7]
-			};
-
-			using(BinaryReader reader = new BinaryReader(new MemoryStream(bytes))) {
-				int length;
-				UInt64 value = VarInt.FromBinaryReader(reader, out length).Value;
-
-				Assert.AreEqual(length, 64);
-				Assert.AreEqual(value, 17654321098765432109);
+		public void Read() {
+			foreach(var number in Numbers) {
+				using(BinaryReader reader = new BinaryReader(new MemoryStream(number.Item1))) {
+					Assert.AreEqual(VarInt.FromBinaryReader(reader).Value, number.Item2);
+				}
 			}
 		}
 	}

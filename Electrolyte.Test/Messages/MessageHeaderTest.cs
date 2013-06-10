@@ -8,12 +8,18 @@ namespace Electrolyte.Test.Messages {
 	public class MessageHeaderTest {
 		[Test]
 		public void Read() {
-			byte[] goodHeader = {
-				0xF9, 0xBE, 0xB4, 0xD9,													// Magic
-				0x76, 0x65, 0x72, 0x73, 0x69, 0x6F, 0x6E, 0x00, 0x00, 0x00, 0x00, 0x00, // Message ("version     ")
-				0x64, 0x00, 0x00, 0x00,													// Payload length (100 bytes)
-				0x35, 0x8D, 0x49, 0x32													// Payload checksum
+			Tuple<byte[], string, uint, byte[]>[] Headers = new Tuple<byte[], string, uint, byte[]>[] {
+				new Tuple<byte[], string, uint, byte[]>(
+					new byte[]{0xF9,0xBE,0xB4,0xD9,0x76,0x65,0x72,0x73,0x69,0x6F,0x6E,0x00,0x00,0x00,0x00,0x00,0x64,0x00,0x00,0x00,0x35,0x8D,0x49,0x32},
+					"version", 100, new byte[]{0x35, 0x8D, 0x49, 0x32}
+				)
 			};
+//			byte[] goodHeader = {
+//				0xF9, 0xBE, 0xB4, 0xD9,													// Magic
+//				0x76, 0x65, 0x72, 0x73, 0x69, 0x6F, 0x6E, 0x00, 0x00, 0x00, 0x00, 0x00, // Message ("version     ")
+//				0x64, 0x00, 0x00, 0x00,													// Payload length (100 bytes)
+//				0x35, 0x8D, 0x49, 0x32													// Payload checksum
+//			};
 
 			byte[] badMagic = {
 				0xF9, 0xBE, 0xB4, 0xE0,
@@ -29,12 +35,15 @@ namespace Electrolyte.Test.Messages {
 				0x35, 0x8D, 0x49
 			};
 
-			using(BinaryReader reader = new BinaryReader(new MemoryStream(goodHeader))) {
-				MessageHeader header = MessageHeader.Read(reader);
-				Assert.AreEqual(header.Command, "version");
-				Assert.AreEqual(header.PayloadLength, 100);
-				Assert.AreEqual(header.ExpectedChecksum, new byte[] {0x35, 0x8D, 0x49, 0x32});
+			foreach(var header in Headers) {
+				using(BinaryReader reader = new BinaryReader(new MemoryStream(header.Item1))) {
+					MessageHeader msgHeader = MessageHeader.Read(reader);
+					Assert.AreEqual(msgHeader.Command, header.Item2);
+					Assert.AreEqual(msgHeader.PayloadLength, header.Item3);
+					Assert.AreEqual(msgHeader.ExpectedChecksum, header.Item4);
+				}
 			}
+
 
 			using(BinaryReader reader = new BinaryReader(new MemoryStream(badMagic)))
 				Assert.Throws<InvalidHeaderException>(() => { MessageHeader.Read(reader); });
@@ -44,7 +53,7 @@ namespace Electrolyte.Test.Messages {
 		}
 
 		[Test]
-		public void TestWrite() {
+		public void Write() {
 			using(MemoryStream stream = new MemoryStream())
 			using(BinaryWriter writer = new BinaryWriter(stream)) {
 				byte[] expected = {
