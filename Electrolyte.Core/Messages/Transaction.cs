@@ -6,7 +6,7 @@ using Electrolyte.Primitives;
 using Electrolyte.Extensions;
 
 namespace Electrolyte.Messages {
-	public class Transaction : Message {
+	public class Transaction : Message<Transaction> {
 		public static UInt32 CurrentVersion = 1;
 
 		public class Input {
@@ -51,7 +51,7 @@ namespace Electrolyte.Messages {
 			return command == "tx";
 		}
 
-		Transaction(BinaryReader reader) : base(reader) {
+		protected override void ReadPayload(BinaryReader reader) {
 			Version = reader.ReadUInt32();
 
 			UInt64 inputCount = VarInt.Read(reader).Value;
@@ -67,11 +67,7 @@ namespace Electrolyte.Messages {
 			LockTime = reader.ReadUInt32();
 		}
 
-		public static Transaction Read(BinaryReader reader) {
-			return new Transaction(reader);
-		}
-
-		public override void Write(BinaryWriter writer) {
+		protected override void WritePayload(BinaryWriter writer) {
 			throw new NotImplementedException();
 		}
 	}

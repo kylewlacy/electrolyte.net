@@ -7,7 +7,7 @@ using Electrolyte.Primitives;
 using Electrolyte.Extensions;
 
 namespace Electrolyte.Messages {
-	public class VersionMessage : Message {
+	public class VersionMessage : Message<VersionMessage> {
 		// https://en.bitcoin.it/wiki/Protocol_specification#version
 		[Flags]
 		public enum Services : ulong {
@@ -52,7 +52,7 @@ namespace Electrolyte.Messages {
 			return command == "version";
 		}
 
-		VersionMessage(BinaryReader reader) : base(reader) {
+		protected override void ReadPayload(BinaryReader reader) {
 			Version = reader.ReadInt32();
 			AvailableServices = (Services)reader.ReadUInt64();
 
@@ -68,11 +68,7 @@ namespace Electrolyte.Messages {
 			Relay = (Version >= 70001) ? reader.ReadBoolean() : false; // BIP 0037
 		}
 
-		public static VersionMessage Read(BinaryReader reader) {
-			return new VersionMessage(reader);
-		}
-
-		public override void Write(BinaryWriter writer) {
+		protected override void WritePayload(BinaryWriter writer) {
 			throw new NotImplementedException();
 		}
 	}
