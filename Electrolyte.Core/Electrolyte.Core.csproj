@@ -41,7 +41,6 @@
     <Compile Include="Messages\Message.cs" />
     <Compile Include="Messages\VersionMessage.cs" />
     <Compile Include="Helpers\ArrayHelpers.cs" />
-    <Compile Include="IBinary.cs" />
     <Compile Include="Helpers\UnixTime.cs" />
     <Compile Include="Helpers\Base58.cs" />
   </ItemGroup>
