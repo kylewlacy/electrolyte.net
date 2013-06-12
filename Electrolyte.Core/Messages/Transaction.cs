@@ -47,8 +47,8 @@ namespace Electrolyte.Messages {
 
 		public UInt32 LockTime; // TODO: Use a struct
 
-		public override bool CommandIsValid(string command) {
-			return command == "tx";
+		public override string ExpectedCommand {
+			get { return "tx"; }
 		}
 
 		protected override void ReadPayload(BinaryReader reader) {

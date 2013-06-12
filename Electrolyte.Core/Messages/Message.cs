@@ -12,9 +12,11 @@ namespace Electrolyte.Messages {
 			}
 		}
 
+		public virtual string ExpectedCommand { get { return String.Empty; } }
+
 		protected Message() { }
 
-		public virtual bool CommandIsValid(string command) { return true; }
+		public virtual bool CommandIsValid(string command) { return ExpectedCommand == command; }
 
 		public static T Read(BinaryReader reader) {
 			T t = new T();
@@ -28,6 +30,13 @@ namespace Electrolyte.Messages {
 		}
 
 		public void Write(BinaryWriter writer) {
+			using(MemoryStream stream = new MemoryStream())
+			using(BinaryWriter payloadWriter = new BinaryWriter(stream)) {
+				WritePayload(payloadWriter);
+
+				Header = new MessageHeader(ExpectedCommand, stream.ToArray());
+			}
+
 			Header.WritePayload(writer);
 			WritePayload(writer);
 		}

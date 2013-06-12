@@ -54,6 +54,10 @@ namespace Electrolyte.Messages {
 		public Int32 BlockHeight;
 		public bool Relay;
 
+		public override string ExpectedCommand {
+			get { return "version"; }
+		}
+
 		public VersionMessage() { }
 
 		public VersionMessage(Int32 version, Services services, DateTime time, NetworkNode sender, NetworkNode receiver, UInt64 nonce, string userAgent, Int32 height) {
@@ -65,10 +69,6 @@ namespace Electrolyte.Messages {
 			Nonce = nonce;
 			UserAgent = userAgent;
 			BlockHeight = height;
-		}
-
-		public override bool CommandIsValid(string command) {
-			return command == "version";
 		}
 
 		protected override void ReadPayload(BinaryReader reader) {

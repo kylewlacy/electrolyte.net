@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Security.Cryptography;
 
 namespace Electrolyte.Messages {
 	public class InvalidHeaderException : Exception { }
@@ -28,6 +29,12 @@ namespace Electrolyte.Messages {
 			Command = command;
 			PayloadLength = payloadLength;
 			ExpectedChecksum = checksum.Take(4).ToArray();
+		}
+
+		public MessageHeader(string command, byte[] payload) {
+			Command = command;
+			PayloadLength = (UInt32)payload.Length;
+			ExpectedChecksum = SHA256.Create().ComputeHash(SHA256.Create().ComputeHash(payload)).Take(4).ToArray();
 		}
 
 		new public static MessageHeader Read(BinaryReader reader) {
