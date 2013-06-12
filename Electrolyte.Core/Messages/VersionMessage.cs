@@ -31,6 +31,12 @@ namespace Electrolyte.Messages {
 				Port = port;
 			}
 
+			public NetworkNode(Services services, IPAddress address, UInt16 port) {
+				AvailableServices = services;
+				Address = address;
+				Port = port;
+			}
+
 			public static NetworkNode FromBinaryReader(BinaryReader reader) {
 				UInt64 availableServices = reader.ReadUInt64();
 				byte[] address = reader.ReadBytes(16);
@@ -47,6 +53,19 @@ namespace Electrolyte.Messages {
 		public string UserAgent;
 		public Int32 BlockHeight;
 		public bool Relay;
+
+		public VersionMessage() { }
+
+		public VersionMessage(Int32 version, Services services, DateTime time, NetworkNode sender, NetworkNode receiver, UInt64 nonce, string userAgent, Int32 height) {
+			Version = version;
+			AvailableServices = services;
+			Time = time;
+			Sender = sender;
+			Receiver = receiver;
+			Nonce = nonce;
+			UserAgent = userAgent;
+			BlockHeight = height;
+		}
 
 		public override bool CommandIsValid(string command) {
 			return command == "version";

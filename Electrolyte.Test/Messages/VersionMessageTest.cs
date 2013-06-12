@@ -7,9 +7,8 @@ using Electrolyte.Messages;
 namespace Electrolyte.Test.Messages {
 	[TestFixture]
 	public class VersionMessageTest {
-		[Test]
-		public void Read() {
-			byte[] bytes = {
+		Tuple<byte[], VersionMessage>[] versions = new Tuple<byte[], VersionMessage>[] {
+			Tuple.Create(new byte[] {
 				0xF9, 0xBE, 0xB4, 0xD9,																																		// Magic
 				0x76, 0x65, 0x72, 0x73, 0x69, 0x6F, 0x6E, 0x00, 0x00, 0x00, 0x00, 0x00, 																					// Message ("version     ")
 				0x64, 0x00, 0x00, 0x00,																																		// Payload length (100 bytes)
@@ -23,25 +22,36 @@ namespace Electrolyte.Test.Messages {
 				0x3B, 0x2E, 0xB3, 0x5D, 0x8C, 0xE6, 0x17, 0x65,																												// Random unique ID (nonce)
 				0x0F, 0x2F, 0x53, 0x61, 0x74, 0x6F, 0x73, 0x68, 0x69, 0x3A, 0x30, 0x2E, 0x37, 0x2E, 0x32, 0x2F,																// User-agent ("/Satoshi:0.7.2/")
 				0xC0, 0x3E, 0x03, 0x00																																		// Latest block height (#212672)
-			};
+			}, new VersionMessage(
+					60002, VersionMessage.Services.NodeNetwork, new DateTime(2012, 12, 18, 18, 12, 33, DateTimeKind.Utc),
+					new VersionMessage.NetworkNode(VersionMessage.Services.NodeNetwork, IPAddress.Parse("10.0.0.1"), 8333),
+					new VersionMessage.NetworkNode(VersionMessage.Services.NodeNetwork, IPAddress.Parse("2001:db8::ff00:42:8329"), 27015),
+					10, "/Satoshi:0.7.2/", 212672
+				)
+			)
+		};
 
-			using(BinaryReader reader = new BinaryReader(new MemoryStream(bytes))) {
-				VersionMessage version = VersionMessage.Read(reader);
+		[Test]
+		public void Read() {
+			foreach(Tuple<byte[], VersionMessage> version in versions) {
+				using(BinaryReader reader = new BinaryReader(new MemoryStream(version.Item1))) {
+					VersionMessage message = VersionMessage.Read(reader);
 
-				Assert.AreEqual(version.Version, 60002);
-				Assert.AreEqual(version.AvailableServices, VersionMessage.Services.NodeNetwork);
-				Assert.AreEqual(version.Time, new DateTime(2012, 12, 18, 18, 12, 33, DateTimeKind.Utc));
+					Assert.AreEqual(message.Version, version.Item2.Version);
+					Assert.AreEqual(message.AvailableServices, VersionMessage.Services.NodeNetwork);
+					Assert.AreEqual(message.Time, new DateTime(2012, 12, 18, 18, 12, 33, DateTimeKind.Utc));
 
-				Assert.AreEqual(version.Receiver.AvailableServices, VersionMessage.Services.NodeNetwork);
-				Assert.AreEqual(version.Receiver.Address, IPAddress.Parse("10.0.0.1"));
-				Assert.AreEqual(version.Receiver.Port, 8333);
+					Assert.AreEqual(message.Receiver.AvailableServices, VersionMessage.Services.NodeNetwork);
+					Assert.AreEqual(message.Receiver.Address, IPAddress.Parse("10.0.0.1"));
+					Assert.AreEqual(message.Receiver.Port, 8333);
 
-				Assert.AreEqual(version.Sender.AvailableServices, VersionMessage.Services.NodeNetwork);
-				Assert.AreEqual(version.Sender.Address, IPAddress.Parse("2001:db8::ff00:42:8329"));
-				Assert.AreEqual(version.Sender.Port, 27015);
+					Assert.AreEqual(message.Sender.AvailableServices, VersionMessage.Services.NodeNetwork);
+					Assert.AreEqual(message.Sender.Address, IPAddress.Parse("2001:db8::ff00:42:8329"));
+					Assert.AreEqual(message.Sender.Port, 27015);
 
-				Assert.AreEqual(version.UserAgent, "/Satoshi:0.7.2/");
-				Assert.AreEqual(version.BlockHeight, 212672);
+					Assert.AreEqual(message.UserAgent, "/Satoshi:0.7.2/");
+					Assert.AreEqual(message.BlockHeight, 212672);
+				}
 			}
 		}
 	}
