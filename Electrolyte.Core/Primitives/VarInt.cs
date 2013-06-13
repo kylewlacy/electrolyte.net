@@ -38,6 +38,24 @@ namespace Electrolyte.Primitives {
 			throw new Exception("Invalid int length");
 		}
 
+		public void Write(BinaryWriter writer) {
+			if(Value <= 252) {
+				writer.Write((byte)Value);
+			}
+			else if(Value <= UInt16.MaxValue) {
+				writer.Write((byte)253);
+				writer.Write((UInt16)Value);
+			}
+			else if(Value <= UInt32.MaxValue) {
+				writer.Write((byte)254);
+				writer.Write((UInt32)Value);
+			}
+			else {
+				writer.Write((byte)255);
+				writer.Write(Value);
+			}
+		}
+
 		static int intLength(byte first) {
 			if(first <= 252)
 				return 8;
