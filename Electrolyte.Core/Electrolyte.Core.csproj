@@ -32,8 +32,6 @@
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Address.cs" />
-    <Compile Include="Extensions\IEnumerableExtensions.cs" />
-    <Compile Include="Extensions\BinaryReaderExtensions.cs" />
     <Compile Include="Primitives\VarString.cs" />
     <Compile Include="Primitives\VarInt.cs" />
     <Compile Include="Messages\Transaction.cs" />
@@ -43,6 +41,8 @@
     <Compile Include="Helpers\ArrayHelpers.cs" />
     <Compile Include="Helpers\UnixTime.cs" />
     <Compile Include="Helpers\Base58.cs" />
+    <Compile Include="Extensions\BinaryExtensions.cs" />
+    <Compile Include="Extensions\IEnumerableExtensions.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <ItemGroup>

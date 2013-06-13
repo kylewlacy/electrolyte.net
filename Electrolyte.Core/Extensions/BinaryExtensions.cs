@@ -71,5 +71,47 @@ namespace Electrolyte.Extensions {
 			return BitConverter.ToDouble(reader.ReadBytes(sizeof(double), endianness), 0);
 		}
 	}
+
+	public static class BinaryWriterExtensions {
+		public static void Write(this BinaryWriter writer, byte[] bytes, Endian endianness) {
+			writer.Write(bytes.SetEndianness(endianness));
+		}
+
+		public static void Write(this BinaryWriter writer, char[] chars, Endian endianness) {
+			writer.Write(chars.SetEndianness(endianness));
+		}
+
+		public static void Write(this BinaryWriter writer, Int16 n, Endian endianness) {
+			writer.Write(BitConverter.GetBytes(n).SetEndianness(endianness));
+		}
+
+		public static void Write(this BinaryWriter writer, Int32 n, Endian endianness) {
+			writer.Write(BitConverter.GetBytes(n).SetEndianness(endianness));
+		}
+
+		public static void Write(this BinaryWriter writer, Int64 n, Endian endianness) {
+			writer.Write(BitConverter.GetBytes(n).SetEndianness(endianness));
+		}
+
+		public static void Write(this BinaryWriter writer, UInt16 n, Endian endianness) {
+			writer.Write(BitConverter.GetBytes(n).SetEndianness(endianness));
+		}
+
+		public static void Write(this BinaryWriter writer, UInt32 n, Endian endianness) {
+			writer.Write(BitConverter.GetBytes(n).SetEndianness(endianness));
+		}
+
+		public static void Write(this BinaryWriter writer, UInt64 n, Endian endianness) {
+			writer.Write(BitConverter.GetBytes(n).SetEndianness(endianness));
+		}
+
+		public static void Write(this BinaryWriter writer, Single n, Endian endianness) {
+			writer.Write(BitConverter.GetBytes(n).SetEndianness(endianness));
+		}
+
+		public static void Write(this BinaryWriter writer, Double n, Endian endianness) {
+			writer.Write(BitConverter.GetBytes(n).SetEndianness(endianness));
+		}
+	}
 }
 
