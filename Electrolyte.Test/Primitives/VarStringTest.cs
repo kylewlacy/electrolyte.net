@@ -19,7 +19,7 @@ namespace Electrolyte.Test.Primitives {
 
 		Tuple<string, byte[]>[] Strings = new Tuple<string, byte[]>[] {
 			Tuple.Create("hello", new byte[] { 0x05 }),
-			Tuple.Create(loremIpsum, new byte[] { 0xFD, 0x01, 0xEF })
+			Tuple.Create(loremIpsum, new byte[] { 0xFD, 0xEF, 0x01 })
 		};
 
 		[Test]
