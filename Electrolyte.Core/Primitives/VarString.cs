@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Text;
 
 namespace Electrolyte.Primitives {
 	public class VarString {
@@ -21,6 +22,12 @@ namespace Electrolyte.Primitives {
 		public static VarString Read(BinaryReader reader, out UInt64 length) {
 			length = VarInt.Read(reader).Value;
 			return new VarString(reader.ReadChars((int)length));
+		}
+
+		public void Write(BinaryWriter writer) {
+			VarInt v = new VarInt(Value.Length);
+			v.Write(writer);
+			writer.Write(Encoding.UTF8.GetBytes(Value));
 		}
 	}
 }
