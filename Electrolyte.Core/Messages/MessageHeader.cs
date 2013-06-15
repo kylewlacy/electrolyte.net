@@ -34,7 +34,8 @@ namespace Electrolyte.Messages {
 		public MessageHeader(string command, byte[] payload) {
 			Command = command;
 			PayloadLength = (UInt32)payload.Length;
-			ExpectedChecksum = SHA256.Create().ComputeHash(SHA256.Create().ComputeHash(payload)).Take(4).ToArray();
+			using(SHA256 sha256 = SHA256.Create())
+				ExpectedChecksum = sha256.ComputeHash(sha256.ComputeHash(payload)).Take(4).ToArray();
 		}
 
 		new public static MessageHeader Read(BinaryReader reader) {
