@@ -34,16 +34,16 @@ namespace Electrolyte.Messages {
 			using(BinaryWriter payloadWriter = new BinaryWriter(stream)) {
 				WritePayload(payloadWriter);
 
-				Header = new MessageHeader(ExpectedCommand, stream.ToArray());
-			}
+				MessageHeader header = new MessageHeader(ExpectedCommand, stream.ToArray());
 
-			Header.WritePayload(writer);
-			WritePayload(writer);
+				header.WritePayload(writer);
+				WritePayload(writer);
+			}
 		}
 
 		protected abstract void ReadPayload(BinaryReader reader);
 
-		protected abstract void WritePayload(BinaryWriter writer);
+		public abstract void WritePayload(BinaryWriter writer); // TODO: Make this protected
 	}
 }
 

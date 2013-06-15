@@ -19,15 +19,10 @@ namespace Electrolyte.Messages {
 			public Services AvailableServices;
 			public IPAddress Address;
 			public UInt16 Port;
-			static byte[] IPv4Wrapper = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xFF, 0xFF };
 
 			public NetworkNode(UInt64 services, byte[] address, UInt16 port) {
 				AvailableServices = (Services)services;
-
-				if(address.Take(IPv4Wrapper.Length).SequenceEqual(IPv4Wrapper))
-					address = address.Reverse().Take(address.Length - IPv4Wrapper.Length).Reverse().ToArray();
-				Address = new IPAddress(address);
-
+				Address = new IPAddress(address).UnwrapFromIPv6();
 				Port = port;
 			}
 
@@ -38,17 +33,21 @@ namespace Electrolyte.Messages {
 			}
 
 			public static NetworkNode FromBinaryReader(BinaryReader reader) {
-				UInt64 availableServices = reader.ReadUInt64();
-				byte[] address = reader.ReadBytes(16);
-				UInt16 port = reader.ReadUInt16(Endian.Big);
-				return new NetworkNode(availableServices, address, port);
+				return new NetworkNode(reader.ReadUInt64(), reader.ReadBytes(16), reader.ReadUInt16(Endian.Big));
+			}
+
+			public void Write(BinaryWriter writer) {
+				writer.Write((UInt64)AvailableServices);
+				writer.Write(Address.WrapToIPv6().GetAddressBytes());
+				writer.Write(Port, Endian.Big);
+
 			}
 		}
 
 		public Int32 Version;
 		public Services AvailableServices;
 		public DateTime Time;
-		public NetworkNode Sender, Receiver;
+		public NetworkNode Sender, Recipient;
 		public UInt64 Nonce;
 		public string UserAgent;
 		public Int32 BlockHeight;
@@ -60,12 +59,12 @@ namespace Electrolyte.Messages {
 
 		public VersionMessage() { }
 
-		public VersionMessage(Int32 version, Services services, DateTime time, NetworkNode sender, NetworkNode receiver, UInt64 nonce, string userAgent, Int32 height) {
+		public VersionMessage(Int32 version, Services services, DateTime time, NetworkNode recipient, NetworkNode sender, UInt64 nonce, string userAgent, Int32 height) {
 			Version = version;
 			AvailableServices = services;
 			Time = time;
 			Sender = sender;
-			Receiver = receiver;
+			Recipient = recipient;
 			Nonce = nonce;
 			UserAgent = userAgent;
 			BlockHeight = height;
@@ -77,7 +76,7 @@ namespace Electrolyte.Messages {
 
 			Time = UnixTime.DateTimeFromUnixTime(reader.ReadInt64());
 
-			Receiver = NetworkNode.FromBinaryReader(reader);
+			Recipient = NetworkNode.FromBinaryReader(reader);
 			Sender = NetworkNode.FromBinaryReader(reader);
 
 			Nonce = reader.ReadUInt64();
@@ -87,8 +86,21 @@ namespace Electrolyte.Messages {
 			Relay = (Version >= 70001) ? reader.ReadBoolean() : false; // BIP 0037
 		}
 
-		protected override void WritePayload(BinaryWriter writer) {
-			throw new NotImplementedException();
+		public override void WritePayload(BinaryWriter writer) {
+			writer.Write(Version);
+			writer.Write((UInt64)AvailableServices);
+
+			writer.Write(UnixTime.UnixTimeFromDateTime(Time));
+
+			Recipient.Write(writer);
+			Sender.Write(writer);
+
+			writer.Write(Nonce);
+			new VarString(UserAgent).Write(writer);
+			writer.Write(BlockHeight);
+
+			if(Version >= 70001)
+				writer.Write(Relay);
 		}
 	}
 }

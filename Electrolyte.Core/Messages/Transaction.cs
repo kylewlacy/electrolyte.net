@@ -67,7 +67,7 @@ namespace Electrolyte.Messages {
 			LockTime = reader.ReadUInt32();
 		}
 
-		protected override void WritePayload(BinaryWriter writer) {
+		public override void WritePayload(BinaryWriter writer) {
 			throw new NotImplementedException();
 		}
 	}

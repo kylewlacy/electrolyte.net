@@ -55,7 +55,7 @@ namespace Electrolyte.Messages {
 			ExpectedChecksum = reader.ReadBytes(4);
 		}
 
-		protected override void WritePayload(BinaryWriter writer) {
+		public override void WritePayload(BinaryWriter writer) {
 			writer.Write(MagicBytes);
 
 			byte[] command = Encoding.ASCII.GetBytes(Command);
