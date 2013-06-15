@@ -30,7 +30,6 @@
     <ConsolePause>false</ConsolePause>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Address.cs" />
     <Compile Include="Primitives\VarString.cs" />
     <Compile Include="Primitives\VarInt.cs" />
@@ -43,6 +42,7 @@
     <Compile Include="Helpers\Base58.cs" />
     <Compile Include="Extensions\BinaryExtensions.cs" />
     <Compile Include="Extensions\IEnumerableExtensions.cs" />
+    <Compile Include="Extensions\IPAddressExtensions.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <ItemGroup>
@@ -50,6 +50,7 @@
     <Folder Include="Helpers\" />
     <Folder Include="Primitives\" />
     <Folder Include="Messages\" />
+    <Folder Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System">
