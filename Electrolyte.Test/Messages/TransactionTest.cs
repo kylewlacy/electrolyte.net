@@ -65,17 +65,17 @@ namespace Electrolyte.Test.Messages {
 
 					Assert.AreEqual(tx.Inputs.Count, transaction.Item3.Length);
 					for(int i = 0; i < tx.Inputs.Count; i++) {
-						Assert.AreEqual(tx.Inputs[i].Sequence, transaction.Item3[i].Item1);
+						Assert.AreEqual(transaction.Item3[i].Item1, tx.Inputs[i].Sequence);
 					}
 
 					
 					Assert.AreEqual(tx.Outputs.Count, transaction.Item4.Length);
 					for(int i = 0; i < tx.Outputs.Count; i++) {
-						Assert.AreEqual(tx.Outputs[i].Value, transaction.Item4[i].Item1);
+						Assert.AreEqual(transaction.Item4[i].Item1, tx.Outputs[i].Value);
 					}
 
-					Assert.AreEqual(tx.LockTime, transaction.Item5);
-					Assert.AreEqual(tx.Value, transaction.Item6);
+					Assert.AreEqual(transaction.Item5, tx.LockTime);
+					Assert.AreEqual(transaction.Item6, tx.Value);
 				}
 			}
 		}

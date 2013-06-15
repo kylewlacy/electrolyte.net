@@ -17,7 +17,7 @@ namespace Electrolyte.Test.Primitives {
 		public void Read() {
 			foreach(var number in Numbers) {
 				using(BinaryReader reader = new BinaryReader(new MemoryStream(number.Item1))) {
-					Assert.AreEqual(VarInt.Read(reader).Value, number.Item2);
+					Assert.AreEqual(number.Item2, VarInt.Read(reader).Value);
 				}
 			}
 		}
@@ -30,7 +30,7 @@ namespace Electrolyte.Test.Primitives {
 					VarInt v = new VarInt(number.Item2);
 					v.Write(writer);
 
-					Assert.AreEqual(stream.ToArray(), number.Item1);
+					Assert.AreEqual(number.Item1, stream.ToArray());
 				}
 			}
 		}

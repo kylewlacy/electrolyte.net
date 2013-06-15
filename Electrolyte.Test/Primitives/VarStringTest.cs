@@ -29,7 +29,7 @@ namespace Electrolyte.Test.Primitives {
 
 				using(BinaryReader reader = new BinaryReader(new MemoryStream(full))) {
 					VarString v = VarString.Read(reader);
-					Assert.AreEqual(v.Value, str.Item1);
+					Assert.AreEqual(str.Item1, v.Value);
 				}
 			}
 		}
@@ -40,12 +40,12 @@ namespace Electrolyte.Test.Primitives {
 				using(MemoryStream stream = new MemoryStream())
 				using(BinaryWriter writer = new BinaryWriter(stream)) {
 					Console.WriteLine(str.Item1);
-					byte[] full = ArrayHelpers.ConcatArrays(str.Item2, Encoding.ASCII.GetBytes(str.Item1));
+					byte[] fullPayload = ArrayHelpers.ConcatArrays(str.Item2, Encoding.ASCII.GetBytes(str.Item1));
 
 					VarString v = new VarString(str.Item1);
 					v.Write(writer);
 
-					Assert.AreEqual(full, stream.ToArray());
+					Assert.AreEqual(stream.ToArray(), fullPayload);
 				}
 			}
 		}

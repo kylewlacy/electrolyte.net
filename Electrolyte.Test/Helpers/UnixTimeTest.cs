@@ -15,14 +15,14 @@ namespace Electrolyte.Test.Helpers {
 		[Test]
 		public void UnixTimeToDateTime() {
 			foreach(var time in Times) {
-				Assert.AreEqual(UnixTime.DateTimeFromUnixTime(time.Item1), time.Item2);
+				Assert.AreEqual(time.Item2, UnixTime.DateTimeFromUnixTime(time.Item1));
 			}
 		}
 
 		[Test]
 		public void DateTimeToUnixTime() {
 			foreach(Tuple<int, DateTime> time in Times) {
-				Assert.AreEqual(UnixTime.UnixTimeFromDateTime(time.Item2), time.Item1);
+				Assert.AreEqual(time.Item1, UnixTime.UnixTimeFromDateTime(time.Item2));
 			}
 		}
 	}

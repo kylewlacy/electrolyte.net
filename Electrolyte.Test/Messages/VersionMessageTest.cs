@@ -59,20 +59,20 @@ namespace Electrolyte.Test.Messages {
 				using(BinaryReader reader = new BinaryReader(new MemoryStream(version.Item1))) {
 					VersionMessage message = VersionMessage.Read(reader);
 
-					Assert.AreEqual(message.Version, version.Item2.Version);
-					Assert.AreEqual(message.AvailableServices, version.Item2.AvailableServices);
-					Assert.AreEqual(message.Time, version.Item2.Time);
+					Assert.AreEqual(version.Item2.Version, message.Version);
+					Assert.AreEqual(version.Item2.AvailableServices, message.AvailableServices);
+					Assert.AreEqual(version.Item2.Time, message.Time);
 
-					Assert.AreEqual(message.Recipient.AvailableServices, version.Item2.Recipient.AvailableServices);
-					Assert.AreEqual(message.Recipient.Address, version.Item2.Recipient.Address);
-					Assert.AreEqual(message.Recipient.Port, version.Item2.Recipient.Port);
+					Assert.AreEqual(version.Item2.Recipient.AvailableServices, message.Recipient.AvailableServices);
+					Assert.AreEqual(version.Item2.Recipient.Address, message.Recipient.Address);
+					Assert.AreEqual(version.Item2.Recipient.Port, message.Recipient.Port);
 
-					Assert.AreEqual(message.Sender.AvailableServices, version.Item2.Sender.AvailableServices);
-					Assert.AreEqual(message.Sender.Address, version.Item2.Sender.Address);
-					Assert.AreEqual(message.Sender.Port, version.Item2.Sender.Port);
+					Assert.AreEqual(version.Item2.Sender.AvailableServices, message.Sender.AvailableServices);
+					Assert.AreEqual(version.Item2.Sender.Address, message.Sender.Address);
+					Assert.AreEqual(version.Item2.Sender.Port, message.Sender.Port);
 
-					Assert.AreEqual(message.UserAgent, version.Item2.UserAgent);
-					Assert.AreEqual(message.BlockHeight, version.Item2.BlockHeight);
+					Assert.AreEqual(version.Item2.UserAgent, message.UserAgent);
+					Assert.AreEqual(version.Item2.BlockHeight, message.BlockHeight);
 				}
 			}
 		}

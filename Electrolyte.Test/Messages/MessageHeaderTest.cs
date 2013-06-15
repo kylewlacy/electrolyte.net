@@ -32,9 +32,9 @@ namespace Electrolyte.Test.Messages {
 			foreach(var header in Headers) {
 				using(BinaryReader reader = new BinaryReader(new MemoryStream(header.Item1))) {
 					MessageHeader msgHeader = MessageHeader.Read(reader);
-					Assert.AreEqual(msgHeader.Command, header.Item2);
-					Assert.AreEqual(msgHeader.PayloadLength, header.Item3);
-					Assert.AreEqual(msgHeader.ExpectedChecksum, header.Item4);
+					Assert.AreEqual(header.Item2, msgHeader.Command);
+					Assert.AreEqual(header.Item3, msgHeader.PayloadLength);
+					Assert.AreEqual(header.Item4, msgHeader.ExpectedChecksum);
 				}
 			}
 
@@ -60,7 +60,7 @@ namespace Electrolyte.Test.Messages {
 				MessageHeader header = new MessageHeader("version", 100, new byte[]{0x35, 0x8D, 0x49, 0x32, 0xAA});
 
 				header.Write(writer);
-				Assert.AreEqual(stream.ToArray(), expected);
+				Assert.AreEqual(expected, stream.ToArray());
 			}
 		}
 	}
