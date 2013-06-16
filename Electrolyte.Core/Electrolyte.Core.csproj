@@ -43,6 +43,8 @@
     <Compile Include="Extensions\BinaryExtensions.cs" />
     <Compile Include="Extensions\IEnumerableExtensions.cs" />
     <Compile Include="Extensions\IPAddressExtensions.cs" />
+    <Compile Include="Script\Script.cs" />
+    <Compile Include="Script\Stack.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <ItemGroup>
@@ -51,6 +53,7 @@
     <Folder Include="Primitives\" />
     <Folder Include="Messages\" />
     <Folder Include="Properties\" />
+    <Folder Include="Script\" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System">
