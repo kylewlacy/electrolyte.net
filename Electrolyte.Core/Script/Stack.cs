@@ -6,6 +6,10 @@ namespace Electrolyte {
 		public class Stack {
 			public List<byte> Items;
 
+			public bool IsTrue {
+				get { return this[0] != (byte)Op.False }
+			}
+
 			public Stack() {
 				Items = new List<byte>();
 			}
@@ -21,6 +25,10 @@ namespace Electrolyte {
 					else
 						return Items[-i];
 				}
+			}
+
+			public int Count {
+				get { return Items.Count; }
 			}
 
 			public void RemoveAt(int i) {
