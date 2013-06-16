@@ -34,6 +34,13 @@ namespace Electrolyte.Test.Primitives {
 		}
 
 		[Test]
+		public void Transcriptiom() {
+			for(int i = Int16.MinValue - 100; i < Int16.MaxValue + 100; i++) { // Arbitrary range, but the Int32 values are too slow
+				Assert.AreEqual(i, new SignedInt(new SignedInt(i).ToByteArray()).Value);
+			}
+		}
+
+		[Test]
 		public void NegativeZero() {
 			SignedInt positive0 = new SignedInt(new byte[] { 0x00 });
 			SignedInt negative0 = new SignedInt(new byte[] { 0x80 });
