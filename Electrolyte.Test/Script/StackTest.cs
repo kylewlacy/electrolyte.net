@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using NUnit.Framework;
-using Stack = Electrolyte.Script.Stack;
+using Stack = Electrolyte.Script.Stack<byte>;
 
 namespace Electrolyte.Test.Script {
 	[TestFixture]

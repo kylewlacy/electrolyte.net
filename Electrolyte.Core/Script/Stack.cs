@@ -3,22 +3,18 @@ using System.Collections.Generic;
 
 namespace Electrolyte {
 	public partial class Script {
-		public class Stack {
-			public List<byte> Items;
-
-			public bool IsTrue {
-				get { return this[0] != (byte)Op.False }
-			}
+		public class Stack<T> {
+			public List<T> Items;
 
 			public Stack() {
-				Items = new List<byte>();
+				Items = new List<T>();
 			}
 
-			public Stack(byte[] stack) {
-				Items = new List<byte>(stack);
+			public Stack(T[] stack) {
+				Items = new List<T>(stack);
 			}
 
-			public byte this[int i] {
+			public T this[int i] {
 				get {
 					if(i >= 0)
 						return Items[Items.Count - 1 - i];
@@ -35,31 +31,31 @@ namespace Electrolyte {
 				Items.RemoveAt(Items.Count - 1 - i);
 			}
 
-			public void Push(byte data) {
+			public void Push(T data) {
 				Items.Add(data);
 			}
 
-			public void Push(byte[] data) {
+			public void Push(T[] data) {
 				Items.AddRange(data);
 			}
 
-			public byte Pop() {
-				byte data = this[0];
+			public T Pop() {
+				T data = this[0];
 				RemoveAt(0);
 				return data;
 			}
 
-			public byte[] Pop(int count) {
-				List<byte> data = new List<byte>();
+			public T[] Pop(int count) {
+				List<T> data = new List<T>();
 				for(int i = 0; i < count; i++) { data.Add(Pop()); }
 				return data.ToArray();
 			}
 
-			public byte[] ToArray() {
+			public T[] ToArray() {
 				return Items.ToArray();
 			}
 
-			public List<byte> ToList() {
+			public List<T> ToList() {
 				return Items;
 			}
 		}
