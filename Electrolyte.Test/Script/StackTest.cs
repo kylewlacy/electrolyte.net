@@ -66,7 +66,7 @@ namespace Electrolyte.Test.ScriptTest {
 		[Test]
 		public void FromByteStackToDataStack() {
 			Stack stack = new Stack();
-			stack.Push(new SignedInt(600).ToByteArray().Reverse().ToArray()); // TODO: Will `SignedInt`s be delivered this way from scripts?
+			stack.Push(new SignedInt(600).ToByteArray()); // TODO: Will `SignedInt`s be delivered this way from scripts?
 
 			DataStack data = new DataStack();
 			data.Push(stack.Pop(2));

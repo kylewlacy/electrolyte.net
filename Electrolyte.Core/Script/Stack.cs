@@ -90,7 +90,7 @@ namespace Electrolyte {
 			}
 
 			public Int32 PopInt() {
-				return new SignedInt(Pop()).Value;
+				return new SignedInt(Pop().Reverse().ToArray()).Value;
 			}
 
 			public bool PopBool() {

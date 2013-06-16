@@ -47,6 +47,7 @@
     <Compile Include="Helpers\UnixTimeTest.cs" />
     <Compile Include="Script\StackTest.cs" />
     <Compile Include="Primitives\SignedIntTest.cs" />
+    <Compile Include="Script\ScriptExecutionTest.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
