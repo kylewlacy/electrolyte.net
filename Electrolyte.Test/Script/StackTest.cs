@@ -1,9 +1,12 @@
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using NUnit.Framework;
+using Electrolyte.Primitives;
 using Stack = Electrolyte.Script.Stack<byte>;
+using DataStack = Electrolyte.Script.DataStack;
 
-namespace Electrolyte.Test.Script {
+namespace Electrolyte.Test.ScriptTest {
 	[TestFixture]
 	public class StackTest {
 		[Test]
@@ -55,6 +58,20 @@ namespace Electrolyte.Test.Script {
 			Assert.AreEqual(new List<byte> { 0x01, 0x02, 0x03 }, stack.ToList());
 
 			Assert.AreEqual(stack.ToArray(), new Stack(stack.ToArray()).ToArray());
+		}
+	}
+
+	[TestFixture]
+	public class DataStackTest {
+		[Test]
+		public void FromByteStackToDataStack() {
+			Stack stack = new Stack();
+			stack.Push(new SignedInt(600).ToByteArray().Reverse().ToArray()); // TODO: Will `SignedInt`s be delivered this way from scripts?
+
+			DataStack data = new DataStack();
+			data.Push(stack.Pop(2));
+
+			Assert.AreEqual(600, data.PopInt());
 		}
 	}
 }
