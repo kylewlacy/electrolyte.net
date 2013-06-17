@@ -159,31 +159,31 @@ namespace Electrolyte {
 					break;
 				case Op.Rot:
 					byte[][] rot = Main.Pop(3);
-					Main.Push(new byte[][] { rot[1], rot[2], rot[0] });
+					Main.Push(new byte[][] { rot[0], rot[2], rot[1] });
 					break;
 				case Op.Swap:
 					byte[][] swap = Main.Pop(2);
-					Main.Push(new byte[][] { swap[1], swap[0] });
+					Main.Push(new byte[][] { swap[0], swap[1] });
 					break;
 				case Op.Tuck:
 					byte[][] tuck = Main.Pop(2);
-					Main.Push(new byte[][] { tuck[1], tuck[0], tuck[1] });
+					Main.Push(new byte[][] { tuck[0], tuck[1], tuck[0] });
 					break;
 				case Op.Drop2:
 					Main.Pop(2);
 					break;
 				case Op.Dup2:
-					Main.Push(new byte[][] { Main[0], Main[1] });
+					Main.Push(new byte[][] { Main[1], Main[0] });
 					break;
 				case Op.Dup3:
-					Main.Push(new byte[][] { Main[0], Main[1], Main[2] });
+					Main.Push(new byte[][] { Main[2], Main[1], Main[0] });
 					break;
 				case Op.Over2:
-					Main.Push(new byte[][] { Main[2], Main[3] });
+					Main.Push(new byte[][] { Main[3], Main[2] });
 					break;
 				case Op.Rot2:
 					byte[][] rot2 = Main.Pop(6);
-					Main.Push(new byte[][] { rot2[2], rot2[3], rot2[4], rot2[5], rot2[0], rot2[1] });
+					Main.Push(new byte[][] { rot2[1], rot2[0], rot2[5], rot2[4], rot2[3], rot2[2] });
 					break;
 				case Op.Swap2:
 					byte[][] swap2 = Main.Pop(4);
@@ -194,7 +194,7 @@ namespace Electrolyte {
 					throw new NotImplementedException();
 
 				case Op.Equal:
-					Main.Push(Main[0] == Main[1]);
+					Main.Push(Main[0].SequenceEqual(Main[1]));
 					break;
 				case Op.EqualVerify:
 					Main.Push(Main[0] == Main[1]);
@@ -228,7 +228,8 @@ namespace Electrolyte {
 					Main.Push(Main.PopInt() + Main.PopInt());
 					break;
 				case Op.Sub:
-					Main.Push(Main.PopInt() - Main.PopInt());
+					int b = Main.PopInt();
+					Main.Push(Main.PopInt() - b);
 					break;
 				case Op.BoolAnd:
 					Main.Push(Main.PopBool() && Main.PopBool());
@@ -264,9 +265,9 @@ namespace Electrolyte {
 					Main.Push(Math.Max(Main.PopInt(), Main.PopInt()));
 					break;
 				case Op.Within:
-					int x = Main.PopInt();
-					int min = Main.PopInt();
 					int max = Main.PopInt();
+					int min = Main.PopInt();
+					int x = Main.PopInt();
 					Main.Push(min <= x && x < max);
 					break;
 
@@ -330,9 +331,8 @@ namespace Electrolyte {
 		}
 
 		public void Execute() { // TODO: Async
-			while(Execution.Count > 0) {
+			while(Execution.Count > 0)
 				Step();
-			}
 		}
 	}
 }
