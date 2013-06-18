@@ -3,11 +3,36 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Security.Cryptography;
 using Electrolyte.Primitives;
+using Electrolyte.Helpers;
 
 namespace Electrolyte {
 	public partial class Script {
 		public DataStack Main, Alt;
-		public Stack<byte> Execution;
+
+		Stack<byte> _start;
+		Stack<byte> _execution;
+		public Stack<byte> Execution {
+			get { return _execution; }
+			set {
+				_execution = value;
+				byte[] items = new byte[_execution.Items.Count];
+				_execution.Items.ToArray().CopyTo(items, 0);
+				_start = new Stack<byte>(items.Reverse().ToArray());
+			}
+		}
+
+		public Stack<byte> Executed {
+			get {
+				return new Stack<byte>(ArrayHelpers.SubArray(_start.ToArray(), 0, _start.Count - Executed.Count));
+			}
+		}
+
+		int lastSeparatorIndex = 0;
+		public Stack<byte> SubScript {
+			get {
+				return new Stack<byte>(ArrayHelpers.SubArray(Executed.Items.ToArray(), lastSeparatorIndex));
+			}
+		}
 
 		public Script(byte[] script) {
 			Execution = new Stack<byte>(script);
@@ -35,6 +60,7 @@ namespace Electrolyte {
 
 		public void Step() {
 			byte next = Execution.Pop();
+
 			if(1 <= next && next <= 75) {
 				Main.Push(Execution.Pop(next));
 			}
@@ -288,7 +314,8 @@ namespace Electrolyte {
 					Main.Push(sha256.ComputeHash(sha256.ComputeHash(Main.Pop())));
 					break;
 				case Op.CodeSeparator:
-					throw new NotImplementedException();
+					lastSeparatorIndex = _start.Count - Execution.Count;
+					break;
 				case Op.CheckSig:
 					throw new NotImplementedException();
 				case Op.CheckSigVerify:
