@@ -280,6 +280,13 @@ namespace Electrolyte {
 				case Op.SHA256:
 					Main.Push(SHA256.Create().ComputeHash(Main.Pop()));
 					break;
+				case Op.Hash160:
+					Main.Push(RIPEMD160.Create().ComputeHash(SHA256.Create().ComputeHash(Main.Pop())));
+					break;
+				case Op.Hash256:
+					SHA256 sha256 = SHA256.Create();
+					Main.Push(sha256.ComputeHash(sha256.ComputeHash(Main.Pop())));
+					break;
 				case Op.CodeSeparator:
 					throw new NotImplementedException();
 				case Op.CheckSig:

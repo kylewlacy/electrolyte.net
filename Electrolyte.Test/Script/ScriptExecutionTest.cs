@@ -1,7 +1,7 @@
 using System;
+using System.Security.Cryptography;
 using NUnit.Framework;
 using Electrolyte;
-using Electrolyte.Primitives;
 using Op = Electrolyte.Script.Op;
 
 namespace Electrolyte.Test.ScriptTest {
@@ -378,6 +378,35 @@ namespace Electrolyte.Test.ScriptTest {
 			Script within = new Script(1, 7, 1, 6, 1, 8, Op.Within);
 			within.Execute();
 			Assert.AreEqual(true, within.Main.PopBool());
+		}
+
+		[Test]
+		public void Cryptography() {
+			SHA1 sha1 = SHA1.Create();
+			SHA256 sha256 = SHA256.Create();
+			RIPEMD160 ripemd160 = RIPEMD160.Create();
+
+			byte[] data = { 0x0A, 0x0B, 0x0C, 0x0D, 0x0E };
+
+			Script sha1Script = new Script(data.Length, data, Op.SHA1);
+			sha1Script.Execute();
+			Assert.AreEqual(sha1.ComputeHash(data), sha1Script.Main.Pop());
+
+			Script sha256Script = new Script(data.Length, data, Op.SHA256);
+			sha256Script.Execute();
+			Assert.AreEqual(sha256.ComputeHash(data), sha256Script.Main.Pop());
+
+			Script ripemd160Script = new Script(data.Length, data, Op.RIPEMD160);
+			ripemd160Script.Execute();
+			Assert.AreEqual(ripemd160.ComputeHash(data), ripemd160Script.Main.Pop());
+
+			Script hash160Script = new Script(data.Length, data, Op.Hash160);
+			hash160Script.Execute();
+			Assert.AreEqual(ripemd160.ComputeHash(sha256.ComputeHash(data)), hash160Script.Main.Pop());
+
+			Script hash256Script = new Script(data.Length, data, Op.Hash256);
+			hash256Script.Execute();
+			Assert.AreEqual(sha256.ComputeHash(sha256.ComputeHash(data)), hash256Script.Main.Pop());
 		}
 	}
 }
