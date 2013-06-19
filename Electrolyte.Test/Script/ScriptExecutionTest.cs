@@ -54,24 +54,66 @@ namespace Electrolyte.Test.ScriptTest {
 			Assert.AreEqual(largePack, dataLarge.Main.Pop());
 		}
 
-//		[Test]
-//		public void ControlFlow() {
-//			Script ifTrue = new Script(Op.True, Op.If, 1, 0x0A, Op.EndIf);
-//			ifTrue.Execute();
-//			Assert.AreEqual(new byte[] { 0x0A }, ifTrue.Main.Pop());
-//
-//			Script ifFalse = new Script(Op.False, Op.If, 1, 0x0A, Op.EndIf);
-//			ifFalse.Execute();
-//			Assert.AreEqual(0, ifFalse.Main.Count);
-//
-//			Script notIfTrue = new Script(Op.True, Op.NotIf, 1, 0x0A, Op.EndIf);
-//			notIfTrue.Execute();
-//			Assert.AreEqual(0, notIfTrue.Main.Count);
-//
-//			Script notIfFalse = new Script(Op.False, Op.NotIf, 1, 0x0A, Op.EndIf);
-//			notIfFalse.Execute();
-//			Assert.AreEqual(new byte[] { 0x0A }, notIfFalse.Main.Pop());
-//		}
+		[Test]
+		public void ControlFlow() {
+			Script ifTrue = new Script(Op.True, Op.If, 1, 0x0A, Op.EndIf);
+			ifTrue.Execute();
+			Assert.AreEqual(new byte[] { 0x0A }, ifTrue.Main.Pop());
+
+			Script ifFalse = new Script(Op.False, Op.If, 1, 0x0A, Op.EndIf);
+			ifFalse.Execute();
+			Assert.AreEqual(0, ifFalse.Main.Count);
+
+			Script notIfTrue = new Script(Op.True, Op.NotIf, 1, 0x0A, Op.EndIf);
+			notIfTrue.Execute();
+			Assert.AreEqual(0, notIfTrue.Main.Count);
+
+			Script notIfFalse = new Script(Op.False, Op.NotIf, 1, 0x0A, Op.EndIf);
+			notIfFalse.Execute();
+			Assert.AreEqual(new byte[] { 0x0A }, notIfFalse.Main.Pop());
+
+			Script ifTrueElse = new Script(Op.True, Op.If, 1, 0x0A, Op.Else, 1, 0x0B, Op.EndIf);
+			ifTrueElse.Execute();
+			Assert.AreEqual(new byte[] { 0x0A }, ifTrueElse.Main.Pop());
+
+			Script ifFalseElse = new Script(Op.False, Op.If, 1, 0x0A, Op.Else, 1, 0x0B, Op.EndIf);
+			ifFalseElse.Execute();
+			Assert.AreEqual(new byte[] { 0x0B }, ifFalseElse.Main.Pop());
+
+
+
+			Script ifTrueIfTrueElseTrue = new Script(Op.True, Op.If, Op.True, Op.If, 1, 0x0A, Op.Else, 1, 0x0B, Op.EndIf, Op.Else, Op.True, Op.If, 1, 0x0C, Op.Else, 1, 0x0D, Op.EndIf, Op.EndIf);
+			ifTrueIfTrueElseTrue.Execute();
+			Assert.AreEqual(new byte[] { 0x0A }, ifTrueIfTrueElseTrue.Main.Pop());
+
+			Script ifTrueIfTrueElseFalse = new Script(Op.True, Op.If, Op.True, Op.If, 1, 0x0A, Op.Else, 1, 0x0B, Op.EndIf, Op.Else, Op.False, Op.If, 1, 0x0C, Op.Else, 1, 0x0D, Op.EndIf, Op.EndIf);
+			ifTrueIfTrueElseFalse.Execute();
+			Assert.AreEqual(new byte[] { 0x0A }, ifTrueIfTrueElseFalse.Main.Pop());
+
+			Script ifTrueIfFalseElseTrue = new Script(Op.True, Op.If, Op.False, Op.If, 1, 0x0A, Op.Else, 1, 0x0B, Op.EndIf, Op.Else, Op.True, Op.If, 1, 0x0C, Op.Else, 1, 0x0D, Op.EndIf, Op.EndIf);
+			ifTrueIfFalseElseTrue.Execute();
+			Assert.AreEqual(new byte[] { 0x0B }, ifTrueIfFalseElseTrue.Main.Pop());
+
+			Script ifTrueIfFalseElseFalse = new Script(Op.True, Op.If, Op.True, Op.If, 1, 0x0A, Op.Else, 1, 0x0B, Op.EndIf, Op.Else, Op.False, Op.If, 1, 0x0C, Op.Else, 1, 0x0D, Op.EndIf, Op.EndIf);
+			ifTrueIfFalseElseFalse.Execute();
+			Assert.AreEqual(new byte[] { 0x0A }, ifTrueIfFalseElseFalse.Main.Pop());
+
+			Script ifFalseIfTrueElseTrue = new Script(Op.False, Op.If, Op.True, Op.If, 1, 0x0A, Op.Else, 1, 0x0B, Op.EndIf, Op.Else, Op.True, Op.If, 1, 0x0C, Op.Else, 1, 0x0D, Op.EndIf, Op.EndIf);
+			ifFalseIfTrueElseTrue.Execute();
+			Assert.AreEqual(new byte[] { 0x0C }, ifFalseIfTrueElseTrue.Main.Pop());
+
+			Script ifFalseIfTrueElseFalse = new Script(Op.False, Op.If, Op.True, Op.If, 1, 0x0A, Op.Else, 1, 0x0B, Op.EndIf, Op.Else, Op.False, Op.If, 1, 0x0C, Op.Else, 1, 0x0D, Op.EndIf, Op.EndIf);
+			ifFalseIfTrueElseFalse.Execute();
+			Assert.AreEqual(new byte[] { 0x0D }, ifFalseIfTrueElseFalse.Main.Pop());
+
+			Script ifFalseIfFalseElseTrue = new Script(Op.False, Op.If, Op.False, Op.If, 1, 0x0A, Op.Else, 1, 0x0B, Op.EndIf, Op.Else, Op.True, Op.If, 1, 0x0C, Op.Else, 1, 0x0D, Op.EndIf, Op.EndIf);
+			ifFalseIfFalseElseTrue.Execute();
+			Assert.AreEqual(new byte[] { 0x0C }, ifFalseIfFalseElseTrue.Main.Pop());
+
+			Script ifFalseIfFalseElseFalse = new Script(Op.False, Op.If, Op.False, Op.If, 1, 0x0A, Op.Else, 1, 0x0B, Op.EndIf, Op.Else, Op.False, Op.If, 1, 0x0C, Op.Else, 1, 0x0D, Op.EndIf, Op.EndIf);
+			ifFalseIfFalseElseFalse.Execute();
+			Assert.AreEqual(new byte[] { 0x0D }, ifFalseIfFalseElseFalse.Main.Pop());
+		}
 
 		[Test]
 		public void AltStack() {
