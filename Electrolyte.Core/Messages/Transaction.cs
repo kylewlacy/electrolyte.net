@@ -18,29 +18,33 @@ namespace Electrolyte.Messages {
 		public static UInt32 CurrentVersion = 1;
 
 		public class Input {
-			//public Script ScriptSig;
-			public Output Output;
+			public Script ScriptSig;
+			public Transaction PreviousTransaciton;
+			protected int OutpointIndex;
+			public Output Outpoint {
+				get { return PreviousTransaciton.Outputs[OutpointIndex]; }
+			}
 			public UInt32 Sequence;
 
 			public Input(BinaryReader reader) {
-				reader.ReadBytes(36); 											// Outpoint
+				reader.ReadBytes(36);
 
-				UInt64 scriptLength = VarInt.Read(reader).Value;	// Script length
-				reader.ReadBytes((int)scriptLength);							// Script (TODO: read bytes as many time as needed to read all)
+				UInt64 scriptLength = VarInt.Read(reader).Value;
+				ScriptSig = new Script(reader.ReadBytes((int)scriptLength));
 
-				Sequence = reader.ReadUInt32();									// Sequence (unused)
+				Sequence = reader.ReadUInt32();
 			}
 		}
 
 		public class Output {
-			//public Script ScriptPubKey;
+			public Script ScriptPubKey;
 			public Int64 Value;
 
 			public Output(BinaryReader reader) {
 				Value = reader.ReadInt64();
 
-				UInt64 scriptLength = VarInt.Read(reader).Value;	// Script length
-				reader.ReadBytes((int)scriptLength);							// Script (TODO: read bytes as many time as needed to read all)
+				UInt64 scriptLength = VarInt.Read(reader).Value;
+				ScriptPubKey = new Script(reader.ReadBytes((int)scriptLength));
 			}
 		}
 
