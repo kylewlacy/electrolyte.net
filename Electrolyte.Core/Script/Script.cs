@@ -319,17 +319,10 @@ namespace Electrolyte {
 						throw new NotImplementedException();
 
 					case Op.Reserved:
-						throw new Exception();
 					case Op.Ver:
-						throw new Exception();
-					case Op.VerIf:
-						throw new Exception();
-					case Op.VerNotIf:
-						throw new Exception();
 					case Op.Reserved1:
-						throw new Exception();
 					case Op.Reserved2:
-						throw new Exception();
+						throw new Exception(String.Format("Invalid script! (opcode {0} used)", (Op)next));
 
 						
 					case Op.If:
@@ -357,21 +350,22 @@ namespace Electrolyte {
 				}
 			}
 
-			if(!isPushInstruction) {
-				switch((Op)next) {
-				case Op.If:
-					RunBranch.Push(branchIsRunning && Main.PopBool());
-					break;
-				case Op.NotIf:
-					RunBranch.Push(branchIsRunning && !Main.PopBool());
-					break;
-				case Op.Else:
-					RunBranch.Push(!RunBranch.Pop() && !branchIsRunning);
-					break;
-				case Op.EndIf:
-					RunBranch.Pop();
-					break;
-				}
+			switch((Op)next) {
+			case Op.If:
+				RunBranch.Push(branchIsRunning && Main.PopBool());
+				break;
+			case Op.NotIf:
+				RunBranch.Push(branchIsRunning && !Main.PopBool());
+				break;
+			case Op.Else:
+				RunBranch.Push(!RunBranch.Pop() && !branchIsRunning);
+				break;
+			case Op.EndIf:
+				RunBranch.Pop();
+				break;
+			case Op.VerIf:
+			case Op.VerNotIf:
+				throw new Exception(String.Format("Invalid script! (opcode {0} included)", (Op)next));
 			}
 		}
 

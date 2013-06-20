@@ -473,6 +473,22 @@ namespace Electrolyte.Test.ScriptTest {
 			partialSeparation.Step(3);
 			Assert.AreEqual(new byte[] { (byte)Op.Nop1, 5, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E }, partialSeparation.SubScript.Items.ToArray());
 		}
+
+		[Test]
+		public void InvalidScript() {
+			Assert.Throws<Exception>(() => { new Script(Op.Ver).Execute(); });
+			Assert.Throws<Exception>(() => { new Script(Op.Reserved).Execute(); });
+			Assert.Throws<Exception>(() => { new Script(Op.Reserved1).Execute(); });
+			Assert.Throws<Exception>(() => { new Script(Op.Reserved2).Execute(); });
+			Assert.Throws<Exception>(() => { new Script(Op.False, Op.If, Op.VerIf, Op.EndIf).Execute(); });
+			Assert.Throws<Exception>(() => { new Script(Op.False, Op.If, Op.VerNotIf, Op.EndIf).Execute(); });
+
+			Assert.DoesNotThrow(() => {
+				new Script(Op.False, Op.If, Op.Ver, Op.EndIf).Execute();
+				new Script(Op.False, Op.If, Op.Reserved, Op.EndIf).Execute();
+				new Script(Op.False, Op.If, Op.Reserved1, Op.EndIf).Execute();
+				new Script(Op.False, Op.If, Op.Reserved2, Op.EndIf).Execute();
+			});
 		}
 	}
 }
