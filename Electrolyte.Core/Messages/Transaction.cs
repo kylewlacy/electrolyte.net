@@ -1,9 +1,17 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.IO;
+using System.Linq;
+using System.Collections.Generic;
+using System.Security.Cryptography;
+using Org.BouncyCastle;
+using Org.BouncyCastle.Crypto;
+using Org.BouncyCastle.Crypto.Generators;
+using Org.BouncyCastle.Crypto.Parameters;
+using Org.BouncyCastle.Security;
+using Electrolyte;
 using Electrolyte.Primitives;
 using Electrolyte.Extensions;
+using Electrolyte.Helpers;
 
 namespace Electrolyte.Messages {
 	public class Transaction : Message<Transaction> {
@@ -49,6 +57,39 @@ namespace Electrolyte.Messages {
 
 		public override string ExpectedCommand {
 			get { return "tx"; }
+		}
+
+		public bool SigIsValid(byte[] pubKey, byte[] sigWithHashType, Script scriptSig) {
+//			uint hashType = sigWithHashType[sigWithHashType.Count() - 1];
+//			byte[] sig = ArrayHelpers.SubArray(sigWithHashType, 0, sigWithHashType.Count() - 2);
+//			Transaction copy;
+//
+//			using(MemoryStream stream = new MemoryStream()) {
+//				using(BinaryWriter writer = new BinaryWriter(stream))
+//					WritePayload(writer);
+//
+//				copy = Transaction.Read(new BinaryReader(stream));
+//			}
+//
+//			for(int i = 0; i < copy.Inputs.Count; i++)
+//				copy.Inputs[i].ScriptSig = new Script();
+//
+//			copy.Inputs[scriptSig.InputIndex].ScriptSig = new Script(scriptSig.SubScript);
+//			byte[] data;
+//
+//			using(MemoryStream stream = new MemoryStream()) {
+//				using(BinaryWriter writer = new BinaryWriter(stream))
+//					copy.WritePayload(writer);
+//
+//				using(SHA256 sha256 = SHA256.Create())
+//					data = sha256.ComputeHash(sha256.ComputeHash(ArrayHelpers.ConcatArrays(stream.ToArray(), BitConverter.GetBytes(hashType))));
+//			}
+//
+//			ISigner signer = SignerUtilities.GetSigner("ECDSA");
+//			signer.Init(false, PublicKeyFactory.CreateKey(pubKey));
+//			signer.BlockUpdate(data, 0, data.Length);
+//			return signer.VerifySignature(sig);
+			return true;
 		}
 
 		protected override void ReadPayload(BinaryReader reader) {

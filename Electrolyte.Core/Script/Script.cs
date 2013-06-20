@@ -2,11 +2,15 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using System.Security.Cryptography;
+using Electrolyte.Messages;
 using Electrolyte.Primitives;
 using Electrolyte.Helpers;
 
 namespace Electrolyte {
 	public partial class Script {
+		public Transaction Transaction;
+		public int InputIndex;
+
 		public DataStack Main, Alt;
 		Stack<byte> _start;
 		Stack<byte> _execution;
@@ -42,11 +46,11 @@ namespace Electrolyte {
 				if(o is byte[])
 					bytes.AddRange(((byte[])o).Reverse());
 				else if(o is int)
-						bytes.AddRange(new SignedInt((int)o).ToByteArray().Reverse().ToArray());
-					else if(o is SignedInt)
-							bytes.AddRange(((SignedInt)o).ToByteArray().Reverse().ToArray());
-						else
-							bytes.Add((byte)o);
+					bytes.AddRange(new SignedInt((int)o).ToByteArray().Reverse().ToArray());
+				else if(o is SignedInt)
+					bytes.AddRange(((SignedInt)o).ToByteArray().Reverse().ToArray());
+				else
+					bytes.Add((byte)o);
 			}
 
 			Execution = new Stack<byte>(bytes.ToArray());
@@ -310,7 +314,8 @@ namespace Electrolyte {
 						lastSeparatorIndex = _start.Count - Execution.Count;
 						break;
 					case Op.CheckSig:
-						throw new NotImplementedException();
+						Main.Push(Transaction.SigIsValid(Main.Pop(), Main.Pop(), this));
+						break;
 					case Op.CheckSigVerify:
 						throw new NotImplementedException();
 					case Op.CheckMultiSig:
