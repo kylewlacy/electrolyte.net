@@ -70,5 +70,8 @@
     <Reference Include="mscorlib">
       <HintPath>..\..\..\..\..\..\..\Library\Frameworks\Mono.framework\Versions\Current\lib\mono\4.0\mscorlib.dll</HintPath>
     </Reference>
+    <Reference Include="BouncyCastle.Crypto">
+      <HintPath>..\..\..\Deps\BouncyCastle\BouncyCastle.Crypto.dll</HintPath>
+    </Reference>
   </ItemGroup>
 </Project>
