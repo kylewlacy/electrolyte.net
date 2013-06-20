@@ -452,23 +452,6 @@ namespace Electrolyte.Test.ScriptTest {
 		}
 
 		[Test]
-		public void ExecutedScript() {
-			byte[] data = { 0x0A, 0x0B, 0x0C, 0x0D, 0x0E };
-
-			Script script = new Script(Op.Nop1, data.Length, data, Op.Nop2, data.Length, data, Op.Equal);
-			script.Step();
-			Assert.AreEqual(new byte[] { (byte)Op.Nop1 }, script.Executed.ToArray());
-			script.Step();
-			Assert.AreEqual(new byte[] { (byte)Op.Nop1, 5, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E }, script.Executed.ToArray());
-			script.Step();
-			Assert.AreEqual(new byte[] { (byte)Op.Nop1, 5, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, (byte)Op.Nop2 }, script.Executed.ToArray());
-			script.Step();
-			Assert.AreEqual(new byte[] { (byte)Op.Nop1, 5, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, (byte)Op.Nop2, 5, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E }, script.Executed.ToArray());
-			script.Step();
-			Assert.AreEqual(new byte[] { (byte)Op.Nop1, 5, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, (byte)Op.Nop2, 5, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, (byte)Op.Equal }, script.Executed.ToArray());
-		}
-
-		[Test]
 		public void SubScript() {
 			byte[] data = { 0x0A, 0x0B, 0x0C, 0x0D, 0x0E };
 
@@ -485,9 +468,11 @@ namespace Electrolyte.Test.ScriptTest {
 			Assert.AreEqual(new byte[] { (byte)Op.Nop1, 5, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E }, multipleSeparations.SubScript.Items.ToArray());
 
 			Script partialSeparation = new Script(data.Length, data, Op.CodeSeparator, Op.Nop, data.Length, data, Op.CodeSeparator, Op.Nop1, data.Length, data);
-			for(int i = 0; i < 5; i++)
-				partialSeparation.Step();
-			Assert.AreEqual(new byte[] { (byte)Op.Nop, 5, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E }, partialSeparation.SubScript.Items.ToArray());
+			partialSeparation.Step(2);
+			Assert.AreEqual(new byte[] { (byte)Op.Nop, 5, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, (byte)Op.CodeSeparator, (byte)Op.Nop1, 5, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E }, partialSeparation.SubScript.Items.ToArray());
+			partialSeparation.Step(3);
+			Assert.AreEqual(new byte[] { (byte)Op.Nop1, 5, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E }, partialSeparation.SubScript.Items.ToArray());
+		}
 		}
 	}
 }

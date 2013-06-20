@@ -21,17 +21,10 @@ namespace Electrolyte {
 			}
 		}
 
-		public Stack<byte> Executed {
-			get {
-				return new Stack<byte>(ArrayHelpers.SubArray(_start.ToArray(), 0, _start.Count - Executed.Count));
-			}
-		}
-
 		int lastSeparatorIndex = 0;
-
 		public Stack<byte> SubScript {
 			get {
-				return new Stack<byte>(ArrayHelpers.SubArray(Executed.Items.ToArray(), lastSeparatorIndex));
+				return new Stack<byte>(ArrayHelpers.SubArray(_start.ToArray(), lastSeparatorIndex));
 			}
 		}
 
