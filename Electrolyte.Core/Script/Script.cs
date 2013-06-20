@@ -61,6 +61,11 @@ namespace Electrolyte {
 			Alt = new DataStack();
 		}
 
+		public void Step(int count) {
+			for(int i = 0; i < count; i++)
+				Step();
+		}
+
 		public void Step() {
 			byte next = Execution.Pop();
 			bool isPushInstruction = (1 <= next && next <= 75);
