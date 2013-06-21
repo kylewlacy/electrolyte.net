@@ -177,6 +177,22 @@ namespace Electrolyte {
 			return Strings.ContainsKey(str);
 		}
 
+		public static bool IsPush(Op op) {
+			return IsFastPush(op) || op == Op.PushData1 || op == Op.PushData2 || op == Op.PushData4;
+		}
+
+		public static bool IsPush(byte op) {
+			return IsPush((Op)op);
+		}
+
+		public static bool IsFastPush(Op op) {
+			return IsFastPush((byte)op);
+		}
+
+		public static bool IsFastPush(byte op) {
+			return 1 <= op && op <= 75;
+		}
+
 		public static byte[] Pack(params byte[] data) {
 			byte[] header;
 			if(data.Length <= 75)

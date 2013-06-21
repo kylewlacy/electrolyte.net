@@ -79,11 +79,10 @@ namespace Electrolyte {
 
 		public void Step() {
 			byte next = Execution.Pop();
-			bool isPushInstruction = (1 <= next && next <= 75);
 			bool branchIsRunning = RunBranch.Items.All(b => b);
 
 			if(branchIsRunning) {
-				if(isPushInstruction) {
+				if(Opcodes.IsFastPush(next)) {
 					Main.Push(Execution.Pop(next));
 				}
 				else {
@@ -400,10 +399,10 @@ namespace Electrolyte {
 			while(dataStack.Count > 0) {
 				byte next = dataStack.Pop();
 
-				if((1 <= next && next <= 75) || next == (byte)Op.PushData1 || next == (byte)Op.PushData2 || next == (byte)Op.PushData4) {
+				if(Opcodes.IsPush(next)) {
 					int toPush = 0;
 
-					if(1 <= next && next <= 75)
+					if(Opcodes.IsFastPush(next))
 						toPush = next;
 					else if(next == (byte)Op.PushData1)
 						toPush = new SignedInt(dataStack.Pop()).Value;
