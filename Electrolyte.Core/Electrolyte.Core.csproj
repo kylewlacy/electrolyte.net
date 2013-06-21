@@ -43,10 +43,10 @@
     <Compile Include="Extensions\BinaryExtensions.cs" />
     <Compile Include="Extensions\IEnumerableExtensions.cs" />
     <Compile Include="Extensions\IPAddressExtensions.cs" />
-    <Compile Include="Script\Op.cs" />
     <Compile Include="Script\Script.cs" />
     <Compile Include="Script\Stack.cs" />
     <Compile Include="Primitives\SignedInt.cs" />
+    <Compile Include="Opcodes.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <ItemGroup>

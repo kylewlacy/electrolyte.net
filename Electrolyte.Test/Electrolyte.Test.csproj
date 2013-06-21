@@ -48,6 +48,7 @@
     <Compile Include="Script\StackTest.cs" />
     <Compile Include="Primitives\SignedIntTest.cs" />
     <Compile Include="Script\ScriptExecutionTest.cs" />
+    <Compile Include="OpcodesTest.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

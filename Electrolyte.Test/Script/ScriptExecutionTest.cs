@@ -2,7 +2,6 @@ using System;
 using System.Security.Cryptography;
 using NUnit.Framework;
 using Electrolyte;
-using Op = Electrolyte.Script.Op;
 
 namespace Electrolyte.Test.ScriptTest {
 	[TestFixture]
