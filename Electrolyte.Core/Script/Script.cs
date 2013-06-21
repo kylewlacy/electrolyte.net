@@ -5,6 +5,7 @@ using System.Security.Cryptography;
 using Electrolyte.Messages;
 using Electrolyte.Primitives;
 using Electrolyte.Helpers;
+using System.Text;
 
 namespace Electrolyte {
 	public partial class Script {
@@ -56,6 +57,19 @@ namespace Electrolyte {
 			Execution = new Stack<byte>(bytes.ToArray());
 			Main = new DataStack();
 			Alt = new DataStack();
+		}
+
+		public static Script FromString(string script) {
+			List<byte> bytes = new List<byte>();
+
+			foreach(string data in script.Split(' ')) {
+				if(Opcodes.IsOpcode(data))
+					bytes.Add((byte)Opcodes.Strings[data]);
+				else
+					bytes.AddRange(Opcodes.Pack(data));
+			}
+
+			return new Script(bytes.ToArray());
 		}
 
 		public void Step(int count) {
@@ -377,6 +391,36 @@ namespace Electrolyte {
 		public void Execute() { // TODO: Async
 			while(Execution.Count > 0)
 				Step();
+		}
+
+		public override string ToString() {
+			Stack<byte> dataStack = new Stack<byte>(_start);
+			List<string> unpacked = new List<string>();
+
+			while(dataStack.Count > 0) {
+				byte next = dataStack.Pop();
+
+				if((1 <= next && next <= 75) || next == (byte)Op.PushData1 || next == (byte)Op.PushData2 || next == (byte)Op.PushData4) {
+					int toPush = 0;
+
+					if(1 <= next && next <= 75)
+						toPush = next;
+					else if(next == (byte)Op.PushData1)
+						toPush = new SignedInt(dataStack.Pop()).Value;
+					else if(next == (byte)Op.PushData2)
+						toPush = new SignedInt(dataStack.Pop(2)).Value;
+					else if(next == (byte)Op.PushData4)
+						toPush = new SignedInt(dataStack.Pop(4)).Value;
+
+					unpacked.Add(BitConverter.ToString(dataStack.Pop(toPush)).Replace("-", ""));
+				}
+
+				else {
+					unpacked.Add(Opcodes.Strings.FirstOrDefault(x => x.Value == (Op)next).Key ?? next.ToString());
+				}
+			}
+
+			return String.Join(" ", unpacked);
 		}
 	}
 }
