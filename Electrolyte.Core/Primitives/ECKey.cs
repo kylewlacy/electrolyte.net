@@ -32,7 +32,7 @@ namespace Electrolyte.Primitives {
 	/// Bouncy Castle is used. In future this may become an interface with multiple implementations using different crypto
 	/// libraries. The class also provides a static method that can verify a signature with just the public key.
 	/// </summary>
-	[Serializable]
+//	[Serializable]
 	public class ECKey {
 		static readonly ECDomainParameters _ecParams;
 		static readonly SecureRandom _secureRandom;
@@ -46,7 +46,7 @@ namespace Electrolyte.Primitives {
 
 		readonly BigInteger _priv;
 		readonly byte[] _pub;
-		[NonSerialized] byte[] _pubKeyHash;
+//		[NonSerialized] byte[] _pubKeyHash;
 
 		public byte[] PrivateKeyBytes {
 			get {
@@ -158,7 +158,7 @@ namespace Electrolyte.Primitives {
 		/// </summary>
 		public Address ToAddress() {
 			byte[] hashedPubKey = RIPEMD160.Create().ComputeHash(SHA256.Create().ComputeHash(PubKey));
-			return new Address(Base58.EncodeWithChecksum(ArrayHelpers.ConcatArrays(new byte[] { 0x0 }, hashedPubKey)));
+			return new Address(Base58.EncodeWithChecksum(ArrayHelpers.ConcatArrays(new byte[] { 0x00 }, hashedPubKey)));
 		}
 
 		/// <summary>

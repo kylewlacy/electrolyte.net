@@ -80,11 +80,12 @@ namespace Electrolyte.Test.Messages {
 		[Test]
 		public void Write() {
 			foreach(Tuple<byte[], VersionMessage> version in versions) {
-				using(MemoryStream stream = new MemoryStream())
-				using(BinaryWriter writer = new BinaryWriter(stream)) {
-					version.Item2.Write(writer);
+				using(MemoryStream stream = new MemoryStream()) {
+					using(BinaryWriter writer = new BinaryWriter(stream)) {
+						version.Item2.Write(writer);
 
-					Assert.AreEqual(version.Item1, stream.ToArray());
+						Assert.AreEqual(version.Item1, stream.ToArray());
+					}
 				}
 			}
 		}

@@ -25,12 +25,13 @@ namespace Electrolyte.Test.Primitives {
 		[Test]
 		public void Write() {
 			foreach(var number in Numbers) {
-				using(MemoryStream stream = new MemoryStream())
-				using(BinaryWriter writer = new BinaryWriter(stream)) {
-					VarInt v = new VarInt(number.Item2);
-					v.Write(writer);
+				using(MemoryStream stream = new MemoryStream()) {
+					using(BinaryWriter writer = new BinaryWriter(stream)) {
+						VarInt v = new VarInt(number.Item2);
+						v.Write(writer);
 
-					Assert.AreEqual(number.Item1, stream.ToArray());
+						Assert.AreEqual(number.Item1, stream.ToArray());
+					}
 				}
 			}
 		}

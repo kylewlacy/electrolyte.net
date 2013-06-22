@@ -37,15 +37,16 @@ namespace Electrolyte.Test.Primitives {
 		[Test]
 		public void Write() {
 			foreach(var str in Strings) {
-				using(MemoryStream stream = new MemoryStream())
-				using(BinaryWriter writer = new BinaryWriter(stream)) {
-					Console.WriteLine(str.Item1);
-					byte[] fullPayload = ArrayHelpers.ConcatArrays(str.Item2, Encoding.ASCII.GetBytes(str.Item1));
+				using(MemoryStream stream = new MemoryStream()) {
+					using(BinaryWriter writer = new BinaryWriter(stream)) {
+						Console.WriteLine(str.Item1);
+						byte[] fullPayload = ArrayHelpers.ConcatArrays(str.Item2, Encoding.ASCII.GetBytes(str.Item1));
 
-					VarString v = new VarString(str.Item1);
-					v.Write(writer);
+						VarString v = new VarString(str.Item1);
+						v.Write(writer);
 
-					Assert.AreEqual(stream.ToArray(), fullPayload);
+						Assert.AreEqual(stream.ToArray(), fullPayload);
+					}
 				}
 			}
 		}

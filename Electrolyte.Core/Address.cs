@@ -38,12 +38,13 @@ namespace Electrolyte {
 			ID = id;
 		}
 
-		public string ToString() {
+		public override string ToString() {
 			return ID;
 		}
 
 		public static bool AddressIsValid(string address) {
-			byte[] bytes = Base58.DecodeWithChecksum(address);
+//			byte[] bytes = Base58.DecodeWithChecksum(address);
+			Base58.DecodeWithChecksum(address);
 			if(!SupportedAddressPrefix(address[0]))
 				throw new FormatException(String.Format("'{0}' is an unsupported address prefix", address[0]));
 

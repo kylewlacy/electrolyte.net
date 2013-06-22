@@ -20,7 +20,7 @@ namespace Electrolyte.Test.ScriptTest {
 		}
 
 		[Test]
-		public void ToString() {
+		new public void ToString() {
 			foreach(Tuple<string, byte[]> script in scripts) {
 				Assert.AreEqual(script.Item1, new Script(script.Item2).ToString());
 			}
