@@ -38,6 +38,10 @@ namespace Electrolyte {
 			ID = id;
 		}
 
+		public string ToString() {
+			return ID;
+		}
+
 		public static bool AddressIsValid(string address) {
 			byte[] bytes = Base58.DecodeWithChecksum(address);
 			if(!SupportedAddressPrefix(address[0]))
