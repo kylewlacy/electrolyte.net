@@ -69,6 +69,18 @@ namespace Electrolyte.Test {
 					Assert.Throws<CryptographicException>(() => Wallet.Decrypt(reader, "2345"));
 			}
 		}
+
+		[Test]
+		public void ImportPrivateKey() {
+			Wallet wallet = new Wallet();
+			wallet.ImportKey("5Kb8kLf9zgWQnogidDA76MzPL6TsZZY36hWXMssSzNydYXYB9KF");
+
+			IntPtr key = Marshal.SecureStringToBSTR(wallet.PrivateKeys.Values.ToArray()[0]);
+			Assert.AreEqual("5Kb8kLf9zgWQnogidDA76MzPL6TsZZY36hWXMssSzNydYXYB9KF", Marshal.PtrToStringBSTR(key));
+			Marshal.ZeroFreeBSTR(key);
+
+			Assert.Contains("1CC3X2gu58d6wXUWMffpuzN9JAfTUWu4Kj", wallet.PrivateKeys.Keys);
+		}
 	}
 }
 

@@ -121,8 +121,14 @@ namespace Electrolyte {
 		}
 
 		public void GenerateKey() {
-			ECKey key = new ECKey();
+			ImportKey(new ECKey());
+		}
 
+		public void ImportKey(string key) {
+			ImportKey(ECKey.FromWalletImportFormat(key));
+		}
+
+		public void ImportKey(ECKey key) {
 			SecureString privateKey = new SecureString();
 			foreach(char c in key.ToWalletImportFormat())
 				privateKey.AppendChar(c);
