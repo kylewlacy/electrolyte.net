@@ -47,6 +47,7 @@
     <Compile Include="Script\Stack.cs" />
     <Compile Include="Primitives\SignedInt.cs" />
     <Compile Include="Opcodes.cs" />
+    <Compile Include="Primitives\ECKey.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <ItemGroup>

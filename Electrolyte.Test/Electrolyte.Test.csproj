@@ -50,6 +50,7 @@
     <Compile Include="Script\ScriptExecutionTest.cs" />
     <Compile Include="OpcodesTest.cs" />
     <Compile Include="Script\ScriptInterpretationTest.cs" />
+    <Compile Include="Primitives\ECKeyTest.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
