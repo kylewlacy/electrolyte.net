@@ -6,7 +6,6 @@ using Electrolyte.Helpers;
 namespace Electrolyte {
 	public enum Op : byte {
 		False               = 0x00,
-		PushData            = 0x4B,
 		PushData1           = 0x4C,
 		PushData2           = 0x4D,
 		PushData4           = 0x4E,
