@@ -19,7 +19,7 @@ namespace Electrolyte {
 		public static ulong KeyHashes = 1024;
 #endif
 
-		public Dictionary<string, SecureString> PrivateKeys;
+		public Dictionary<string, byte[]> PrivateKeys;
 
 		public static Wallet Decrypt(BinaryReader reader, string passpharse) {
 			UInt64 version = reader.ReadUInt64();
@@ -52,30 +52,21 @@ namespace Electrolyte {
 				rows.Add(rawRow.Split(new char[] { ',' }, columns.Count));
 			}
 
-			List<Tuple<string, string>> keys = new List<Tuple<string, string>>(rows.Count);
+			Dictionary<string, byte[]> keys = new Dictionary<string, byte[]>();
 			foreach(string[] row in rows) {
-				keys.Add(Tuple.Create(row[columns["address"]], row[columns["priv"]]));
+				ECKey key = ECKey.FromWalletImportFormat(row[columns["priv"]]);
+				keys.Add(row[columns["address"]], key.PrivateKeyBytes);
 			}
 
 			return new Wallet(keys);
 		}
 
 		public Wallet() {
-			PrivateKeys = new Dictionary<string, SecureString>();
+			PrivateKeys = new Dictionary<string, byte[]>();
 		}
 
-		public Wallet(Dictionary<string, SecureString> keys) {
+		public Wallet(Dictionary<string, byte[]> keys) {
 			PrivateKeys = keys;
-		}
-
-		public Wallet(List<Tuple<string, string>> keys) {
-			PrivateKeys = new Dictionary<string, SecureString>(keys.Count);
-			foreach(Tuple<string, string> key in keys) {
-				SecureString secureString = new SecureString();
-				foreach(char c in key.Item2)
-					secureString.AppendChar(c);
-				PrivateKeys.Add(key.Item1, secureString);
-			}
 		}
 
 		public void Encrypt(BinaryWriter writer, string passphrase, SecureRandom random) {
@@ -112,10 +103,8 @@ namespace Electrolyte {
 
 		public void Write(TextWriter writer) {
 			writer.WriteLine("address,priv");
-			foreach(KeyValuePair<string, SecureString> key in PrivateKeys) {
-				IntPtr privateKeyPtr = Marshal.SecureStringToBSTR(key.Value);
-				writer.Write(String.Format("{0},{1}", key.Key, Marshal.PtrToStringBSTR(privateKeyPtr)));
-				Marshal.ZeroFreeBSTR(privateKeyPtr);
+			foreach(KeyValuePair<string, byte[]> key in PrivateKeys) {
+				writer.Write(String.Format("{0},{1}", key.Key, new ECKey(key.Value).ToWalletImportFormat()));
 			}
 			writer.WriteLine();
 		}
@@ -129,11 +118,7 @@ namespace Electrolyte {
 		}
 
 		public void ImportKey(ECKey key) {
-			SecureString privateKey = new SecureString();
-			foreach(char c in key.ToWalletImportFormat())
-				privateKey.AppendChar(c);
-
-			PrivateKeys.Add(key.ToAddress().ToString(), privateKey);
+			PrivateKeys.Add(key.ToAddress().ToString(), key.PrivateKeyBytes);
 		}
 
 		public static byte[] PassphraseToKey(byte[] passphrase, byte[] salt) {

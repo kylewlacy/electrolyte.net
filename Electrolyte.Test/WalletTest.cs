@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Runtime.InteropServices;
+using Electrolyte.Primitives;
 using NUnit.Framework;
 
 namespace Electrolyte.Test {
@@ -27,7 +28,7 @@ namespace Electrolyte.Test {
 			}
 
 			Assert.AreEqual(readWallet.PrivateKeys.Keys.ToArray()[0], writeWallet.PrivateKeys.Keys.ToArray()[0]);
-			Assert.AreEqual(Marshal.PtrToStringBSTR(Marshal.SecureStringToBSTR(readWallet.PrivateKeys.Values.ToArray()[0])), Marshal.PtrToStringBSTR(Marshal.SecureStringToBSTR(writeWallet.PrivateKeys.Values.ToArray()[0])));
+			Assert.AreEqual(readWallet.PrivateKeys.Values.ToArray()[0], writeWallet.PrivateKeys.Values.ToArray()[0]);
 		}
 
 		[Test]
@@ -49,7 +50,7 @@ namespace Electrolyte.Test {
 			}
 
 			Assert.AreEqual(encryptWallet.PrivateKeys.Keys.ToArray()[0], decryptWallet.PrivateKeys.Keys.ToArray()[0]);
-			Assert.AreEqual(Marshal.PtrToStringBSTR(Marshal.SecureStringToBSTR(encryptWallet.PrivateKeys.Values.ToArray()[0])), Marshal.PtrToStringBSTR(Marshal.SecureStringToBSTR(decryptWallet.PrivateKeys.Values.ToArray()[0])));
+			Assert.AreEqual(encryptWallet.PrivateKeys.Values.ToArray()[0], decryptWallet.PrivateKeys.Values.ToArray()[0]);
 		}
 
 		[Test]
@@ -75,9 +76,8 @@ namespace Electrolyte.Test {
 			Wallet wallet = new Wallet();
 			wallet.ImportKey("5Kb8kLf9zgWQnogidDA76MzPL6TsZZY36hWXMssSzNydYXYB9KF");
 
-			IntPtr key = Marshal.SecureStringToBSTR(wallet.PrivateKeys.Values.ToArray()[0]);
-			Assert.AreEqual("5Kb8kLf9zgWQnogidDA76MzPL6TsZZY36hWXMssSzNydYXYB9KF", Marshal.PtrToStringBSTR(key));
-			Marshal.ZeroFreeBSTR(key);
+			ECKey key = new ECKey(wallet.PrivateKeys.Values.ToArray()[0]);
+			Assert.AreEqual("5Kb8kLf9zgWQnogidDA76MzPL6TsZZY36hWXMssSzNydYXYB9KF", key.ToWalletImportFormat());
 
 			Assert.Contains("1CC3X2gu58d6wXUWMffpuzN9JAfTUWu4Kj", wallet.PrivateKeys.Keys);
 		}
