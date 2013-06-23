@@ -1,10 +1,8 @@
 using System;
 using System.IO;
 using System.Text;
-using System.Security;
 using System.Collections.Generic;
 using System.Security.Cryptography;
-using System.Runtime.InteropServices;
 using Org.BouncyCastle.Security;
 using Electrolyte.Primitives;
 using Electrolyte.Helpers;
@@ -20,6 +18,17 @@ namespace Electrolyte {
 #endif
 
 		public Dictionary<string, byte[]> PrivateKeys;
+		public List<string> WatchAddresses;
+		public List<string> Addresses {
+			get {
+				List<string> addresses = new List<string>(PrivateKeys.Keys);
+				foreach(string address in WatchAddresses) {
+					if(!addresses.Contains(address))
+						addresses.Add(address);
+				}
+				return addresses;
+			}
+		}
 
 		public static Wallet Decrypt(BinaryReader reader, string passpharse) {
 			UInt64 version = reader.ReadUInt64();
