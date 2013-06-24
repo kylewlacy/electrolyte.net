@@ -75,5 +75,8 @@
     <Reference Include="BouncyCastle.Crypto">
       <HintPath>..\..\..\Deps\BouncyCastle\BouncyCastle.Crypto.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\..\..\Deps\Json.NET\Bin\Portable40\Newtonsoft.Json.dll</HintPath>
+    </Reference>
   </ItemGroup>
 </Project>

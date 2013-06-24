@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Electrolyte.Test", "Electro
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Electrolyte.CLI", "Electrolyte.CLI\Electrolyte.CLI.csproj", "{D0119E53-54C2-41C3-8F6B-D965ED390D8C}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Dependencies", "Dependencies", "{88005EE4-E417-4E76-B327-D9F62E626ED1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -25,6 +27,8 @@ Global
 		{D0119E53-54C2-41C3-8F6B-D965ED390D8C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D0119E53-54C2-41C3-8F6B-D965ED390D8C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D0119E53-54C2-41C3-8F6B-D965ED390D8C}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
 		StartupItem = Electrolyte.CLI\Electrolyte.CLI.csproj
