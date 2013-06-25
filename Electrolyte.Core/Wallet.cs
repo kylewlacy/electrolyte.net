@@ -98,11 +98,11 @@ namespace Electrolyte {
 			Lock(Encoding.UTF8.GetBytes(passphrase));
 		}
 
-		public void Unlock(byte[] passphrase) {
+		public void Unlock(byte[] passphrase, double timeout) {
 			if(!IsLocked)
 				throw new InvalidOperationException("Wallet is already unlocked");
 
-			LockTimer = new Timer(1000 * 60 * 5);
+			LockTimer = new Timer(timeout);
 			LockTimer.Elapsed += new ElapsedEventHandler(Lock);
 			LockTimer.Start();
 
@@ -116,6 +116,14 @@ namespace Electrolyte {
 			Array.Clear(passphrase, 0, passphrase.Length);
 
 			IsLocked = false;
+		}
+
+		public void Unlock(byte[] passphrase) {
+			Unlock(passphrase, 1000 * 60 * 15);
+		}
+
+		public void Unlock(string passphrase, double timeout) {
+			Unlock(Encoding.UTF8.GetBytes(passphrase), timeout);
 		}
 
 		public void Unlock(string passphrase) {
