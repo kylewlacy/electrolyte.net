@@ -38,7 +38,7 @@ namespace Electrolyte {
 				throw new FormatException(String.Format("Invalid wallet version: {0}", data["version"].Value<ulong>()));
 
 			byte[] iv = Base58.DecodeWithChecksum(data["iv"].Value<string>());
-			string salt = data["salt"].Value<string>();
+			byte[] salt = Base58.DecodeWithChecksum(data["salt"].Value<string>());
 
 			Aes aes = Aes.Create();
 			aes.Mode = CipherMode.CBC;
@@ -73,14 +73,12 @@ namespace Electrolyte {
 			byte[] iv = new byte[16];
 			random.NextBytes(iv);
 
-			byte[] rawSalt = new byte[128];
-			random.NextBytes(rawSalt);
-			string salt = Base58.EncodeWithChecksum(rawSalt);
+			byte[] salt = new byte[128];
 
 			Dictionary<string, object> data = new Dictionary<string, object> {
 				{ "version", Version },
 				{ "iv", Base58.EncodeWithChecksum(iv) },
-				{ "salt", salt },
+				{ "salt", Base58.EncodeWithChecksum(salt) },
 				{ "watch_addresses", new List<object>() }
 			};
 
@@ -151,8 +149,8 @@ namespace Electrolyte {
 			return ArrayHelpers.SubArray(key, 0, 32);
 		}
 
-		public static byte[] PassphraseToKey(string passphrase, string salt) {
-			return PassphraseToKey(Encoding.UTF8.GetBytes(passphrase), Base58.DecodeWithChecksum(salt));
+		public static byte[] PassphraseToKey(string passphrase, byte[] salt) {
+			return PassphraseToKey(Encoding.UTF8.GetBytes(passphrase), salt);
 		}
 	}
 }
