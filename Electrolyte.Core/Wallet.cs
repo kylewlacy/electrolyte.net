@@ -19,6 +19,9 @@ namespace Electrolyte {
 		public static ulong KeyHashes = 1024;
 #endif
 
+		public byte[] EncryptedData;
+		public byte[] IV, Salt;
+
 		public Dictionary<string, byte[]> PrivateKeys;
 		public List<string> WatchAddresses;
 		public List<string> Addresses {
@@ -32,24 +35,33 @@ namespace Electrolyte {
 			}
 		}
 
-		public void Decrypt(TextReader reader, string passphrase) {
+		public void Read(TextReader reader) {
 			JObject data = JObject.Parse(reader.ReadToEnd());
 			if(data["version"].Value<ulong>() != Version)
 				throw new FormatException(String.Format("Invalid wallet version: {0}", data["version"].Value<ulong>()));
 
-			byte[] iv = Base58.DecodeWithChecksum(data["iv"].Value<string>());
-			byte[] salt = Base58.DecodeWithChecksum(data["salt"].Value<string>());
+			IV = Base58.DecodeWithChecksum(data["iv"].Value<string>());
+			Salt = Base58.DecodeWithChecksum(data["salt"].Value<string>());
 
+			EncryptedData = Base58.DecodeWithChecksum(data["encrypted"].Value<string>());
+		}
+
+		public void Decrypt(string passphrase) {
 			Aes aes = Aes.Create();
 			aes.Mode = CipherMode.CBC;
-			aes.IV = iv;
-			aes.Key = PassphraseToKey(passphrase, salt);
+			aes.IV = IV;
+			aes.Key = PassphraseToKey(passphrase, Salt);
 
-			using(MemoryStream stream = new MemoryStream(Base58.DecodeWithChecksum(data["encrypted"].Value<string>()))) {
+			using(MemoryStream stream = new MemoryStream(EncryptedData)) {
 				using(CryptoStream cryptoStream = new CryptoStream(stream, aes.CreateDecryptor(), CryptoStreamMode.Read))
 					using(StreamReader streamReader = new StreamReader(cryptoStream))
 						ReadPrivate(streamReader);
 			}
+		}
+
+		public void Decrypt(TextReader reader, string passphrase) {
+			Read(reader);
+			Decrypt(passphrase);
 		}
 
 		public void ReadPrivate(TextReader reader) {
@@ -69,17 +81,19 @@ namespace Electrolyte {
 			WatchAddresses = new List<string>();
 		}
 
-		public void Encrypt(TextWriter writer, string passphrase, SecureRandom random) {
-			byte[] iv = new byte[16];
-			random.NextBytes(iv);
+		public void Encrypt(string passphrase) {
+			SecureRandom random = new SecureRandom();
 
-			byte[] salt = new byte[128];
-			random.NextBytes(salt);
+			IV = new byte[16];
+			random.NextBytes(IV);
+
+			Salt = new byte[128];
+			random.NextBytes(Salt);
 
 			Dictionary<string, object> data = new Dictionary<string, object> {
 				{ "version", Version },
-				{ "iv", Base58.EncodeWithChecksum(iv) },
-				{ "salt", Base58.EncodeWithChecksum(salt) },
+				{ "iv", Base58.EncodeWithChecksum(IV) },
+				{ "salt", Base58.EncodeWithChecksum(Salt) },
 				{ "watch_addresses", new List<object>() }
 			};
 
@@ -91,22 +105,38 @@ namespace Electrolyte {
 
 			Aes aes = Aes.Create();
 			aes.Mode = CipherMode.CBC;
-			aes.IV = iv;
-			aes.Key = PassphraseToKey(passphrase, salt);
+			aes.IV = IV;
+			aes.Key = PassphraseToKey(passphrase, Salt);
 
 			using(MemoryStream stream = new MemoryStream()) {
 				using(CryptoStream cryptoStream = new CryptoStream(stream, aes.CreateEncryptor(), CryptoStreamMode.Write))
 					using(StreamWriter streamWriter = new StreamWriter(cryptoStream))
 						WritePrivate(streamWriter);
+				EncryptedData = stream.ToArray();
+			}
+		}
 
-				data.Add("encrypted", Base58.EncodeWithChecksum(stream.ToArray()));
+		public void Write(TextWriter writer) {
+			Dictionary<string, object> data = new Dictionary<string, object> {
+				{ "version", Version },
+				{ "iv", Base58.EncodeWithChecksum(IV) },
+				{ "salt", Base58.EncodeWithChecksum(Salt) },
+				{ "watch_addresses", new List<object>() },
+				{ "encrypted", Base58.EncodeWithChecksum(EncryptedData) }
+			};
+
+			foreach(string address in WatchAddresses) {
+				((List<object>)data["watch_addresses"]).Add(new Dictionary<string,object> {
+					{ "addr", address }
+				});
 			}
 
 			writer.Write(JsonConvert.SerializeObject(data));
 		}
 
 		public void Encrypt(TextWriter writer, string passphrase) {
-			Encrypt(writer, passphrase, new SecureRandom());
+			Encrypt(passphrase);
+			Write(writer);
 		}
 
 		public void WritePrivate(TextWriter writer) {
