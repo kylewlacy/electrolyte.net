@@ -10,9 +10,19 @@ namespace Electrolyte.Test {
 	[TestFixture]
 	public class WalletTest {
 		[Test]
-		public void ReadWrite() {
+		public void ImportKeys() {
+			Wallet wallet = new Wallet();
+			wallet.ImportKey("5Kb8kLf9zgWQnogidDA76MzPL6TsZZY36hWXMssSzNydYXYB9KF");
+
+			Assert.Contains(new byte[] { 0xE9, 0x87, 0x3D, 0x79, 0xC6, 0xD8, 0x7D, 0xC0, 0xFB, 0x6A, 0x57, 0x78, 0x63, 0x33, 0x89, 0xF4, 0x45, 0x32, 0x13, 0x30, 0x3D, 0xA6, 0x1F, 0x20, 0xBD, 0x67, 0xFC, 0x23, 0x3A, 0xA3, 0x32, 0x62 }, wallet.PrivateKeys.Values);
+			Assert.Contains("1CC3X2gu58d6wXUWMffpuzN9JAfTUWu4Kj", wallet.PrivateKeys.Keys);
+			Assert.Contains("1CC3X2gu58d6wXUWMffpuzN9JAfTUWu4Kj", wallet.Addresses);
+		}
+
+		[Test]
+		public void ReadWritePrivate() {
 			Wallet writeWallet = new Wallet();
-			writeWallet.GenerateKey();
+			writeWallet.ImportKey("5Kb8kLf9zgWQnogidDA76MzPL6TsZZY36hWXMssSzNydYXYB9KF");
 
 			byte[] output;
 			using(MemoryStream stream = new MemoryStream()) {
@@ -27,14 +37,14 @@ namespace Electrolyte.Test {
 					readWallet.ReadPrivate(reader);
 			}
 
-			Assert.AreEqual(readWallet.PrivateKeys.Keys.ToArray()[0], writeWallet.PrivateKeys.Keys.ToArray()[0]);
-			Assert.AreEqual(readWallet.PrivateKeys.Values.ToArray()[0], writeWallet.PrivateKeys.Values.ToArray()[0]);
+			Assert.AreEqual(writeWallet.Addresses, readWallet.Addresses);
+			Assert.AreEqual(writeWallet.PrivateKeys, readWallet.PrivateKeys);
 		}
 
 		[Test]
 		public void EncryptDecrypt() {
 			Wallet encryptWallet = new Wallet();
-			encryptWallet.GenerateKey();
+			encryptWallet.ImportKey("5Kb8kLf9zgWQnogidDA76MzPL6TsZZY36hWXMssSzNydYXYB9KF");
 
 			byte[] output;
 			using(MemoryStream stream = new MemoryStream()) {
@@ -49,8 +59,8 @@ namespace Electrolyte.Test {
 					decryptWallet.Decrypt(reader, "1234");
 			}
 
-			Assert.AreEqual(encryptWallet.PrivateKeys.Keys.ToArray()[0], decryptWallet.PrivateKeys.Keys.ToArray()[0]);
-			Assert.AreEqual(encryptWallet.PrivateKeys.Values.ToArray()[0], decryptWallet.PrivateKeys.Values.ToArray()[0]);
+			Assert.AreEqual(encryptWallet.Addresses, decryptWallet.Addresses);
+			Assert.AreEqual(encryptWallet.PrivateKeys, decryptWallet.PrivateKeys);
 		}
 
 		[Test]
