@@ -74,6 +74,7 @@ namespace Electrolyte {
 			random.NextBytes(iv);
 
 			byte[] salt = new byte[128];
+			random.NextBytes(salt);
 
 			Dictionary<string, object> data = new Dictionary<string, object> {
 				{ "version", Version },
