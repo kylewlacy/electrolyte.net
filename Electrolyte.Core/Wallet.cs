@@ -11,7 +11,7 @@ using Electrolyte.Helpers;
 
 namespace Electrolyte {
 	public class Wallet {
-		public static UInt64 Version = 1000;
+		public static string Version = "1.0.0.0";
 
 #if !DEBUG
 		public static ulong KeyHashes = 1048576;
@@ -63,7 +63,7 @@ namespace Electrolyte {
 
 		public void LoadFromJson(string json) {
 			JObject data = JObject.Parse(json);
-			if(data["version"].Value<ulong>() != Version)
+			if(data["version"].Value<string>() != Version)
 				throw new FormatException(String.Format("Invalid wallet version: {0}", data["version"].Value<ulong>()));
 
 			IV = Base58.DecodeWithChecksum(data["encrypted"]["iv"].Value<string>());
