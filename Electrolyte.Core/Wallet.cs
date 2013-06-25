@@ -27,10 +27,10 @@ namespace Electrolyte {
 		public byte[] EncryptedData, IV, Salt;
 
 		public Dictionary<string, byte[]> PrivateKeys;
-		public List<string> WatchAddresses;
-		public List<string> Addresses {
+		public HashSet<string> WatchAddresses;
+		public HashSet<string> Addresses {
 			get {
-				List<string> addresses = new List<string>(PrivateKeys.Keys);
+				HashSet<string> addresses = new HashSet<string>(PrivateKeys.Keys);
 				foreach(string address in WatchAddresses) {
 					if(!addresses.Contains(address))
 						addresses.Add(address);
@@ -41,12 +41,12 @@ namespace Electrolyte {
 
 		public Wallet() {
 			PrivateKeys = new Dictionary<string, byte[]>();
-			WatchAddresses = new List<string>();
+			WatchAddresses = new HashSet<string>();
 		}
 
 		public Wallet(Dictionary<string, byte[]> keys) {
 			PrivateKeys = keys;
-			WatchAddresses = new List<string>();
+			WatchAddresses = new HashSet<string>();
 		}
 
 
