@@ -63,6 +63,14 @@ namespace Electrolyte {
 			PrivateKeys.Add(key.ToAddress().ToString(), key.PrivateKeyBytes);
 		}
 
+		public void WatchAddress(string address) {
+			WatchAddresses.Add(address);
+		}
+
+		public void WatchAddress(Address address) {
+			WatchAddress(address.ID);
+		}
+
 
 
 		public void Lock() {

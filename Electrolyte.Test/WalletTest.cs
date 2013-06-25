@@ -21,6 +21,20 @@ namespace Electrolyte.Test {
 		}
 
 		[Test]
+		public void WatchAddress() {
+			Wallet wallet = new Wallet();
+
+			wallet.WatchAddress("1CC3X2gu58d6wXUWMffpuzN9JAfTUWu4Kj");
+			wallet.WatchAddress("1ky1eHUrRR1kxKTbfiCptao9V25W97gDm");
+
+			Assert.Contains("1CC3X2gu58d6wXUWMffpuzN9JAfTUWu4Kj", wallet.Addresses);
+			Assert.Contains("1CC3X2gu58d6wXUWMffpuzN9JAfTUWu4Kj", wallet.WatchAddresses);
+
+			Assert.Contains("1ky1eHUrRR1kxKTbfiCptao9V25W97gDm", wallet.Addresses);
+			Assert.Contains("1ky1eHUrRR1kxKTbfiCptao9V25W97gDm", wallet.WatchAddresses);
+		}
+
+		[Test]
 		public void ReadWritePrivate() {
 			Wallet writeWallet = new Wallet();
 			writeWallet.ImportKey("5Kb8kLf9zgWQnogidDA76MzPL6TsZZY36hWXMssSzNydYXYB9KF");
