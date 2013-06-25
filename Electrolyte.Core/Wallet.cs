@@ -171,6 +171,7 @@ namespace Electrolyte {
 
 		public void Read(TextReader reader) {
 			LoadFromJson(reader.ReadToEnd());
+			IsLocked = true;
 		}
 
 		public void ReadPrivate(TextReader reader) {
