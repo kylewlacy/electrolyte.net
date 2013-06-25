@@ -3,14 +3,8 @@ using System.IO;
 using System.Linq;
 using System.Collections.Generic;
 using System.Security.Cryptography;
-using Org.BouncyCastle;
-using Org.BouncyCastle.Crypto;
-using Org.BouncyCastle.Crypto.Generators;
-using Org.BouncyCastle.Crypto.Parameters;
-using Org.BouncyCastle.Security;
 using Electrolyte;
 using Electrolyte.Primitives;
-using Electrolyte.Extensions;
 using Electrolyte.Helpers;
 
 namespace Electrolyte.Messages {
@@ -19,7 +13,10 @@ namespace Electrolyte.Messages {
 
 		public class Input {
 			public Script ScriptSig;
+
+			public byte[] PrevTransactionHash;
 			public Transaction PreviousTransaciton;
+
 			protected int OutpointIndex;
 			public Output Outpoint {
 				get { return PreviousTransaciton.Outputs[OutpointIndex]; }
@@ -27,12 +24,21 @@ namespace Electrolyte.Messages {
 			public UInt32 Sequence;
 
 			public Input(BinaryReader reader) {
-				reader.ReadBytes(36);
+				PrevTransactionHash = reader.ReadBytes(36);
 
 				UInt64 scriptLength = VarInt.Read(reader).Value;
 				ScriptSig = new Script(reader.ReadBytes((int)scriptLength));
 
 				Sequence = reader.ReadUInt32();
+			}
+
+			public void Write(BinaryWriter writer) {
+				writer.Write(PrevTransactionHash);
+
+				new VarInt(ScriptSig.Execution.Count).Write(writer);
+				writer.Write(ScriptSig.Execution.ToArray()); // TODO: Move this logic to Script class
+
+				writer.Write(Sequence);
 			}
 		}
 
@@ -45,6 +51,13 @@ namespace Electrolyte.Messages {
 
 				UInt64 scriptLength = VarInt.Read(reader).Value;
 				ScriptPubKey = new Script(reader.ReadBytes((int)scriptLength));
+			}
+
+			public void Write(BinaryWriter writer) {
+				writer.Write(Value);
+
+				new VarInt(ScriptPubKey.Execution.Count).Write(writer);
+				writer.Write(ScriptPubKey.Execution.ToArray());
 			}
 		}
 
@@ -113,7 +126,19 @@ namespace Electrolyte.Messages {
 		}
 
 		public override void WritePayload(BinaryWriter writer) {
-			throw new NotImplementedException();
+			writer.Write(Version);
+
+			new VarInt(Inputs.Count).Write(writer);
+			foreach(Input input in Inputs) {
+				input.Write(writer);
+			}
+
+			new VarInt(Outputs.Count).Write(writer);
+			foreach(Output output in Outputs) {
+				output.Write(writer);
+			}
+
+			writer.Write(LockTime);
 		}
 	}
 }
