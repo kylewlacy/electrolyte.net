@@ -36,7 +36,11 @@ namespace Electrolyte {
 		}
 
 		public void Read(TextReader reader) {
-			JObject data = JObject.Parse(reader.ReadToEnd());
+			LoadFromJson(reader.ReadToEnd());
+		}
+
+		public void LoadFromJson(string json) {
+			JObject data = JObject.Parse(json);
 			if(data["version"].Value<ulong>() != Version)
 				throw new FormatException(String.Format("Invalid wallet version: {0}", data["version"].Value<ulong>()));
 
@@ -65,7 +69,11 @@ namespace Electrolyte {
 		}
 
 		public void ReadPrivate(TextReader reader) {
-			JObject data = JObject.Parse(reader.ReadToEnd());
+			LoadPrivateDataFromJson(reader.ReadToEnd());
+		}
+
+		public void LoadPrivateDataFromJson(string json) {
+			JObject data = JObject.Parse(json);
 			foreach(JToken key in data["keys"]) {
 				PrivateKeys.Add(key["addr"].Value<string>(), ECKey.FromWalletImportFormat(key["priv"].Value<string>()).PrivateKeyBytes);
 			}
@@ -117,6 +125,10 @@ namespace Electrolyte {
 		}
 
 		public void Write(TextWriter writer) {
+			writer.Write(DataAsJson());
+		}
+
+		public string DataAsJson() {
 			Dictionary<string, object> data = new Dictionary<string, object> {
 				{ "version", Version },
 				{ "iv", Base58.EncodeWithChecksum(IV) },
@@ -131,7 +143,7 @@ namespace Electrolyte {
 				});
 			}
 
-			writer.Write(JsonConvert.SerializeObject(data));
+			return JsonConvert.SerializeObject(data);
 		}
 
 		public void Encrypt(TextWriter writer, string passphrase) {
