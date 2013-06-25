@@ -55,12 +55,22 @@ namespace Electrolyte {
 			ImportKey(new ECKey());
 		}
 
+		public void ImportKey(string key, bool isPublic) {
+			ImportKey(ECKey.FromWalletImportFormat(key), isPublic);
+		}
+
 		public void ImportKey(string key) {
-			ImportKey(ECKey.FromWalletImportFormat(key));
+			ImportKey(key, false);
+		}
+
+		void ImportKey(ECKey key, bool isPublic) {
+			if(isPublic)
+				WatchAddress(key.ToAddress());
+			PrivateKeys.Add(key.ToAddress().ToString(), key.PrivateKeyBytes);
 		}
 
 		void ImportKey(ECKey key) {
-			PrivateKeys.Add(key.ToAddress().ToString(), key.PrivateKeyBytes);
+			ImportKey(key, false);
 		}
 
 		public void WatchAddress(string address) {
