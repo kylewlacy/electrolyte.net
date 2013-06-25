@@ -82,6 +82,34 @@ namespace Electrolyte.Test {
 		}
 
 		[Test]
+		public void LockUnlock() {
+			Wallet wallet = new Wallet();
+			wallet.ImportKey("5Kb8kLf9zgWQnogidDA76MzPL6TsZZY36hWXMssSzNydYXYB9KF");
+
+			wallet.Lock("1234");
+			wallet.Unlock("1234");
+
+			wallet.Lock();
+			wallet.Unlock("1234");
+
+			wallet.Lock();
+			Assert.Throws<CryptographicException>(() => wallet.Unlock("2345"));
+			wallet.Unlock("1234");
+
+			wallet.Lock("2345");
+			Assert.Throws<CryptographicException>(() => wallet.Unlock("1234"));
+			wallet.Unlock("2345");
+			Assert.Throws<InvalidOperationException>(() => wallet.Unlock("2345"));
+
+			wallet.Lock();
+			Assert.Throws<InvalidOperationException>(wallet.Lock);
+			wallet.Unlock("2345");
+
+			wallet.Lock();
+			wallet.Unlock("2345");
+		}
+
+		[Test]
 		public void ImportPrivateKey() {
 			Wallet wallet = new Wallet();
 			wallet.ImportKey("5Kb8kLf9zgWQnogidDA76MzPL6TsZZY36hWXMssSzNydYXYB9KF");

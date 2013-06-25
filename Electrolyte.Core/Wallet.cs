@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Text;
+using System.Timers;
 using System.Collections.Generic;
 using System.Security.Cryptography;
 using Org.BouncyCastle.Security;
@@ -19,8 +20,11 @@ namespace Electrolyte {
 		public static ulong KeyHashes = 1024;
 #endif
 
-		public byte[] EncryptedData;
-		public byte[] IV, Salt;
+		internal Timer LockTimer = new Timer();
+
+		public bool IsLocked { get; private set; }
+		public byte[] EncryptionKey = new byte[] { };
+		public byte[] EncryptedData, IV, Salt;
 
 		public Dictionary<string, byte[]> PrivateKeys;
 		public List<string> WatchAddresses;
@@ -61,6 +65,65 @@ namespace Electrolyte {
 
 
 
+		public void Lock() {
+			Lock(EncryptionKey);
+
+			Array.Clear(EncryptionKey, 0, EncryptionKey.Length);
+			EncryptionKey = new byte[] { };
+		}
+
+		public void Lock(object sender, ElapsedEventArgs e) {
+			Lock();
+		}
+
+		public void Lock(byte[] passphrase) {
+			if(IsLocked)
+				throw new InvalidOperationException("Wallet is already locked");
+
+			Encrypt(passphrase);
+			foreach(KeyValuePair<string, byte[]> privateKey in PrivateKeys) {
+				Array.Clear(privateKey.Value, 0, privateKey.Value.Length);
+			}
+
+			Array.Clear(EncryptionKey, 0, EncryptionKey.Length);
+			EncryptionKey = new byte[] { };
+
+			PrivateKeys = new Dictionary<string, byte[]>();
+			LockTimer.Stop();
+
+			IsLocked = true;
+		}
+
+		public void Lock(string passphrase) {
+			Lock(Encoding.UTF8.GetBytes(passphrase));
+		}
+
+		public void Unlock(byte[] passphrase) {
+			if(!IsLocked)
+				throw new InvalidOperationException("Wallet is already unlocked");
+
+			LockTimer = new Timer(1000 * 60 * 5);
+			LockTimer.Elapsed += new ElapsedEventHandler(Lock);
+			LockTimer.Start();
+
+			Decrypt(passphrase);
+
+			Array.Clear(EncryptedData, 0, EncryptedData.Length);
+			EncryptedData = new byte[] { };
+
+			EncryptionKey = new byte[passphrase.Length];
+			Array.Copy(passphrase, EncryptionKey, passphrase.Length); // TODO: Is this safe?
+			Array.Clear(passphrase, 0, passphrase.Length);
+
+			IsLocked = false;
+		}
+
+		public void Unlock(string passphrase) {
+			Unlock(Encoding.UTF8.GetBytes(passphrase));
+		}
+
+
+
 		public void LoadFromJson(string json) {
 			JObject data = JObject.Parse(json);
 			if(data["version"].Value<string>() != Version)
@@ -87,7 +150,7 @@ namespace Electrolyte {
 			LoadPrivateDataFromJson(reader.ReadToEnd());
 		}
 
-		public void Decrypt(string passphrase) {
+		public void Decrypt(byte[] passphrase) {
 			Aes aes = Aes.Create();
 			aes.Mode = CipherMode.CBC;
 			aes.IV = IV;
@@ -98,6 +161,15 @@ namespace Electrolyte {
 					using(StreamReader streamReader = new StreamReader(cryptoStream))
 						ReadPrivate(streamReader);
 			}
+		}
+
+		public void Decrypt(string passphrase) {
+			Decrypt(Encoding.UTF8.GetBytes(passphrase));
+		}
+
+		public void Decrypt(TextReader reader, byte[] passphrase) {
+			Read(reader);
+			Decrypt(passphrase);
 		}
 
 		public void Decrypt(TextReader reader, string passphrase) {
@@ -146,7 +218,7 @@ namespace Electrolyte {
 			writer.Write(PrivateDataAsJson());
 		}
 
-		public void Encrypt(string passphrase) {
+		public void Encrypt(byte[] passphrase) {
 			SecureRandom random = new SecureRandom();
 
 			IV = new byte[16];
@@ -168,6 +240,15 @@ namespace Electrolyte {
 			}
 		}
 
+		public void Encrypt(string passphrase) {
+			Encrypt(Encoding.UTF8.GetBytes(passphrase));
+		}
+
+		public void Encrypt(TextWriter writer, byte[] passphrase) {
+			Encrypt(passphrase);
+			Write(writer);
+		}
+
 		public void Encrypt(TextWriter writer, string passphrase) {
 			Encrypt(passphrase);
 			Write(writer);
@@ -183,10 +264,6 @@ namespace Electrolyte {
 			}
 
 			return ArrayHelpers.SubArray(key, 0, 32);
-		}
-
-		static byte[] PassphraseToKey(string passphrase, byte[] salt) {
-			return PassphraseToKey(Encoding.UTF8.GetBytes(passphrase), salt);
 		}
 	}
 }
