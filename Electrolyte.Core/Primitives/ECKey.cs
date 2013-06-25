@@ -123,7 +123,7 @@ namespace Electrolyte.Primitives {
 		/// Creates an ECKey given only the private key. This works because EC public keys are derivable from their
 		/// private keys by doing a multiply with the generator value.
 		/// </summary>
-		public ECKey(BigInteger privKey) {
+		ECKey(BigInteger privKey) {
 			_priv = privKey;
 			_pub = PublicKeyFromPrivate(privKey);
 		}

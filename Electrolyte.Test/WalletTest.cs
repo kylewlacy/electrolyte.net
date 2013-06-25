@@ -17,14 +17,14 @@ namespace Electrolyte.Test {
 			byte[] output;
 			using(MemoryStream stream = new MemoryStream()) {
 				using(StreamWriter writer = new StreamWriter(stream))
-					writeWallet.Write(writer);
+					writeWallet.WritePrivate(writer);
 				output = stream.ToArray();
 			}
 			
-			Wallet readWallet;
+			Wallet readWallet = new Wallet();
 			using(MemoryStream stream = new MemoryStream(output)) {
 				using(StreamReader reader = new StreamReader(stream))
-					readWallet = Wallet.Read(reader);
+					readWallet.ReadPrivate(reader);
 			}
 
 			Assert.AreEqual(readWallet.PrivateKeys.Keys.ToArray()[0], writeWallet.PrivateKeys.Keys.ToArray()[0]);
@@ -38,15 +38,15 @@ namespace Electrolyte.Test {
 
 			byte[] output;
 			using(MemoryStream stream = new MemoryStream()) {
-				using(BinaryWriter writer = new BinaryWriter(stream))
+				using(StreamWriter writer = new StreamWriter(stream))
 					encryptWallet.Encrypt(writer, "1234");
 				output = stream.ToArray();
 			}
 
-			Wallet decryptWallet;
+			Wallet decryptWallet = new Wallet();
 			using(MemoryStream stream = new MemoryStream(output)) {
-				using(BinaryReader reader = new BinaryReader(stream))
-					decryptWallet = Wallet.Decrypt(reader, "1234");
+				using(StreamReader reader = new StreamReader(stream))
+					decryptWallet.Decrypt(reader, "1234");
 			}
 
 			Assert.AreEqual(encryptWallet.PrivateKeys.Keys.ToArray()[0], decryptWallet.PrivateKeys.Keys.ToArray()[0]);
@@ -60,14 +60,14 @@ namespace Electrolyte.Test {
 
 			byte[] output;
 			using(MemoryStream stream = new MemoryStream()) {
-				using(BinaryWriter writer = new BinaryWriter(stream))
+				using(StreamWriter writer = new StreamWriter(stream))
 					encryptWallet.Encrypt(writer, "1234");
 				output = stream.ToArray();
 			}
 
 			using(MemoryStream stream = new MemoryStream(output)) {
-				using(BinaryReader reader = new BinaryReader(stream))
-					Assert.Throws<CryptographicException>(() => Wallet.Decrypt(reader, "2345"));
+				using(StreamReader reader = new StreamReader(stream))
+					Assert.Throws<CryptographicException>(() => new Wallet().Decrypt(reader, "2345"));
 			}
 		}
 

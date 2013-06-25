@@ -4,6 +4,8 @@ using System.Text;
 using System.Collections.Generic;
 using System.Security.Cryptography;
 using Org.BouncyCastle.Security;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Electrolyte.Primitives;
 using Electrolyte.Helpers;
 
@@ -30,92 +32,99 @@ namespace Electrolyte {
 			}
 		}
 
-		public static Wallet Decrypt(BinaryReader reader, string passpharse) {
-			UInt64 version = reader.ReadUInt64();
-			if(version != Version)
-				throw new FormatException(String.Format("Unsupported wallet version: {0}", version));
+		public void Decrypt(TextReader reader, string passphrase) {
+			JObject data = JObject.Parse(reader.ReadToEnd());
+			if(data["version"].Value<ulong>() != Version)
+				throw new FormatException(String.Format("Invalid wallet version: {0}", data["version"].Value<ulong>()));
+
+			byte[] iv = Base58.DecodeWithChecksum(data["iv"].Value<string>());
+			string salt = data["salt"].Value<string>();
 
 			Aes aes = Aes.Create();
-			aes.IV = reader.ReadBytes(16);
-			aes.Key = PassphraseToKey(passpharse, reader.ReadString());
+			aes.Mode = CipherMode.CBC;
+			aes.IV = iv;
+			aes.Key = PassphraseToKey(passphrase, salt);
 
-			Int32 length = reader.ReadInt32();
-
-			using(MemoryStream stream = new MemoryStream(reader.ReadBytes(length))) {
+			using(MemoryStream stream = new MemoryStream(Base58.DecodeWithChecksum(data["encrypted"].Value<string>()))) {
 				using(CryptoStream cryptoStream = new CryptoStream(stream, aes.CreateDecryptor(), CryptoStreamMode.Read))
 					using(StreamReader streamReader = new StreamReader(cryptoStream))
-						return Read(streamReader);
+						ReadPrivate(streamReader);
 			}
 		}
 
-		public static Wallet Read(TextReader reader) {
-			Dictionary<string, int> columns = new Dictionary<string, int>();
-			string[] rawColumns = reader.ReadLine().Split(new char[] { ',' }, StringSplitOptions.None);
-			for(int i = 0; i < rawColumns.Length; i++)
-				columns.Add(rawColumns[i], i);
-
-			List<string[]> rows = new List<string[]>();
-
-			string rawRow;
-			while(!String.IsNullOrEmpty(rawRow = reader.ReadLine())) {
-				rows.Add(rawRow.Split(new char[] { ',' }, columns.Count));
+		public void ReadPrivate(TextReader reader) {
+			JObject data = JObject.Parse(reader.ReadToEnd());
+			foreach(JToken key in data["keys"]) {
+				PrivateKeys.Add(key["addr"].Value<string>(), ECKey.FromWalletImportFormat(key["priv"].Value<string>()).PrivateKeyBytes);
 			}
-
-			Dictionary<string, byte[]> keys = new Dictionary<string, byte[]>();
-			foreach(string[] row in rows) {
-				ECKey key = ECKey.FromWalletImportFormat(row[columns["priv"]]);
-				keys.Add(row[columns["address"]], key.PrivateKeyBytes);
-			}
-
-			return new Wallet(keys);
 		}
 
 		public Wallet() {
 			PrivateKeys = new Dictionary<string, byte[]>();
+			WatchAddresses = new List<string>();
 		}
 
 		public Wallet(Dictionary<string, byte[]> keys) {
 			PrivateKeys = keys;
+			WatchAddresses = new List<string>();
 		}
 
-		public void Encrypt(BinaryWriter writer, string passphrase, SecureRandom random) {
-			writer.Write(Version);
-
-			byte[] IV = new byte[16];
-			random.NextBytes(IV);
-			writer.Write(IV);
+		public void Encrypt(TextWriter writer, string passphrase, SecureRandom random) {
+			byte[] iv = new byte[16];
+			random.NextBytes(iv);
 
 			byte[] rawSalt = new byte[128];
 			random.NextBytes(rawSalt);
 			string salt = Base58.EncodeWithChecksum(rawSalt);
-			writer.Write(salt);
+
+			Dictionary<string, object> data = new Dictionary<string, object> {
+				{ "version", Version },
+				{ "iv", Base58.EncodeWithChecksum(iv) },
+				{ "salt", salt },
+				{ "watch_addresses", new List<object>() }
+			};
+
+			foreach(string address in WatchAddresses) {
+				((List<object>)data["watch_addresses"]).Add(new Dictionary<string,object> {
+					{ "addr", address }
+				});
+			}
 
 			Aes aes = Aes.Create();
 			aes.Mode = CipherMode.CBC;
-			aes.IV = IV;
+			aes.IV = iv;
 			aes.Key = PassphraseToKey(passphrase, salt);
 
 			using(MemoryStream stream = new MemoryStream()) {
 				using(CryptoStream cryptoStream = new CryptoStream(stream, aes.CreateEncryptor(), CryptoStreamMode.Write))
 					using(StreamWriter streamWriter = new StreamWriter(cryptoStream))
-						Write(streamWriter);
+						WritePrivate(streamWriter);
 
-				byte[] data = stream.ToArray();
-				writer.Write(data.Length);
-				writer.Write(data);
+				data.Add("encrypted", Base58.EncodeWithChecksum(stream.ToArray()));
 			}
+
+			writer.Write(JsonConvert.SerializeObject(data));
 		}
 
-		public void Encrypt(BinaryWriter writer, string passphrase) {
+		public void Encrypt(TextWriter writer, string passphrase) {
 			Encrypt(writer, passphrase, new SecureRandom());
 		}
 
-		public void Write(TextWriter writer) {
-			writer.WriteLine("address,priv");
-			foreach(KeyValuePair<string, byte[]> key in PrivateKeys) {
-				writer.Write(String.Format("{0},{1}", key.Key, new ECKey(key.Value).ToWalletImportFormat()));
+		public void WritePrivate(TextWriter writer) {
+			writer.Write(SecureDataAsJson());
+		}
+
+		public string SecureDataAsJson() {
+			Dictionary<string, object> data = new Dictionary<string, object>();
+			data.Add("keys", new List<object>());
+			foreach(KeyValuePair<string, byte[]> privateKey in PrivateKeys) {
+				((List<object>)data["keys"]).Add(new Dictionary<string, object> {
+					{ "addr", privateKey.Key },
+					{ "priv", new ECKey(privateKey.Value).ToWalletImportFormat() }
+				});
 			}
-			writer.WriteLine();
+
+			return JsonConvert.SerializeObject(data);
 		}
 
 		public void GenerateKey() {
