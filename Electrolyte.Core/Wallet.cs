@@ -66,10 +66,10 @@ namespace Electrolyte {
 			if(data["version"].Value<ulong>() != Version)
 				throw new FormatException(String.Format("Invalid wallet version: {0}", data["version"].Value<ulong>()));
 
-			IV = Base58.DecodeWithChecksum(data["iv"].Value<string>());
-			Salt = Base58.DecodeWithChecksum(data["salt"].Value<string>());
+			IV = Base58.DecodeWithChecksum(data["encrypted"]["iv"].Value<string>());
+			Salt = Base58.DecodeWithChecksum(data["encrypted"]["salt"].Value<string>());
 
-			EncryptedData = Base58.DecodeWithChecksum(data["encrypted"].Value<string>());
+			EncryptedData = Base58.DecodeWithChecksum(data["encrypted"]["data"].Value<string>());
 		}
 
 		void LoadPrivateDataFromJson(string json) {
@@ -108,10 +108,12 @@ namespace Electrolyte {
 		public string DataAsJson() {
 			Dictionary<string, object> data = new Dictionary<string, object> {
 				{ "version", Version },
-				{ "iv", Base58.EncodeWithChecksum(IV) },
-				{ "salt", Base58.EncodeWithChecksum(Salt) },
 				{ "watch_addresses", new List<object>() },
-				{ "encrypted", Base58.EncodeWithChecksum(EncryptedData) }
+				{ "encrypted", new Dictionary<string, object> {
+						{ "iv", Base58.EncodeWithChecksum(IV) },
+						{ "salt", Base58.EncodeWithChecksum(Salt) },
+						{ "data", Base58.EncodeWithChecksum(EncryptedData) }
+				} }
 			};
 
 			foreach(string address in WatchAddresses) {
@@ -152,19 +154,6 @@ namespace Electrolyte {
 
 			Salt = new byte[128];
 			random.NextBytes(Salt);
-
-			Dictionary<string, object> data = new Dictionary<string, object> {
-				{ "version", Version },
-				{ "iv", Base58.EncodeWithChecksum(IV) },
-				{ "salt", Base58.EncodeWithChecksum(Salt) },
-				{ "watch_addresses", new List<object>() }
-			};
-
-			foreach(string address in WatchAddresses) {
-				((List<object>)data["watch_addresses"]).Add(new Dictionary<string,object> {
-					{ "addr", address }
-				});
-			}
 
 			Aes aes = Aes.Create();
 			aes.Mode = CipherMode.CBC;
