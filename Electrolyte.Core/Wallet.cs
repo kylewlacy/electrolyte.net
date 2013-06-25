@@ -102,10 +102,6 @@ namespace Electrolyte {
 			if(!IsLocked)
 				throw new InvalidOperationException("Wallet is already unlocked");
 
-			LockTimer = new Timer(timeout);
-			LockTimer.Elapsed += new ElapsedEventHandler(Lock);
-			LockTimer.Start();
-
 			Decrypt(passphrase);
 
 			Array.Clear(EncryptedData, 0, EncryptedData.Length);
@@ -114,6 +110,11 @@ namespace Electrolyte {
 			EncryptionKey = new byte[passphrase.Length];
 			Array.Copy(passphrase, EncryptionKey, passphrase.Length); // TODO: Is this safe?
 			Array.Clear(passphrase, 0, passphrase.Length);
+
+			LockTimer = new Timer(timeout);
+			LockTimer.Elapsed += new ElapsedEventHandler(Lock);
+			LockTimer.AutoReset = false;
+			LockTimer.Start();
 
 			IsLocked = false;
 		}

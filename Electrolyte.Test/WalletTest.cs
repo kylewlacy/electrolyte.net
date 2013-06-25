@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Security.Cryptography;
 using System.Runtime.InteropServices;
 using Electrolyte.Primitives;
@@ -107,6 +108,23 @@ namespace Electrolyte.Test {
 
 			wallet.Lock();
 			wallet.Unlock("2345");
+		}
+
+		[Test]
+		public void UnlockTimeout() {
+			Wallet wallet = new Wallet();
+			wallet.ImportKey("5Kb8kLf9zgWQnogidDA76MzPL6TsZZY36hWXMssSzNydYXYB9KF");
+
+			wallet.Lock("1234");
+			Assert.IsTrue(wallet.IsLocked);
+
+			wallet.Unlock("1234", 500);
+			Assert.IsFalse(wallet.IsLocked);
+
+			Thread.Sleep(1000);
+
+			Assert.IsTrue(wallet.IsLocked);
+
 		}
 
 		[Test]
