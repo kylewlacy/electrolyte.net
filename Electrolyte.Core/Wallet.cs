@@ -35,9 +35,31 @@ namespace Electrolyte {
 			}
 		}
 
-		public void Read(TextReader reader) {
-			LoadFromJson(reader.ReadToEnd());
+		public Wallet() {
+			PrivateKeys = new Dictionary<string, byte[]>();
+			WatchAddresses = new List<string>();
 		}
+
+		public Wallet(Dictionary<string, byte[]> keys) {
+			PrivateKeys = keys;
+			WatchAddresses = new List<string>();
+		}
+
+
+
+		public void GenerateKey() {
+			ImportKey(new ECKey());
+		}
+
+		public void ImportKey(string key) {
+			ImportKey(ECKey.FromWalletImportFormat(key));
+		}
+
+		void ImportKey(ECKey key) {
+			PrivateKeys.Add(key.ToAddress().ToString(), key.PrivateKeyBytes);
+		}
+
+
 
 		public void LoadFromJson(string json) {
 			JObject data = JObject.Parse(json);
@@ -48,6 +70,21 @@ namespace Electrolyte {
 			Salt = Base58.DecodeWithChecksum(data["salt"].Value<string>());
 
 			EncryptedData = Base58.DecodeWithChecksum(data["encrypted"].Value<string>());
+		}
+
+		void LoadPrivateDataFromJson(string json) {
+			JObject data = JObject.Parse(json);
+			foreach(JToken key in data["keys"]) {
+				PrivateKeys.Add(key["addr"].Value<string>(), ECKey.FromWalletImportFormat(key["priv"].Value<string>()).PrivateKeyBytes);
+			}
+		}
+
+		public void Read(TextReader reader) {
+			LoadFromJson(reader.ReadToEnd());
+		}
+
+		public void ReadPrivate(TextReader reader) {
+			LoadPrivateDataFromJson(reader.ReadToEnd());
 		}
 
 		public void Decrypt(string passphrase) {
@@ -68,25 +105,43 @@ namespace Electrolyte {
 			Decrypt(passphrase);
 		}
 
-		public void ReadPrivate(TextReader reader) {
-			LoadPrivateDataFromJson(reader.ReadToEnd());
-		}
+		public string DataAsJson() {
+			Dictionary<string, object> data = new Dictionary<string, object> {
+				{ "version", Version },
+				{ "iv", Base58.EncodeWithChecksum(IV) },
+				{ "salt", Base58.EncodeWithChecksum(Salt) },
+				{ "watch_addresses", new List<object>() },
+				{ "encrypted", Base58.EncodeWithChecksum(EncryptedData) }
+			};
 
-		public void LoadPrivateDataFromJson(string json) {
-			JObject data = JObject.Parse(json);
-			foreach(JToken key in data["keys"]) {
-				PrivateKeys.Add(key["addr"].Value<string>(), ECKey.FromWalletImportFormat(key["priv"].Value<string>()).PrivateKeyBytes);
+			foreach(string address in WatchAddresses) {
+				((List<object>)data["watch_addresses"]).Add(new Dictionary<string,object> {
+					{ "addr", address }
+				});
 			}
+
+			return JsonConvert.SerializeObject(data);
 		}
 
-		public Wallet() {
-			PrivateKeys = new Dictionary<string, byte[]>();
-			WatchAddresses = new List<string>();
+		string PrivateDataAsJson() {
+			Dictionary<string, object> data = new Dictionary<string, object>();
+			data.Add("keys", new List<object>());
+			foreach(KeyValuePair<string, byte[]> privateKey in PrivateKeys) {
+				((List<object>)data["keys"]).Add(new Dictionary<string, object> {
+					{ "addr", privateKey.Key },
+					{ "priv", new ECKey(privateKey.Value).ToWalletImportFormat() }
+				});
+			}
+
+			return JsonConvert.SerializeObject(data);
 		}
 
-		public Wallet(Dictionary<string, byte[]> keys) {
-			PrivateKeys = keys;
-			WatchAddresses = new List<string>();
+		public void Write(TextWriter writer) {
+			writer.Write(DataAsJson());
+		}
+
+		public void WritePrivate(TextWriter writer) {
+			writer.Write(PrivateDataAsJson());
 		}
 
 		public void Encrypt(string passphrase) {
@@ -124,63 +179,12 @@ namespace Electrolyte {
 			}
 		}
 
-		public void Write(TextWriter writer) {
-			writer.Write(DataAsJson());
-		}
-
-		public string DataAsJson() {
-			Dictionary<string, object> data = new Dictionary<string, object> {
-				{ "version", Version },
-				{ "iv", Base58.EncodeWithChecksum(IV) },
-				{ "salt", Base58.EncodeWithChecksum(Salt) },
-				{ "watch_addresses", new List<object>() },
-				{ "encrypted", Base58.EncodeWithChecksum(EncryptedData) }
-			};
-
-			foreach(string address in WatchAddresses) {
-				((List<object>)data["watch_addresses"]).Add(new Dictionary<string,object> {
-					{ "addr", address }
-				});
-			}
-
-			return JsonConvert.SerializeObject(data);
-		}
-
 		public void Encrypt(TextWriter writer, string passphrase) {
 			Encrypt(passphrase);
 			Write(writer);
 		}
 
-		public void WritePrivate(TextWriter writer) {
-			writer.Write(SecureDataAsJson());
-		}
-
-		public string SecureDataAsJson() {
-			Dictionary<string, object> data = new Dictionary<string, object>();
-			data.Add("keys", new List<object>());
-			foreach(KeyValuePair<string, byte[]> privateKey in PrivateKeys) {
-				((List<object>)data["keys"]).Add(new Dictionary<string, object> {
-					{ "addr", privateKey.Key },
-					{ "priv", new ECKey(privateKey.Value).ToWalletImportFormat() }
-				});
-			}
-
-			return JsonConvert.SerializeObject(data);
-		}
-
-		public void GenerateKey() {
-			ImportKey(new ECKey());
-		}
-
-		public void ImportKey(string key) {
-			ImportKey(ECKey.FromWalletImportFormat(key));
-		}
-
-		public void ImportKey(ECKey key) {
-			PrivateKeys.Add(key.ToAddress().ToString(), key.PrivateKeyBytes);
-		}
-
-		public static byte[] PassphraseToKey(byte[] passphrase, byte[] salt) {
+		static byte[] PassphraseToKey(byte[] passphrase, byte[] salt) {
 			byte[] key = passphrase;
 
 			using(SHA256 sha256 = SHA256.Create()) {
@@ -192,7 +196,7 @@ namespace Electrolyte {
 			return ArrayHelpers.SubArray(key, 0, 32);
 		}
 
-		public static byte[] PassphraseToKey(string passphrase, byte[] salt) {
+		static byte[] PassphraseToKey(string passphrase, byte[] salt) {
 			return PassphraseToKey(Encoding.UTF8.GetBytes(passphrase), salt);
 		}
 	}
