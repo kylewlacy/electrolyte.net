@@ -151,6 +151,26 @@ namespace Electrolyte.Test {
 
 			Assert.Contains("1CC3X2gu58d6wXUWMffpuzN9JAfTUWu4Kj", wallet.PrivateKeys.Keys);
 		}
+
+		[Test]
+		public void AccessLimitation() {
+			Wallet wallet = new Wallet();
+			wallet.ImportKey("5Kb8kLf9zgWQnogidDA76MzPL6TsZZY36hWXMssSzNydYXYB9KF");
+			wallet.WatchAddress("1ky1eHUrRR1kxKTbfiCptao9V25W97gDm");
+
+			Assert.Contains("1CC3X2gu58d6wXUWMffpuzN9JAfTUWu4Kj", wallet.Addresses);
+			Assert.Contains("1ky1eHUrRR1kxKTbfiCptao9V25W97gDm", wallet.Addresses);
+
+			wallet.Lock("1234");
+
+			Assert.Contains("1ky1eHUrRR1kxKTbfiCptao9V25W97gDm", wallet.Addresses);
+			Assert.IsFalse(wallet.Addresses.Contains("1CC3X2gu58d6wXUWMffpuzN9JAfTUWu4Kj"));
+
+			wallet.Unlock("1234");
+
+			Assert.Contains("1CC3X2gu58d6wXUWMffpuzN9JAfTUWu4Kj", wallet.Addresses);
+			Assert.Contains("1ky1eHUrRR1kxKTbfiCptao9V25W97gDm", wallet.Addresses);
+		}
 	}
 }
 
