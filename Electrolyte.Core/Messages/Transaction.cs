@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Collections.Generic;
 using System.Security.Cryptography;
+using Newtonsoft.Json.Linq;
 using Electrolyte;
 using Electrolyte.Primitives;
 using Electrolyte.Helpers;
@@ -23,7 +24,18 @@ namespace Electrolyte.Messages {
 			}
 			public UInt32 Sequence;
 
-			public Input(BinaryReader reader) {
+			protected Input() {	}
+
+			public void Write(BinaryWriter writer) {
+				writer.Write(PrevTransactionHash);
+
+				new VarInt(ScriptSig.Execution.Count).Write(writer);
+				writer.Write(ScriptSig.Execution.ToArray()); // TODO: Move this logic to Script class
+
+				writer.Write(Sequence);
+			}
+
+			protected void ReadPayload(BinaryReader reader) {
 				PrevTransactionHash = reader.ReadBytes(36);
 
 				UInt64 scriptLength = VarInt.Read(reader).Value;
@@ -39,6 +51,11 @@ namespace Electrolyte.Messages {
 				writer.Write(ScriptSig.Execution.ToArray()); // TODO: Move this logic to Script class
 
 				writer.Write(Sequence);
+			public static Input Read(BinaryReader reader) {
+				Input input = new Input();
+				input.ReadPayload(reader);
+				return input;
+			}
 			}
 		}
 
@@ -46,7 +63,11 @@ namespace Electrolyte.Messages {
 			public Script ScriptPubKey;
 			public Int64 Value;
 
-			public Output(BinaryReader reader) {
+			protected Output() {
+
+			}
+
+			protected void ReadPayload(BinaryReader reader) {
 				Value = reader.ReadInt64();
 
 				UInt64 scriptLength = VarInt.Read(reader).Value;
@@ -114,12 +135,12 @@ namespace Electrolyte.Messages {
 
 			UInt64 inputCount = VarInt.Read(reader).Value;
 			for(ulong i = 0; i < inputCount; i++) {
-				Inputs.Add(new Input(reader));
+				Inputs.Add(Input.Read(reader));
 			}
 
 			UInt64 outputCount = VarInt.Read(reader).Value;
 			for(ulong i = 0; i < outputCount; i++) {
-				Outputs.Add(new Output(reader));
+				Outputs.Add(Output.Read(reader));
 			}
 
 			LockTime = reader.ReadUInt32();
