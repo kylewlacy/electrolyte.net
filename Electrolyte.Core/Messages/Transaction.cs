@@ -44,18 +44,33 @@ namespace Electrolyte.Messages {
 				Sequence = reader.ReadUInt32();
 			}
 
-			public void Write(BinaryWriter writer) {
-				writer.Write(PrevTransactionHash);
+			protected void ReadFromJson(JToken data) {
+				Console.WriteLine(data["prev_out"].ToString());
+				string hash = data["prev_out"]["hash"].Value<string>();
+				PrevTransactionHash = new byte[hash.Length / 2];
 
-				new VarInt(ScriptSig.Execution.Count).Write(writer);
-				writer.Write(ScriptSig.Execution.ToArray()); // TODO: Move this logic to Script class
+				for(int i = 0; i < PrevTransactionHash.Length; i++) {
+					PrevTransactionHash[i] = Convert.ToByte(hash.Substring(i * 2, 2), 16);
+				}
+				OutpointIndex = data["prev_out"]["n"].Value<int>();
 
-				writer.Write(Sequence);
+				ScriptSig = Script.FromString(data["scriptSig"].Value<string>());
+			}
+
 			public static Input Read(BinaryReader reader) {
 				Input input = new Input();
 				input.ReadPayload(reader);
 				return input;
 			}
+
+			public static Input FromJson(string json) {
+				return FromJson(JToken.Parse(json));
+			}
+
+			public static Input FromJson(JToken data) {
+				Input input = new Input();
+				input.ReadFromJson(data);
+				return input;
 			}
 		}
 
@@ -79,6 +94,31 @@ namespace Electrolyte.Messages {
 
 				new VarInt(ScriptPubKey.Execution.Count).Write(writer);
 				writer.Write(ScriptPubKey.Execution.ToArray());
+			}
+
+			protected void ReadFromJson(JToken data) {
+				// TODO: Move conversion to a class
+				decimal btc = Decimal.Parse(data["value"].Value<string>());
+				Value = (Int64)Math.Floor(btc * 100000000); // TODO: Is flooring the proper way to round?
+				Console.WriteLine("BTC: {0}\nSAT: {1}", btc, Value);
+
+				ScriptPubKey = Script.FromString(data["scriptPubKey"].Value<string>());
+			}
+
+			public static Output Read(BinaryReader reader) {
+				Output output = new Output();
+				output.ReadPayload(reader);
+				return output;
+			}
+
+			public static Output FromJson(string json) {
+				return FromJson(JToken.Parse(json));
+			}
+
+			public static Output FromJson(JToken data) {
+				Output output = new Output();
+				output.ReadFromJson(data);
+				return output;
 			}
 		}
 
@@ -160,6 +200,33 @@ namespace Electrolyte.Messages {
 			}
 
 			writer.Write(LockTime);
+		}
+
+		protected void ReadFromJson(JToken data) {
+			Version = data["ver"].Value<uint>();
+
+			ulong inputCount = data["vin_sz"].Value<ulong>();
+
+			JToken[] inputs = data["in"].ToArray();
+			for(ulong i = 0; i < inputCount; i++)
+				Inputs.Add(Input.FromJson(inputs[i]));
+
+			ulong outputCount = data["vout_sz"].Value<ulong>();
+
+			JToken[] outputs = data["out"].ToArray();
+			for(ulong i = 0; i < outputCount; i++)
+				Outputs.Add(Output.FromJson(outputs[i]));
+		}
+
+
+		public static Transaction FromJson(string json) {
+			return FromJson(JToken.Parse(json));
+		}
+
+		static Transaction FromJson(JToken data) {
+			Transaction tx = new Transaction();
+			tx.ReadFromJson(data);
+			return tx;
 		}
 	}
 }

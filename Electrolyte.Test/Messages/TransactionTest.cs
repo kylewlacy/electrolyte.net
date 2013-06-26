@@ -6,15 +6,13 @@ using Electrolyte.Messages;
 namespace Electrolyte.Test.Messages {
 	[TestFixture]
 	public class TransactionTest {
-		Tuple<byte[], uint, Tuple<uint>[], Tuple<ulong>[], ulong, ulong>[] Transactions = new Tuple<byte[], uint, Tuple<uint>[], Tuple<ulong>[], ulong, ulong>[] {
+		Tuple<byte[], uint, Tuple<uint>[], Tuple<ulong>[], ulong, ulong, string>[] Transactions = new Tuple<byte[], uint, Tuple<uint>[], Tuple<ulong>[], ulong, ulong, string>[] {
 			Tuple.Create(
 				new byte[] {
 				0xF9, 0xBE, 0xB4, 0xD9,
 				0x74, 0x78, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 				0x02, 0x01, 0x00, 0x00,
 				0xE2, 0x93, 0xCD, 0xBE,
-//				0x01, 0x01, 0x00, 0x00,
-//				128,  138,  91,   175,
 
 				0x01, 0x00, 0x00, 0x00,
 
@@ -53,7 +51,35 @@ namespace Electrolyte.Test.Messages {
 				0xFD, 0xA0, 0xB7, 0x8B, 0x4E, 0xCC, 0x52, 0x88, 0xAC,
 
 				0x00, 0x00, 0x00, 0x00
-			}, 1U, new Tuple<uint>[] {Tuple.Create(UInt32.MaxValue)}, new Tuple<ulong>[] {Tuple.Create(5000000UL), Tuple.Create(3354000000UL)}, 0UL, 3359000000UL
+			},
+			1U, new Tuple<uint>[] {Tuple.Create(UInt32.MaxValue)}, new Tuple<ulong>[] {Tuple.Create(5000000UL), Tuple.Create(3354000000UL)}, 0UL, 3359000000UL,
+			@"{
+			  ""hash"":""d4a73f51ab7ee7acb4cf0505d1fab34661666c461488e58ec30281e2becd93e2"",
+			  ""ver"":1,
+			  ""vin_sz"":1,
+			  ""vout_sz"":2,
+			  ""lock_time"":0,
+			  ""size"":258,
+			  ""in"":[
+			    {
+			      ""prev_out"":{
+			        ""hash"":""2936ee6a0db4e4901988503bb6e966128dd5fa01bcf08451f78a1d5b08dbbd6d"",
+			        ""n"":0
+			      },
+			      ""scriptSig"":""3045022100f3581e1972ae8ac7c7367a7a253bc1135223adb9a468bb3a59233f45bc578380022059af01ca17d00e41837a1d58e97aa31bae584edec28d35bd96923690913bae9a01 049c02bfc97ef236ce6d8fe5d94013c721e915982acd2b12b65d9b7d59e20a842005f8fc4e02532e873d37b96f09d6d4511ada8f14042f46614a4c70c0f14beff5""
+			    }
+			  ],
+			  ""out"":[
+			    {
+			      ""value"":""0.05000000"",
+			      ""scriptPubKey"":""OP_DUP OP_HASH160 1aa0cd1cbea6e7458a7abad512a9d9ea1afb225e OP_EQUALVERIFY OP_CHECKSIG""
+			    },
+			    {
+			      ""value"":""33.54000000"",
+			      ""scriptPubKey"":""OP_DUP OP_HASH160 0eab5bea436a0484cfab12485efda0b78b4ecc52 OP_EQUALVERIFY OP_CHECKSIG""
+			    }
+			  ]
+			}"
 			)
 		};
 
@@ -63,15 +89,15 @@ namespace Electrolyte.Test.Messages {
 				using(BinaryReader reader = new BinaryReader(new MemoryStream(transaction.Item1))) {
 					Transaction tx = Transaction.Read(reader);
 
-					Assert.AreEqual(tx.Version, transaction.Item2);
+					Assert.AreEqual(transaction.Item2, tx.Version);
 
-					Assert.AreEqual(tx.Inputs.Count, transaction.Item3.Length);
+					Assert.AreEqual(transaction.Item3.Length, tx.Inputs.Count);
 					for(int i = 0; i < tx.Inputs.Count; i++) {
 						Assert.AreEqual(transaction.Item3[i].Item1, tx.Inputs[i].Sequence);
 					}
 
 					
-					Assert.AreEqual(tx.Outputs.Count, transaction.Item4.Length);
+					Assert.AreEqual(transaction.Item4.Length, tx.Outputs.Count);
 					for(int i = 0; i < tx.Outputs.Count; i++) {
 						Assert.AreEqual(transaction.Item4[i].Item1, tx.Outputs[i].Value);
 					}
@@ -97,6 +123,31 @@ namespace Electrolyte.Test.Messages {
 
 					Assert.AreEqual(transaction.Item1, stream.ToArray());
 				}
+			}
+		}
+
+		[Test]
+		public void ReadFromJson() {
+			foreach(var transaction in Transactions) {
+				Transaction tx = Transaction.FromJson(transaction.Item7);
+
+				Assert.AreEqual(transaction.Item2, tx.Version);
+
+				Assert.AreEqual(transaction.Item3.Length, tx.Inputs.Count);
+//				for(int i = 0; i < tx.Inputs.Count; i++) {
+//					Assert.AreEqual(transaction.Item3[i].Item1, tx.Inputs[i].Sequence);
+//					Assert.AreEqual(transaction.Item3[i].Item2, tx.Inputs[i].ScriptSig); // TODO: Assert script equality
+//				}
+
+
+				Assert.AreEqual(transaction.Item4.Length, tx.Outputs.Count);
+				for(int i = 0; i < tx.Outputs.Count; i++) {
+					Assert.AreEqual(transaction.Item4[i].Item1, tx.Outputs[i].Value);
+//					Assert.AreEqual(transaction.Item4[i].Item2, tx.Outputs[i].ScriptPubKey)
+				}
+
+				Assert.AreEqual(transaction.Item5, tx.LockTime);
+				Assert.AreEqual(transaction.Item6, tx.Value);
 			}
 		}
 	}
