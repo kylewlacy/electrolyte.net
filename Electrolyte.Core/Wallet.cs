@@ -39,14 +39,17 @@ namespace Electrolyte {
 			}
 		}
 
-		public Wallet() {
-			PrivateKeys = new Dictionary<string, byte[]>();
-			WatchAddresses = new HashSet<string>();
-		}
+		public Wallet(byte[] passphrase) : this(passphrase, new Dictionary<string, byte[]>()) { }
 
-		public Wallet(Dictionary<string, byte[]> keys) {
+		public Wallet(byte[] passphrase, Dictionary<string, byte[]> keys) : this(passphrase, keys, new HashSet<string>()) { }
+
+		public Wallet(byte[] passphrase, Dictionary<string, byte[]> keys, HashSet<string> watchAddresses) {
 			PrivateKeys = keys;
-			WatchAddresses = new HashSet<string>();
+			WatchAddresses = watchAddresses;
+
+			// TODO: Move these lines to another method?
+			Lock(passphrase);
+			Unlock(passphrase);
 		}
 
 
@@ -94,7 +97,7 @@ namespace Electrolyte {
 			Lock();
 		}
 
-		public void Lock(byte[] passphrase) {
+		void Lock(byte[] passphrase) {
 			if(IsLocked)
 				throw new InvalidOperationException("Wallet is already locked");
 
@@ -112,7 +115,7 @@ namespace Electrolyte {
 			IsLocked = true;
 		}
 
-		public void Lock(string passphrase) {
+		void Lock(string passphrase) {
 			Lock(Encoding.UTF8.GetBytes(passphrase));
 		}
 
