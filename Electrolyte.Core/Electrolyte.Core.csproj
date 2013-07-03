@@ -49,6 +49,7 @@
     <Compile Include="Opcodes.cs" />
     <Compile Include="Wallet.cs" />
     <Compile Include="Primitives\ECKey.cs" />
+    <Compile Include="SigHash.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <ItemGroup>
