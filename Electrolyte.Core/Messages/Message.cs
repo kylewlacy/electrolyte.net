@@ -41,7 +41,7 @@ namespace Electrolyte.Messages {
 				}
 		}
 
-		protected abstract void ReadPayload(BinaryReader reader);
+		public abstract void ReadPayload(BinaryReader reader);
 
 		public abstract void WritePayload(BinaryWriter writer); // TODO: Make this protected
 	}

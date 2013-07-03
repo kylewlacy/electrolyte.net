@@ -70,7 +70,7 @@ namespace Electrolyte.Messages {
 			BlockHeight = height;
 		}
 
-		protected override void ReadPayload(BinaryReader reader) {
+		public override void ReadPayload(BinaryReader reader) {
 			Version = reader.ReadInt32();
 			AvailableServices = (Services)reader.ReadUInt64();
 

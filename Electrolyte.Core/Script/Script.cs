@@ -327,7 +327,8 @@ namespace Electrolyte {
 						lastSeparatorIndex = _start.Count - Execution.Count;
 						break;
 					case Op.CheckSig:
-						Main.Push(Transaction.SigIsValid(Main.Pop(), Main.Pop(), this));
+//						Main.Push(Transaction.SigIsValid(Main.Pop(), Main.Pop(), SubScript, InputIndex));
+						throw new NotImplementedException();
 						break;
 					case Op.CheckSigVerify:
 						throw new NotImplementedException();

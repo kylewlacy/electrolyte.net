@@ -48,7 +48,7 @@ namespace Electrolyte.Messages {
 			WritePayload(writer);
 		}
 
-		protected override void ReadPayload(BinaryReader reader) {
+		public override void ReadPayload(BinaryReader reader) {
 			if(!reader.ReadBytes(4).SequenceEqual(MagicBytes) || reader.BaseStream.Length < HeaderSize)
 				throw new InvalidHeaderException();
 			Command = new String(reader.ReadChars(12));

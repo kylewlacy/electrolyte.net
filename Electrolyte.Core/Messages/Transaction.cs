@@ -137,40 +137,44 @@ namespace Electrolyte.Messages {
 			get { return "tx"; }
 		}
 
-		public bool SigIsValid(byte[] pubKey, byte[] sigWithHashType, Script scriptSig) {
-//			uint hashType = sigWithHashType[sigWithHashType.Count() - 1];
-//			byte[] sig = ArrayHelpers.SubArray(sigWithHashType, 0, sigWithHashType.Count() - 2);
-//			Transaction copy;
-//
-//			using(MemoryStream stream = new MemoryStream()) {
-//				using(BinaryWriter writer = new BinaryWriter(stream))
-//					WritePayload(writer);
-//
-//				copy = Transaction.Read(new BinaryReader(stream));
-//			}
-//
-//			for(int i = 0; i < copy.Inputs.Count; i++)
-//				copy.Inputs[i].ScriptSig = new Script();
-//
-//			copy.Inputs[scriptSig.InputIndex].ScriptSig = new Script(scriptSig.SubScript);
-//			byte[] data;
-//
-//			using(MemoryStream stream = new MemoryStream()) {
-//				using(BinaryWriter writer = new BinaryWriter(stream))
-//					copy.WritePayload(writer);
-//
-//				using(SHA256 sha256 = SHA256.Create())
-//					data = sha256.ComputeHash(sha256.ComputeHash(ArrayHelpers.ConcatArrays(stream.ToArray(), BitConverter.GetBytes(hashType))));
-//			}
-//
-//			ISigner signer = SignerUtilities.GetSigner("ECDSA");
-//			signer.Init(false, PublicKeyFactory.CreateKey(pubKey));
-//			signer.BlockUpdate(data, 0, data.Length);
-//			return signer.VerifySignature(sig);
-			return true;
+		public bool SigIsValid(byte[] pubKey, byte[] sigWithHashType, Script subScript, int inputIndex) {
+			byte[] sig = ArrayHelpers.SubArray(sigWithHashType, 0, sigWithHashType.Length - 1);
+			byte hashType = sigWithHashType[sigWithHashType.Length - 1];
+
+			Transaction copy = new Transaction();
+			using(MemoryStream originalStream = new MemoryStream()) {
+				using(BinaryWriter writer = new BinaryWriter(originalStream))
+					WritePayload(writer);
+
+				using(MemoryStream copyStream = new MemoryStream(originalStream.ToArray())) {
+					using(BinaryReader reader = new BinaryReader(copyStream))
+						copy.ReadPayload(reader);
+				}
+			}
+
+			foreach(Input input in copy.Inputs) {
+				input.ScriptSig = new Script();
+			}
+
+			copy.Inputs[inputIndex].ScriptSig = subScript;
+
+			List<byte> verify = new List<byte>();
+			using(MemoryStream stream = new MemoryStream()) {
+				using(BinaryWriter writer = new BinaryWriter(stream))
+					copy.WritePayload(writer);
+
+				verify.AddRange(stream.ToArray());
+			}
+
+			verify.AddRange(BitConverter.GetBytes((uint)hashType));
+
+			Console.WriteLine(BitConverter.ToString(verify.ToArray()));
+
+			using(SHA256 sha256 = SHA256.Create())
+				return ECKey.Verify(sha256.ComputeHash(sha256.ComputeHash(verify.ToArray())), sig, pubKey);
 		}
 
-		protected override void ReadPayload(BinaryReader reader) {
+		public override void ReadPayload(BinaryReader reader) {
 			Version = reader.ReadUInt32();
 
 			UInt64 inputCount = VarInt.Read(reader).Value;
