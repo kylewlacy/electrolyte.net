@@ -139,7 +139,14 @@ namespace Electrolyte.Messages {
 
 		public bool SigIsValid(byte[] pubKey, byte[] sigWithHashType, Script subScript, int inputIndex) {
 			byte[] sig = ArrayHelpers.SubArray(sigWithHashType, 0, sigWithHashType.Length - 1);
-			byte hashType = sigWithHashType[sigWithHashType.Length - 1];
+			SigHash hashType = (SigHash)sigWithHashType[sigWithHashType.Length - 1];
+			
+			if(hashType.HasFlag(SigHash.None))
+				throw new NotImplementedException();
+			if(hashType.HasFlag(SigHash.Single))
+				throw new NotImplementedException();
+			if(hashType.HasFlag(SigHash.AnyoneCanPay))
+				throw new NotImplementedException();
 
 			Transaction copy = new Transaction();
 			using(MemoryStream originalStream = new MemoryStream()) {
@@ -167,8 +174,6 @@ namespace Electrolyte.Messages {
 			}
 
 			verify.AddRange(BitConverter.GetBytes((uint)hashType));
-
-			Console.WriteLine(BitConverter.ToString(verify.ToArray()));
 
 			using(SHA256 sha256 = SHA256.Create())
 				return ECKey.Verify(sha256.ComputeHash(sha256.ComputeHash(verify.ToArray())), sig, pubKey);
