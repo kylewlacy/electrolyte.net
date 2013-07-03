@@ -137,10 +137,7 @@ namespace Electrolyte.Messages {
 			get { return "tx"; }
 		}
 
-		public bool SigIsValid(byte[] pubKey, byte[] sigWithHashType, Script subScript, int inputIndex) {
-			byte[] sig = ArrayHelpers.SubArray(sigWithHashType, 0, sigWithHashType.Length - 1);
-			SigHash hashType = (SigHash)sigWithHashType[sigWithHashType.Length - 1];
-			
+		public byte[] InputHash(SigHash hashType, Script subScript, int inputIndex) {
 			if(hashType.HasFlag(SigHash.None))
 				throw new NotImplementedException();
 			if(hashType.HasFlag(SigHash.Single))
@@ -173,10 +170,17 @@ namespace Electrolyte.Messages {
 				verify.AddRange(stream.ToArray());
 			}
 
-			verify.AddRange(BitConverter.GetBytes((uint)hashType));
+			verify.AddRange(BitConverter.GetBytes((UInt32)hashType));
 
 			using(SHA256 sha256 = SHA256.Create())
-				return ECKey.Verify(sha256.ComputeHash(sha256.ComputeHash(verify.ToArray())), sig, pubKey);
+				return sha256.ComputeHash(sha256.ComputeHash(verify.ToArray()));
+		}
+
+		public bool SigIsValid(byte[] pubKey, byte[] sigWithHashType, Script subScript, int inputIndex) {
+			byte[] sig = ArrayHelpers.SubArray(sigWithHashType, 0, sigWithHashType.Length - 1);
+			SigHash hashType = (SigHash)sigWithHashType[sigWithHashType.Length - 1];
+
+			return ECKey.Verify(InputHash(hashType, subScript, inputIndex), sig, pubKey);
 		}
 
 		public override void ReadPayload(BinaryReader reader) {
