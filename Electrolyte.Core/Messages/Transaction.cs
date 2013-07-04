@@ -183,6 +183,17 @@ namespace Electrolyte.Messages {
 			return ECKey.Verify(InputHash(hashType, subScript, inputIndex), sig, pubKey);
 		}
 
+		public byte[] GenerateInputSignature(ECKey privateKey, SigHash hashType, Script subScript, int inputIndex) {
+			if(hashType.HasFlag(SigHash.None))
+				throw new NotImplementedException();
+			if(hashType.HasFlag(SigHash.Single))
+				throw new NotImplementedException();
+			if(hashType.HasFlag(SigHash.AnyoneCanPay))
+				throw new NotImplementedException();
+
+			return ArrayHelpers.ConcatArrays(privateKey.Sign(InputHash(hashType, subScript, inputIndex)), new byte[] { (byte)hashType });
+		}
+
 		public override void ReadPayload(BinaryReader reader) {
 			Version = reader.ReadUInt32();
 
