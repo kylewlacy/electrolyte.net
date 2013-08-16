@@ -9,12 +9,7 @@ namespace Electrolyte.CLI {
 
 			Console.WriteLine("Address is {0}", address.ID);
 
-			Pause();
-		}
 
-		public static void Pause() {
-			Console.Write("\nPress any key to continue...");
-			Console.ReadKey();
 		}
 	}
 }
