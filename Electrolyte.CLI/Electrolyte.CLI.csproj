@@ -36,7 +36,6 @@
     <ProjectReference Include="..\Electrolyte.Core\Electrolyte.Core.csproj">
       <Project>{CF6CF5BB-DC12-4950-B13F-6370AE4488E7}</Project>
       <Name>Electrolyte.Core</Name>
-      <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
