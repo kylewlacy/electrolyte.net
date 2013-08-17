@@ -50,6 +50,7 @@
     <Compile Include="Wallet.cs" />
     <Compile Include="Primitives\ECKey.cs" />
     <Compile Include="SigHash.cs" />
+    <Compile Include="Networking\NetworkProtocol.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <ItemGroup>
@@ -59,6 +60,7 @@
     <Folder Include="Messages\" />
     <Folder Include="Properties\" />
     <Folder Include="Script\" />
+    <Folder Include="Networking\" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System">
