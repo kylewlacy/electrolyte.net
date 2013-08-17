@@ -51,6 +51,7 @@
     <Compile Include="Primitives\ECKey.cs" />
     <Compile Include="SigHash.cs" />
     <Compile Include="Networking\NetworkProtocol.cs" />
+    <Compile Include="Networking\ElectrumProtocol.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <ItemGroup>
