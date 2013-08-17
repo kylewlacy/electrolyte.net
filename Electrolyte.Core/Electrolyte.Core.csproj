@@ -50,6 +50,7 @@
     <Compile Include="Wallet.cs" />
     <Compile Include="Primitives\ECKey.cs" />
     <Compile Include="SigHash.cs" />
+    <Compile Include="Networking\Network.cs" />
     <Compile Include="Networking\NetworkProtocol.cs" />
     <Compile Include="Networking\ElectrumProtocol.cs" />
   </ItemGroup>
