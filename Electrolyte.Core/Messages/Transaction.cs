@@ -14,6 +14,7 @@ namespace Electrolyte.Messages {
 		public static Address.Network CurrentNetwork = Address.Network.Bitcoin;
 
 		public class Input {
+			public Transaction Transaction;
 			public Script ScriptSig;
 
 			// TODO: Make this consistent with `Transaction.Hash`
@@ -80,24 +81,39 @@ namespace Electrolyte.Messages {
 				ScriptSig = Script.FromString(data["scriptSig"].Value<string>());
 			}
 
-			public static Input Read(BinaryReader reader) {
+			public static Input Read(BinaryReader reader, Transaction transaction) {
 				Input input = new Input();
 				input.ReadPayload(reader);
+				input.Transaction = transaction;
 				return input;
+			}
+
+			public static Input Read(BinaryReader reader) {
+				return Read(reader, null);
 			}
 
 			public static Input FromJson(string json) {
 				return FromJson(JToken.Parse(json));
 			}
 
+			public static Input FromJson(string json, Transaction transaction) {
+				return FromJson(JToken.Parse(json), transaction);
+			}
+
 			public static Input FromJson(JToken data) {
+				return FromJson(data, null);
+			}
+
+			public static Input FromJson(JToken data, Transaction transaction) {
 				Input input = new Input();
 				input.ReadFromJson(data);
+				input.Transaction = transaction;
 				return input;
 			}
 		}
 
 		public class Output {
+			public Transaction Transaction;
 			public Script ScriptPubKey;
 			public Int64 Value;
 
@@ -114,9 +130,7 @@ namespace Electrolyte.Messages {
 				}
 			}
 
-			protected Output() {
-
-			}
+			protected Output() { }
 
 			protected void ReadPayload(BinaryReader reader) {
 				Value = reader.ReadInt64();
@@ -142,18 +156,32 @@ namespace Electrolyte.Messages {
 			}
 
 			public static Output Read(BinaryReader reader) {
+				return Read(reader, null);
+			}
+
+			public static Output Read(BinaryReader reader, Transaction transaction) {
 				Output output = new Output();
 				output.ReadPayload(reader);
+				output.Transaction = transaction;
 				return output;
 			}
 
+			public static Output FromJson(string json, Transaction transaction) {
+				return FromJson(JToken.Parse(json), transaction);
+			}
+
 			public static Output FromJson(string json) {
-				return FromJson(JToken.Parse(json));
+				return FromJson(json, null);
 			}
 
 			public static Output FromJson(JToken data) {
+				return FromJson(data, null);
+			}
+
+			public static Output FromJson(JToken data, Transaction transaction) {
 				Output output = new Output();
 				output.ReadFromJson(data);
+				output.Transaction = transaction;
 				return output;
 			}
 		}
@@ -256,12 +284,12 @@ namespace Electrolyte.Messages {
 
 			UInt64 inputCount = VarInt.Read(reader).Value;
 			for(ulong i = 0; i < inputCount; i++) {
-				Inputs.Add(Input.Read(reader));
+				Inputs.Add(Input.Read(reader, this));
 			}
 
 			UInt64 outputCount = VarInt.Read(reader).Value;
 			for(ulong i = 0; i < outputCount; i++) {
-				Outputs.Add(Output.Read(reader));
+				Outputs.Add(Output.Read(reader, this));
 			}
 
 			LockTime = reader.ReadUInt32();
@@ -290,13 +318,13 @@ namespace Electrolyte.Messages {
 
 			JToken[] inputs = data["in"].ToArray();
 			for(ulong i = 0; i < inputCount; i++)
-				Inputs.Add(Input.FromJson(inputs[i]));
+				Inputs.Add(Input.FromJson(inputs[i], this));
 
 			ulong outputCount = data["vout_sz"].Value<ulong>();
 
 			JToken[] outputs = data["out"].ToArray();
 			for(ulong i = 0; i < outputCount; i++)
-				Outputs.Add(Output.FromJson(outputs[i]));
+				Outputs.Add(Output.FromJson(outputs[i], this));
 		}
 
 
