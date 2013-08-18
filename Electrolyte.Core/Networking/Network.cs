@@ -34,6 +34,14 @@ namespace Electrolyte.Networking {
 		public static List<Transaction> GetAddressHistory(string address) {
 			return GetAddressHistory(new Address(address));
 		}
+
+		public static long GetAddressBalance(Address address) {
+			return Protocol.GetAddressBalance(address);
+		}
+
+		public static long GetAddressBalance(string address) {
+			return GetAddressBalance(new Address(address));
+		}
 	}
 }
 

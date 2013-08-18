@@ -15,6 +15,7 @@ namespace Electrolyte.Messages {
 		public class Input {
 			public Script ScriptSig;
 
+			// TODO: Make this consistent with `Transaction.Hash`
 			public byte[] PrevTransactionHash;
 			public Transaction PreviousTransaciton;
 
