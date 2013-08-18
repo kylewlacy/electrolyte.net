@@ -65,10 +65,41 @@ namespace Electrolyte {
 		}
 
 		public static bool SupportedAddressPrefix(char prefix) {
-			return PrefixNetwork(prefix) == Network.Bitcoin;
+			return NetworkFromPrefix(prefix) == Network.Bitcoin;
 		}
 
-		public static Network PrefixNetwork(char prefix) {
+		public static char PrefixForNetwork(Network network) {
+			switch(network) {
+			case Network.Bitcoin:
+				return '1';
+			case Network.Testnet:
+				return '2';
+			case Network.Friendly:
+				return 'F';
+			case Network.Litecoin:
+				return 'L';
+			case Network.Namecoin:
+				return 'N';
+			case Network.Fairbrix:
+				return 'f';
+			case Network.GeistGeld:
+				return 'g';
+			case Network.I0coin:
+				return 'j';
+			case Network.Solidcoin:
+				return 's';
+			case Network.Tenebrix:
+				return 't';
+			default:
+				throw new ArgumentException(String.Format("No known network prefix for network {0}", network));
+			}
+		}
+
+		public static byte BytePrefixForNetwork(Network network) {
+			return Base58.Decode(PrefixForNetwork(network).ToString())[0];
+		}
+
+		public static Network NetworkFromPrefix(char prefix) {
 			switch(prefix) {
 			case '1':
 			case '3':
@@ -96,6 +127,10 @@ namespace Electrolyte {
 			default:
 				return Network.Other;
 			}
+		}
+
+		public static Network NetworkFromPrefix(byte prefix) {
+			return NetworkFromPrefix(Base58.Encode(new byte[] { prefix })[0]);
 		}
 	}
 }
