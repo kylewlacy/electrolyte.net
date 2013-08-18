@@ -42,6 +42,19 @@ namespace Electrolyte {
 			return ID;
 		}
 
+		public override bool Equals(object obj) {
+			Address address = obj as Address;
+			return address != null && ID == address.ID;
+		}
+
+		public static bool operator ==(Address a, Address b) {
+			return (object)a != null && (object)b != null && a.Equals(b);
+		}
+
+		public static bool operator !=(Address a, Address b) {
+			return (object)a == null || (object)b == null || !(a == b);
+		}
+
 		public static bool AddressIsValid(string address) {
 //			byte[] bytes = Base58.DecodeWithChecksum(address);
 			Base58.DecodeWithChecksum(address);
