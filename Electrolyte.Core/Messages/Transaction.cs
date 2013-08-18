@@ -24,6 +24,26 @@ namespace Electrolyte.Messages {
 			}
 			public UInt32 Sequence;
 
+			public Address Sender {
+				get {
+					// TODO: Check ScriptSig format beforehand
+
+					// TODO: Move this out to a method (`Script.Data[1]`)
+					string pubKeyHex = ScriptSig.ToString().Split(' ')[1];
+					// TODO: Rewrite faster
+					byte[] pubKey = Enumerable.Range(0, pubKeyHex.Length).Where(x => x % 2 == 0).Select(x => Convert.ToByte(pubKeyHex.Substring(x, 2), 16)).ToArray();
+
+					using(RIPEMD160 ripemd = RIPEMD160.Create()) {
+						using(SHA256 sha256 = SHA256.Create()) {
+							byte[] pubKeyHash = ripemd.ComputeHash(sha256.ComputeHash(pubKey));
+							// TODO: Move current network byte out somewhere
+							byte[] addressBytes = ArrayHelpers.ConcatArrays(new byte[] { 0x00 }, pubKeyHash);
+							return new Address(Base58.EncodeWithChecksum(addressBytes));
+						}
+					}
+				}
+			}
+
 			protected Input() {	}
 
 			public void Write(BinaryWriter writer) {
@@ -78,6 +98,21 @@ namespace Electrolyte.Messages {
 			public Script ScriptPubKey;
 			public Int64 Value;
 
+			public Address Recipient {
+				get {
+					// TODO: Check ScriptPubKey format beforehand
+
+					// TODO: Move this out to a method (`Script.Data[1]`)
+					string pubKeyHex = ScriptPubKey.ToString().Split(' ')[2];
+					// TODO: Rewrite faster
+					byte[] pubKeyHash = Enumerable.Range(0, pubKeyHex.Length).Where(x => x % 2 == 0).Select(x => Convert.ToByte(pubKeyHex.Substring(x, 2), 16)).ToArray();
+
+					// TODO: Move current network byte out somewhere
+					byte[] addressBytes = ArrayHelpers.ConcatArrays(new byte[] { 0x00 }, pubKeyHash);
+					return new Address(Base58.EncodeWithChecksum(addressBytes));
+				}
+			}
+
 			protected Output() {
 
 			}
@@ -126,6 +161,14 @@ namespace Electrolyte.Messages {
 
 		public List<Input> Inputs = new List<Input>();
 		public List<Output> Outputs = new List<Output>();
+
+		public List<Address> Senders {
+			get { return Inputs.Select(i => i.Sender).ToList(); }
+		}
+
+		public List<Address> Recipients {
+			get { return Outputs.Select(o => o.Recipient).ToList(); }
+		}
 
 		public Int64 Value {
 			get { return Outputs.Select(o => o.Value).Sum(); }

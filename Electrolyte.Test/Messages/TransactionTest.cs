@@ -222,6 +222,12 @@ namespace Electrolyte.Test.Messages {
 		public void Hash() {
 
 		}
+
+		[Test]
+		[Ignore("Refactor test organization to add transaction hash (YAML?)")]
+		public void SendersAndRecipients() {
+
+		}
 	}
 }
 
