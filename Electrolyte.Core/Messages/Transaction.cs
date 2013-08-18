@@ -45,7 +45,7 @@ namespace Electrolyte.Messages {
 			}
 
 			protected void ReadFromJson(JToken data) {
-				Console.WriteLine(data["prev_out"].ToString());
+				Console.WriteLine(data["prev_out"]);
 				string hash = data["prev_out"]["hash"].Value<string>();
 				PrevTransactionHash = new byte[hash.Length / 2];
 
@@ -135,6 +135,19 @@ namespace Electrolyte.Messages {
 
 		public override string ExpectedCommand {
 			get { return "tx"; }
+		}
+
+		public string Hash {
+			get {
+				using(MemoryStream stream = new MemoryStream()) {
+					using(BinaryWriter writer = new BinaryWriter(stream)) {
+						WritePayload(writer);
+						using(SHA256 sha256 = SHA256.Create()) {
+							return BitConverter.ToString(sha256.ComputeHash(sha256.ComputeHash(stream.ToArray())).Reverse().ToArray()).Replace("-", "").ToLower();
+						}
+					}
+				}
+			}
 		}
 
 		public byte[] InputHash(SigHash hashType, Script subScript, int inputIndex) {
