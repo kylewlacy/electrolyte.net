@@ -7,7 +7,7 @@ namespace Electrolyte.Networking {
 		public static NetworkProtocol Protocol;
 
 		static Network() {
-			Protocol = new ElectrumProtocol();
+			Protocol = new ElectrumProtocol("electrum.be", 50001);
 			Connect();
 		}
 

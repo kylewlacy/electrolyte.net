@@ -10,12 +10,14 @@ using Electrolyte.Messages;
 
 namespace Electrolyte.Networking {
 	public class ElectrumProtocol : NetworkProtocol {
-		public string Server = "electrum.no-ip.org";
-		public int Port = 50001;
+		public string Server;
+		public int Port;
 		public TcpClient Client;
 
-		public ElectrumProtocol() {
+		public ElectrumProtocol(string server, int port) {
 			Client = new TcpClient();
+			Server = server;
+			Port = port;
 		}
 		
 
