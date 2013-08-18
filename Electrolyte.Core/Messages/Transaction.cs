@@ -11,6 +11,7 @@ using Electrolyte.Helpers;
 namespace Electrolyte.Messages {
 	public class Transaction : Message<Transaction> {
 		public static UInt32 CurrentVersion = 1;
+		public static Address.Network CurrentNetwork = Address.Network.Bitcoin;
 
 		public class Input {
 			public Script ScriptSig;
