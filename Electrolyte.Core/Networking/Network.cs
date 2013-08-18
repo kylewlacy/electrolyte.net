@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Electrolyte.Messages;
 
 namespace Electrolyte.Networking {
@@ -19,28 +20,28 @@ namespace Electrolyte.Networking {
 			Protocol.Disconnect();
 		}
 
-		public static Transaction GetTransaction(TransactionInfo info) {
-			return Protocol.GetTransaction(info);
+		public static async Task<Transaction> GetTransactionAsync(TransactionInfo info) {
+			return await Protocol.GetTransactionAsync(info);
 		}
 
-		public static Transaction GetTransaction(string hex, ulong height) {
-			return GetTransaction(new TransactionInfo(hex, height));
+		public static async Task<Transaction> GetTransactionAsync(string hex, ulong height) {
+			return await GetTransactionAsync(new TransactionInfo(hex, height));
 		}
 
-		public static List<Transaction> GetAddressHistory(Address address) {
-			return Protocol.GetAddressHistory(address);
+		public static async Task<List<Transaction>> GetAddressHistoryAsync(Address address) {
+			return await Protocol.GetAddressHistoryAsync(address);
 		}
 
-		public static List<Transaction> GetAddressHistory(string address) {
-			return GetAddressHistory(new Address(address));
+		public static async Task<List<Transaction>> GetAddressHistoryAsync(string address) {
+			return await GetAddressHistoryAsync(new Address(address));
 		}
 
-		public static long GetAddressBalance(Address address) {
-			return Protocol.GetAddressBalance(address);
+		public static async Task<long> GetAddressBalanceAsync(Address address) {
+			return await Protocol.GetAddressBalanceAsync(address);
 		}
 
-		public static long GetAddressBalance(string address) {
-			return GetAddressBalance(new Address(address));
+		public static async Task<long> GetAddressBalanceAsync(string address) {
+			return await GetAddressBalanceAsync(new Address(address));
 		}
 	}
 }

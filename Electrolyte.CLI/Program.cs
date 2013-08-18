@@ -45,7 +45,7 @@ namespace Electrolyte.CLI {
 			Console.Write("Enter an address: ");
 			Address address = new Address(Console.ReadLine());
 
-			Console.WriteLine("Balance: {0}", Network.GetAddressBalance(address));
+			Console.WriteLine("Balance: {0}", Network.GetAddressBalanceAsync(address).Result);
 		}
 	}
 }

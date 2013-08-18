@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Electrolyte.Messages;
 
 namespace Electrolyte.Networking {
@@ -18,18 +19,18 @@ namespace Electrolyte.Networking {
 		public abstract void Connect();
 		public abstract void Disconnect();
 		
-		public abstract Transaction GetTransaction(TransactionInfo info);
-		public virtual Transaction GetTransaction(string hex, ulong height) {
-			return GetTransaction(new TransactionInfo(hex, height));
+		public abstract Task<Transaction> GetTransactionAsync(TransactionInfo info);
+		public async virtual Task<Transaction> GetTransactionAsync(string hex, ulong height) {
+			return await GetTransactionAsync(new TransactionInfo(hex, height));
 		}
 
-		public abstract List<Transaction> GetAddressHistory(Address address);
-		public virtual List<Transaction> GetAddressHistory(string address) {
-			return GetAddressHistory(new Address(address));
+		public abstract Task<List<Transaction>> GetAddressHistoryAsync(Address address);
+		public async virtual Task<List<Transaction>> GetAddressHistoryAsync(string address) {
+			return await GetAddressHistoryAsync(new Address(address));
 		}
 
-		public virtual long GetAddressBalance(Address address) {
-			List<Transaction> addressHistory = GetAddressHistory(address);
+		public async virtual Task<long> GetAddressBalanceAsync(Address address) {
+			List<Transaction> addressHistory = await GetAddressHistoryAsync(address);
 			Dictionary<Tuple<string, uint>, long> unspentCoins = new Dictionary<Tuple<string, uint>, long>();
 
 			foreach(Transaction tx in addressHistory) {
@@ -56,8 +57,8 @@ namespace Electrolyte.Networking {
 			return unspentCoins.Values.Sum();
 		}
 
-		public virtual long GetAddressBalance(string address) {
-			return GetAddressBalance(new Address(address));
+		public async virtual Task<long> GetAddressBalanceAsync(string address) {
+			return await GetAddressBalanceAsync(new Address(address));
 		}
 	}
 }
