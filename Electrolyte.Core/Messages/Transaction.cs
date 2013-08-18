@@ -38,8 +38,7 @@ namespace Electrolyte.Messages {
 					using(RIPEMD160 ripemd = RIPEMD160.Create()) {
 						using(SHA256 sha256 = SHA256.Create()) {
 							byte[] pubKeyHash = ripemd.ComputeHash(sha256.ComputeHash(pubKey));
-							// TODO: Move current network byte out somewhere
-							byte[] addressBytes = ArrayHelpers.ConcatArrays(new byte[] { 0x00 }, pubKeyHash);
+							byte[] addressBytes = ArrayHelpers.ConcatArrays(new byte[] { Address.BytePrefixForNetwork(CurrentNetwork) }, pubKeyHash);
 							return new Address(Base58.EncodeWithChecksum(addressBytes));
 						}
 					}
@@ -110,9 +109,7 @@ namespace Electrolyte.Messages {
 					string pubKeyHex = ScriptPubKey.ToString().Split(' ')[2];
 					// TODO: Rewrite faster
 					byte[] pubKeyHash = Enumerable.Range(0, pubKeyHex.Length).Where(x => x % 2 == 0).Select(x => Convert.ToByte(pubKeyHex.Substring(x, 2), 16)).ToArray();
-
-					// TODO: Move current network byte out somewhere
-					byte[] addressBytes = ArrayHelpers.ConcatArrays(new byte[] { 0x00 }, pubKeyHash);
+					byte[] addressBytes = ArrayHelpers.ConcatArrays(new byte[] { Address.BytePrefixForNetwork(CurrentNetwork) }, pubKeyHash);
 					return new Address(Base58.EncodeWithChecksum(addressBytes));
 				}
 			}
