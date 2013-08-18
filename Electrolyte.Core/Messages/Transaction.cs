@@ -18,9 +18,9 @@ namespace Electrolyte.Messages {
 			public byte[] PrevTransactionHash;
 			public Transaction PreviousTransaciton;
 
-			protected int OutpointIndex;
+			public UInt32 OutpointIndex;
 			public Output Outpoint {
-				get { return PreviousTransaciton.Outputs[OutpointIndex]; }
+				get { return PreviousTransaciton.Outputs[(int)OutpointIndex]; }
 			}
 			public UInt32 Sequence;
 
@@ -48,6 +48,7 @@ namespace Electrolyte.Messages {
 
 			public void Write(BinaryWriter writer) {
 				writer.Write(PrevTransactionHash);
+				writer.Write(OutpointIndex);
 
 				new VarInt(ScriptSig.Execution.Count).Write(writer);
 				writer.Write(ScriptSig.Execution.ToArray()); // TODO: Move this logic to Script class
@@ -56,7 +57,8 @@ namespace Electrolyte.Messages {
 			}
 
 			protected void ReadPayload(BinaryReader reader) {
-				PrevTransactionHash = reader.ReadBytes(36);
+				PrevTransactionHash = reader.ReadBytes(32);
+				OutpointIndex = reader.ReadUInt32();
 
 				UInt64 scriptLength = VarInt.Read(reader).Value;
 				ScriptSig = new Script(reader.ReadBytes((int)scriptLength));
@@ -72,7 +74,7 @@ namespace Electrolyte.Messages {
 				for(int i = 0; i < PrevTransactionHash.Length; i++) {
 					PrevTransactionHash[i] = Convert.ToByte(hash.Substring(i * 2, 2), 16);
 				}
-				OutpointIndex = data["prev_out"]["n"].Value<int>();
+				OutpointIndex = data["prev_out"]["n"].Value<uint>();
 
 				ScriptSig = Script.FromString(data["scriptSig"].Value<string>());
 			}
