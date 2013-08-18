@@ -12,6 +12,14 @@ namespace Electrolyte.Extensions {
 			}
 			return sum;
 		}
+
+		public static long Sum(this IEnumerable<long> source) {
+			Int64 sum = 0L;
+			foreach(Int64 number in source) {
+				sum += number;
+			}
+			return sum;
+		}
 	}
 }
 
