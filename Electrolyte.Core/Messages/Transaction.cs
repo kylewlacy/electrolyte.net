@@ -17,8 +17,10 @@ namespace Electrolyte.Messages {
 			public Transaction Transaction;
 			public Script ScriptSig;
 
-			// TODO: Make this consistent with `Transaction.Hash`
-			public byte[] PrevTransactionHash;
+			public byte[] PrevTransactionHashBytes;
+			public string PrevTransactionHash {
+				get { return BitConverter.ToString(PrevTransactionHashBytes.Reverse().ToArray()).Replace("-", "").ToLower(); }
+			}
 			public Transaction PreviousTransaciton;
 
 			public UInt32 OutpointIndex;
@@ -49,7 +51,7 @@ namespace Electrolyte.Messages {
 			protected Input() {	}
 
 			public void Write(BinaryWriter writer) {
-				writer.Write(PrevTransactionHash);
+				writer.Write(PrevTransactionHashBytes);
 				writer.Write(OutpointIndex);
 
 				new VarInt(ScriptSig.Execution.Count).Write(writer);
@@ -59,7 +61,7 @@ namespace Electrolyte.Messages {
 			}
 
 			protected void ReadPayload(BinaryReader reader) {
-				PrevTransactionHash = reader.ReadBytes(32);
+				PrevTransactionHashBytes = reader.ReadBytes(32);
 				OutpointIndex = reader.ReadUInt32();
 
 				UInt64 scriptLength = VarInt.Read(reader).Value;
@@ -71,10 +73,10 @@ namespace Electrolyte.Messages {
 			protected void ReadFromJson(JToken data) {
 				Console.WriteLine(data["prev_out"]);
 				string hash = data["prev_out"]["hash"].Value<string>();
-				PrevTransactionHash = new byte[hash.Length / 2];
+				PrevTransactionHashBytes = new byte[hash.Length / 2];
 
-				for(int i = 0; i < PrevTransactionHash.Length; i++) {
-					PrevTransactionHash[i] = Convert.ToByte(hash.Substring(i * 2, 2), 16);
+				for(int i = 0; i < PrevTransactionHashBytes.Length; i++) {
+					PrevTransactionHashBytes[i] = Convert.ToByte(hash.Substring(i * 2, 2), 16);
 				}
 				OutpointIndex = data["prev_out"]["n"].Value<uint>();
 

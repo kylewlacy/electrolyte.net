@@ -45,10 +45,9 @@ namespace Electrolyte.Networking {
 			foreach(Transaction tx in addressHistory) {
 				foreach(Transaction.Input input in tx.Inputs) {
 					if(input.Sender == address) {
-						string prevTxHash = BitConverter.ToString(input.PrevTransactionHash.Reverse().ToArray()).Replace("-", "").ToLower();
-						if(unspentCoins.ContainsKey(Tuple.Create(prevTxHash, input.OutpointIndex))) {
-							Console.WriteLine("-{0}:{1} ({2})", prevTxHash, input.OutpointIndex, unspentCoins[Tuple.Create(prevTxHash, input.OutpointIndex)]);
-							unspentCoins.Remove(Tuple.Create(prevTxHash, input.OutpointIndex));
+						if(unspentCoins.ContainsKey(Tuple.Create(input.PrevTransactionHash, input.OutpointIndex))) {
+							Console.WriteLine("-{0}:{1} ({2})", input.PrevTransactionHash, input.OutpointIndex, unspentCoins[Tuple.Create(input.PrevTransactionHash, input.OutpointIndex)]);
+							unspentCoins.Remove(Tuple.Create(input.PrevTransactionHash, input.OutpointIndex));
 						}
 					}
 				}
