@@ -35,12 +35,15 @@ namespace Electrolyte {
 
 		public Stack<bool> RunBranch = new Stack<bool>(new bool[] { true });
 
+		public Script() : this(new byte[] { }) { }
+
 		public Script(byte[] script) {
 			Execution = new Stack<byte>(script);
 			Main = new DataStack();
 			Alt = new DataStack();
 		}
 
+		// TODO: Remove this in favor of `Script.Create`
 		public Script(params object[] script) {
 			List<byte> bytes = new List<byte>();
 			foreach(object o in script.Reverse()) {
@@ -421,6 +424,23 @@ namespace Electrolyte {
 			}
 
 			return String.Join(" ", unpacked);
+		}
+
+		public static Script Create(params object[] script) {
+			List<byte> bytes = new List<byte>();
+			foreach(object o in script) {
+				if(o is byte[])
+					bytes.AddRange(Opcodes.Pack((byte[])o));
+				// TODO: Do either of these need to be flipped? (Write some tests)
+				//				else if(o is int)
+				//						bytes.AddRange(new SignedInt((int)o).ToByteArray());
+				//				else if(o is SignedInt)
+				//					bytes.AddRange(((SignedInt)o).ToByteArray());
+				else
+					bytes.Add((byte)o);
+			}
+
+			return new Script(bytes.ToArray());
 		}
 	}
 }
