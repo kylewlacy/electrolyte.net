@@ -1,7 +1,9 @@
 using System;
+using System.IO;
 using System.Collections.Generic;
 using Electrolyte.Messages;
 using Electrolyte.Networking;
+using Electrolyte.Primitives;
 
 namespace Electrolyte.CLI {
 	class MainClass {
@@ -42,10 +44,38 @@ namespace Electrolyte.CLI {
 //				}
 //			}
 
-			Console.Write("Enter an address: ");
-			Address address = new Address(Console.ReadLine());
+//			Console.Write("Enter an address: ");
+//			Address address = new Address(Console.ReadLine());
+//
+//			Console.WriteLine("Balance: {0}", Network.GetAddressBalanceAsync(address).Result);
 
-			Console.WriteLine("Balance: {0}", Network.GetAddressBalanceAsync(address).Result);
+			Console.Write("Enter a private key: ");
+			ECKey key = ECKey.FromWalletImportFormat(Console.ReadLine());
+
+			Console.WriteLine("Getting unspent transactions for {0}...", key.ToAddress());
+			List<Transaction.Output> unspentOutputs = Network.GetUnspentOutputsAsync(key.ToAddress()).Result;
+			Console.WriteLine("Done");
+
+			for(int i = 0; i < unspentOutputs.Count; i++) {
+				Console.WriteLine("{0} - {1}:{2} ({3})", i, unspentOutputs[i].Transaction.Hash, unspentOutputs[i].Index, unspentOutputs[i].Value);
+			}
+			Console.Write("Pick an output: ");
+			Transaction.Output inpoint = unspentOutputs[Int32.Parse(Console.ReadLine())];
+
+			Console.Write("Enter a recipient: ");
+			Address recipient = new Address(Console.ReadLine());
+
+			Dictionary<Address, long> destinations = new Dictionary<Address, long> { { recipient, inpoint.Value - 100000L} };
+			Dictionary<string, ECKey> privateKeys = new Dictionary<string, ECKey> { { key.ToAddress().ID, key } };
+
+			Transaction tx = Transaction.Create(new List<Transaction.Output> { inpoint }, destinations, privateKeys);
+
+			using(MemoryStream stream = new MemoryStream()) {
+				using(BinaryWriter writer = new BinaryWriter(stream)) {
+					tx.WritePayload(writer);
+					Console.WriteLine(BitConverter.ToString(stream.ToArray()).Replace("-", "").ToLower());
+				}
+			}
 		}
 	}
 }
