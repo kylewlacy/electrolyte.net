@@ -15,6 +15,7 @@ namespace Electrolyte.Messages {
 
 		public class Input {
 			public Transaction Transaction;
+			public UInt32 Index;
 			public Script ScriptSig;
 
 			public byte[] PrevTransactionHashBytes;
@@ -49,6 +50,11 @@ namespace Electrolyte.Messages {
 			}
 
 			protected Input() {	}
+			public Input(string prevTxHash, UInt32 outpointIndex, UInt32 index) {
+				PrevTransactionHashBytes = Enumerable.Range(0, prevTxHash.Length).Where(x => x % 2 == 0).Select(x => Convert.ToByte(prevTxHash.Substring(x, 2), 16)).ToArray();
+				OutpointIndex = outpointIndex;
+				Index = index;
+			}
 
 			public void Write(BinaryWriter writer) {
 				writer.Write(PrevTransactionHashBytes);
@@ -83,30 +89,18 @@ namespace Electrolyte.Messages {
 				ScriptSig = Script.FromString(data["scriptSig"].Value<string>());
 			}
 
-			public static Input Read(BinaryReader reader, Transaction transaction) {
+			public static Input Read(BinaryReader reader, Transaction transaction = null, UInt32 index = 0) {
 				Input input = new Input();
 				input.ReadPayload(reader);
 				input.Transaction = transaction;
 				return input;
 			}
 
-			public static Input Read(BinaryReader reader) {
-				return Read(reader, null);
-			}
-
-			public static Input FromJson(string json) {
-				return FromJson(JToken.Parse(json));
-			}
-
-			public static Input FromJson(string json, Transaction transaction) {
+			public static Input FromJson(string json, Transaction transaction = null, UInt32 index = 0) {
 				return FromJson(JToken.Parse(json), transaction);
 			}
 
-			public static Input FromJson(JToken data) {
-				return FromJson(data, null);
-			}
-
-			public static Input FromJson(JToken data, Transaction transaction) {
+			public static Input FromJson(JToken data, Transaction transaction = null, UInt32 index = 0) {
 				Input input = new Input();
 				input.ReadFromJson(data);
 				input.Transaction = transaction;
@@ -116,6 +110,7 @@ namespace Electrolyte.Messages {
 
 		public class Output {
 			public Transaction Transaction;
+			public UInt32 Index;
 			public Script ScriptPubKey;
 			public Int64 Value;
 
@@ -130,6 +125,13 @@ namespace Electrolyte.Messages {
 					byte[] addressBytes = ArrayHelpers.ConcatArrays(new byte[] { Address.BytePrefixForNetwork(CurrentNetwork) }, pubKeyHash);
 					return new Address(Base58.EncodeWithChecksum(addressBytes));
 				}
+			}
+
+			public Output(Script scriptPubKey, Int64 value, Transaction transaction = null, UInt32 index = 0) {
+				ScriptPubKey = scriptPubKey;
+				Value = value;
+				Transaction = transaction;
+				Index = index;
 			}
 
 			protected Output() { }
@@ -157,33 +159,23 @@ namespace Electrolyte.Messages {
 				ScriptPubKey = Script.FromString(data["scriptPubKey"].Value<string>());
 			}
 
-			public static Output Read(BinaryReader reader) {
-				return Read(reader, null);
-			}
-
-			public static Output Read(BinaryReader reader, Transaction transaction) {
+			public static Output Read(BinaryReader reader, Transaction transaction = null, UInt32 index = 0) {
 				Output output = new Output();
 				output.ReadPayload(reader);
 				output.Transaction = transaction;
+				output.Index = index;
 				return output;
 			}
 
-			public static Output FromJson(string json, Transaction transaction) {
-				return FromJson(JToken.Parse(json), transaction);
+			public static Output FromJson(string json, Transaction transaction = null, UInt32 index = 0) {
+				return FromJson(JToken.Parse(json), transaction, index);
 			}
 
-			public static Output FromJson(string json) {
-				return FromJson(json, null);
-			}
-
-			public static Output FromJson(JToken data) {
-				return FromJson(data, null);
-			}
-
-			public static Output FromJson(JToken data, Transaction transaction) {
+			public static Output FromJson(JToken data, Transaction transaction = null, UInt32 index = 0) {
 				Output output = new Output();
 				output.ReadFromJson(data);
 				output.Transaction = transaction;
+				output.Index = index;
 				return output;
 			}
 		}
@@ -286,12 +278,12 @@ namespace Electrolyte.Messages {
 
 			UInt64 inputCount = VarInt.Read(reader).Value;
 			for(ulong i = 0; i < inputCount; i++) {
-				Inputs.Add(Input.Read(reader, this));
+				Inputs.Add(Input.Read(reader, this, (UInt32)i));
 			}
 
 			UInt64 outputCount = VarInt.Read(reader).Value;
 			for(ulong i = 0; i < outputCount; i++) {
-				Outputs.Add(Output.Read(reader, this));
+				Outputs.Add(Output.Read(reader, this, (UInt32)i));
 			}
 
 			LockTime = reader.ReadUInt32();
@@ -320,13 +312,13 @@ namespace Electrolyte.Messages {
 
 			JToken[] inputs = data["in"].ToArray();
 			for(ulong i = 0; i < inputCount; i++)
-				Inputs.Add(Input.FromJson(inputs[i], this));
+				Inputs.Add(Input.FromJson(inputs[i], this, (UInt32)i));
 
 			ulong outputCount = data["vout_sz"].Value<ulong>();
 
 			JToken[] outputs = data["out"].ToArray();
 			for(ulong i = 0; i < outputCount; i++)
-				Outputs.Add(Output.FromJson(outputs[i], this));
+				Outputs.Add(Output.FromJson(outputs[i], this, (UInt32)i));
 		}
 
 
