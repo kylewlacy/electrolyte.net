@@ -25,8 +25,12 @@ namespace Electrolyte.Messages {
 			public Transaction PreviousTransaciton;
 
 			public UInt32 OutpointIndex;
+			Output _outpoint;
 			public Output Outpoint {
-				get { return PreviousTransaciton.Outputs[(int)OutpointIndex]; }
+				get {
+					_outpoint = _outpoint ?? PreviousTransaciton.Outputs[(int)OutpointIndex];
+					return _outpoint;
+				}
 			}
 			public UInt32 Sequence;
 
@@ -56,6 +60,10 @@ namespace Electrolyte.Messages {
 				Index = index;
 				Sequence = sequence;
 				ScriptSig = new Script(new byte[] { });
+			}
+
+			public Input(Output outpoint, UInt32 index, UInt32 sequence = 0xFFFFFFFF) : this(outpoint.Transaction.Hash, outpoint.Index, index, sequence) {
+				_outpoint = outpoint;
 			}
 
 			public void Write(BinaryWriter writer) {
