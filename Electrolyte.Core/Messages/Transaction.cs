@@ -50,10 +50,11 @@ namespace Electrolyte.Messages {
 			}
 
 			protected Input() {	}
-			public Input(string prevTxHash, UInt32 outpointIndex, UInt32 index) {
+			public Input(string prevTxHash, UInt32 outpointIndex, UInt32 index, UInt32 sequence = 0xFFFFFFFF) {
 				PrevTransactionHashBytes = Enumerable.Range(0, prevTxHash.Length).Where(x => x % 2 == 0).Select(x => Convert.ToByte(prevTxHash.Substring(x, 2), 16)).ToArray();
 				OutpointIndex = outpointIndex;
 				Index = index;
+				Sequence = sequence;
 			}
 
 			public void Write(BinaryWriter writer) {
