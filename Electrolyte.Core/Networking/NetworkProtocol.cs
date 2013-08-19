@@ -29,15 +29,15 @@ namespace Electrolyte.Networking {
 			return await GetAddressHistoryAsync(new Address(address));
 		}
 
-		public async virtual Task<long> GetAddressBalanceAsync(Address address) {
+		public async Task<List<Transaction.Output>> GetUnspentOutputsAsync(Address address) {
 			List<Transaction> addressHistory = await GetAddressHistoryAsync(address);
-			Dictionary<Tuple<string, uint>, long> unspentCoins = new Dictionary<Tuple<string, uint>, long>();
+			Dictionary<Tuple<string, uint>, Transaction.Output> unspentOutputs = new Dictionary<Tuple<string, uint>, Transaction.Output>();
 
 			foreach(Transaction tx in addressHistory) {
-				for(uint i = 0; i < tx.Outputs.Count; i++) {
-					if(tx.Outputs[(int)i].Recipient == address) {
-						unspentCoins.Add(Tuple.Create(tx.Hash, i), tx.Outputs[(int)i].Value);
-						Console.WriteLine("+{0}:{1} ({2})", tx.Hash, i, tx.Outputs[(int)i].Value);
+				foreach(Transaction.Output output in tx.Outputs) {
+					if(output.Recipient == address) {
+						unspentOutputs.Add(Tuple.Create(output.Transaction.Hash, output.Index), output);
+						Console.WriteLine("+{0}:{1} ({2})", tx.Hash, output.Index, output.Value);
 					}
 				}
 			}
@@ -45,15 +45,25 @@ namespace Electrolyte.Networking {
 			foreach(Transaction tx in addressHistory) {
 				foreach(Transaction.Input input in tx.Inputs) {
 					if(input.Sender == address) {
-						if(unspentCoins.ContainsKey(Tuple.Create(input.PrevTransactionHash, input.OutpointIndex))) {
-							Console.WriteLine("-{0}:{1} ({2})", input.PrevTransactionHash, input.OutpointIndex, unspentCoins[Tuple.Create(input.PrevTransactionHash, input.OutpointIndex)]);
-							unspentCoins.Remove(Tuple.Create(input.PrevTransactionHash, input.OutpointIndex));
+						// TODO: Provide some means of an input returning an equivalent (so we can use a `List` rather than a `Dictionary`
+						if(unspentOutputs.ContainsKey(Tuple.Create(input.PrevTransactionHash, input.OutpointIndex))) {
+							Console.WriteLine("-{0}:{1} ({2})", input.PrevTransactionHash, input.OutpointIndex, unspentOutputs[Tuple.Create(input.PrevTransactionHash, input.OutpointIndex)].Value);
+							unspentOutputs.Remove(Tuple.Create(input.PrevTransactionHash, input.OutpointIndex));
 						}
 					}
 				}
 			}
 
-			return unspentCoins.Values.Sum();
+			return unspentOutputs.Values.ToList();
+		}
+
+		public async Task<List<Transaction.Output>> GetUnspentOutputsAsync(string address) {
+			return await GetUnspentOutputsAsync(new Address(address));
+		}
+
+		public async virtual Task<long> GetAddressBalanceAsync(Address address) {
+			List<Transaction.Output> unspentOutputs = await GetUnspentOutputsAsync(address);
+			return unspentOutputs.Select(o => o.Value).Sum();
 		}
 
 		public async virtual Task<long> GetAddressBalanceAsync(string address) {

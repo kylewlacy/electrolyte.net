@@ -36,6 +36,14 @@ namespace Electrolyte.Networking {
 			return await GetAddressHistoryAsync(new Address(address));
 		}
 
+		public static async Task<List<Transaction.Output>> GetUnspentOutputsAsync(Address address) {
+			return await Protocol.GetUnspentOutputsAsync(address);
+		}
+
+		public static async Task<List<Transaction.Output>> GetUnspentOutputsAsync(string address) {
+			return await GetUnspentOutputsAsync(new Address(address));
+		}
+
 		public static async Task<long> GetAddressBalanceAsync(Address address) {
 			return await Protocol.GetAddressBalanceAsync(address);
 		}
