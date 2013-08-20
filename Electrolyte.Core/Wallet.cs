@@ -64,8 +64,10 @@ namespace Electrolyte {
 
 
 
-		public void GenerateKey() {
-			ImportKey(new ECKey());
+		public Address GenerateAddress() {
+			ECKey key = new ECKey();
+			ImportKey(key);
+			return key.ToAddress();
 		}
 
 		public void ImportKey(string key, bool isPublic) {

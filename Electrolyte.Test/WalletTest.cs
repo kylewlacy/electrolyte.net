@@ -95,7 +95,7 @@ namespace Electrolyte.Test {
 		[Test]
 		public void InvalidPasscode() {
 			Wallet encryptWallet = new Wallet(Encoding.ASCII.GetBytes("1234"));
-			encryptWallet.GenerateKey();
+			encryptWallet.GenerateAddress();
 
 			byte[] output;
 			using(MemoryStream stream = new MemoryStream()) {
