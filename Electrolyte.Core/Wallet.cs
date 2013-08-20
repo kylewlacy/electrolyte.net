@@ -296,6 +296,26 @@ namespace Electrolyte {
 
 			return ArrayHelpers.SubArray(key, 0, 32);
 		}
+
+		public static string DefaultWalletPath {
+			get {
+				string storageDir;
+				switch((int)Environment.OSVersion.Platform) {
+				case 4:   // PlatformID.Unix
+				case 128:
+					storageDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".electrolyte");
+					break;
+				case 6:   // PlatformID.MacOSX
+					storageDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Application Support", "Electrolyte");
+					break;
+				default:
+					storageDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Electrolyte");
+					break;
+				}
+
+				return Path.Combine(storageDir, "wallet.json");
+			}
+		}
 	}
 }
 
