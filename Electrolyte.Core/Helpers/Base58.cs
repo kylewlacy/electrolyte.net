@@ -19,6 +19,9 @@ namespace Electrolyte.Helpers {
 		}
 		//Returns null if the checksum is invalid
 		public static byte[] VerifyAndRemoveChecksum(byte[] data) {
+			if(data.Length - ChecksumSizeInBytes < 0)
+				return null;
+
 			byte[] result = ArrayHelpers.SubArray(data, 0, data.Length - ChecksumSizeInBytes);
 			byte[] givenCheckSum = ArrayHelpers.SubArray(data, data.Length - ChecksumSizeInBytes);
 			byte[] correctCheckSum = GetChecksum(result);

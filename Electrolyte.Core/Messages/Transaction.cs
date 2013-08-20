@@ -349,7 +349,7 @@ namespace Electrolyte.Messages {
 
 			int outputIndex = 0;
 			foreach(KeyValuePair<Address, long> destination in destinations) {
-				Script pkScript = Script.Create(Op.Dup, Op.Hash160, ArrayHelpers.SubArray(Base58.DecodeWithChecksum(destination.Key.ID), 1), Op.EqualVerify, Op.CheckSig); /////// FLIPS?
+				Script pkScript = Script.Create(Op.Dup, Op.Hash160, ArrayHelpers.SubArray(Base58.DecodeWithChecksum(destination.Key.ID), 1), Op.EqualVerify, Op.CheckSig);
 				tx.Outputs.Add(new Output(pkScript, destination.Value, tx, (uint)outputIndex));
 				outputIndex++;
 			}
@@ -359,10 +359,10 @@ namespace Electrolyte.Messages {
 			}
 
 			foreach(Input input in tx.Inputs) {
-				ECKey key = privateKeys[input.Outpoint.Recipient.ID]; ///// FLIP?
+				ECKey key = privateKeys[input.Outpoint.Recipient.ID];
 //				byte[] sig = tx.GenerateInputSignature(key, SigHash.All, inpoint.ScriptPubKey.SubScript, inputIndex);
-				byte[] sig = tx.GenerateInputSignature(key, SigHash.All, input.Outpoint.ScriptPubKey, (int)input.Index); /////// FLIP?
-				input.ScriptSig = Script.Create(sig, key.PubKey); ////// FLIP?
+				byte[] sig = tx.GenerateInputSignature(key, SigHash.All, input.Outpoint.ScriptPubKey, (int)input.Index);
+				input.ScriptSig = Script.Create(sig, key.PubKey);
 			}
 
 			tx.LockTime = 0;
