@@ -72,22 +72,14 @@ namespace Electrolyte {
 			return key.ToAddress();
 		}
 
-		public void ImportKey(string key, bool isPublic) {
+		public void ImportKey(string key, bool isPublic = false) {
 			ImportKey(ECKey.FromWalletImportFormat(key), isPublic);
 		}
 
-		public void ImportKey(string key) {
-			ImportKey(key, false);
-		}
-
-		void ImportKey(ECKey key, bool isPublic) {
+		void ImportKey(ECKey key, bool isPublic = false) {
 			if(isPublic)
 				PublicAddresses.Add(key.ToAddress().ToString());
 			PrivateKeys.Add(key.ToAddress().ToString(), key.PrivateKeyBytes);
-		}
-
-		void ImportKey(ECKey key) {
-			ImportKey(key, false);
 		}
 
 		public void WatchAddress(string address) {
