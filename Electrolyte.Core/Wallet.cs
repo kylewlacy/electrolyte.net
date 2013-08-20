@@ -14,6 +14,18 @@ using Electrolyte.Helpers;
 
 namespace Electrolyte {
 	public class Wallet {
+		public class OperationException : System.InvalidOperationException {
+			public OperationException() { }
+			public OperationException(string message) : base(message) { }
+			public OperationException(string message, Exception inner) : base(message, inner) { }
+		}
+
+		public class LockedException : OperationException {
+			public LockedException() { }
+			public LockedException(string message) : base(message) { }
+			public LockedException(string message, Exception inner) : base(message, inner) { }
+		}
+
 		public static string Version = "1.0.0.0";
 
 #if !DEBUG
@@ -115,7 +127,7 @@ namespace Electrolyte {
 
 		void Lock(byte[] passphrase) {
 			if(IsLocked)
-				throw new InvalidOperationException("Wallet is already locked");
+				throw new OperationException("Wallet is already locked");
 
 			Encrypt(passphrase);
 			foreach(KeyValuePair<string, byte[]> privateKey in PrivateKeys) {
@@ -137,7 +149,7 @@ namespace Electrolyte {
 
 		public void Unlock(byte[] passphrase, double timeout) {
 			if(!IsLocked)
-				throw new InvalidOperationException("Wallet is already unlocked");
+				throw new OperationException("Wallet is already unlocked");
 
 			Decrypt(passphrase);
 

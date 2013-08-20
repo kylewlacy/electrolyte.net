@@ -125,10 +125,10 @@ namespace Electrolyte.Test {
 			Assert.Throws<CryptographicException>(() => wallet.Unlock("2345"));
 
 			wallet.Unlock("1234");
-			Assert.Throws<InvalidOperationException>(() => wallet.Unlock("1234"));
+			Assert.Throws<Wallet.OperationException>(() => wallet.Unlock("1234"));
 
 			wallet.Lock();
-			Assert.Throws<InvalidOperationException>(wallet.Lock);
+			Assert.Throws<Wallet.OperationException>(wallet.Lock);
 			wallet.Unlock("1234");
 
 			wallet.Lock();
