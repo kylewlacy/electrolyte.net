@@ -1,12 +1,14 @@
 using System;
 using System.IO;
 using System.Text;
+using System.Linq;
 using System.Timers;
 using System.Collections.Generic;
 using System.Security.Cryptography;
 using Org.BouncyCastle.Security;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Electrolyte.Networking;
 using Electrolyte.Primitives;
 using Electrolyte.Helpers;
 
@@ -94,6 +96,16 @@ namespace Electrolyte {
 
 		public void WatchAddress(Address address) {
 			WatchAddress(address.ID);
+		}
+
+
+
+		public long GetBalance() {
+			return Addresses.Select(a => Network.GetAddressBalanceAsync(a).Result).Sum();
+		}
+
+		public long GetSpendableBalance() {
+			return PrivateKeys.Keys.Select(a => Network.GetAddressBalanceAsync(a).Result).Sum();
 		}
 
 
@@ -353,6 +365,8 @@ namespace Electrolyte {
 				}
 			}
 		}
+
+
 
 		static byte[] PassphraseToKey(byte[] passphrase, byte[] salt) {
 			byte[] key = passphrase;
