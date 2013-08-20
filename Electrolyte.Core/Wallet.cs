@@ -40,11 +40,25 @@ namespace Electrolyte {
 		public byte[] EncryptionKey = new byte[] { };
 		public byte[] EncryptedData, IV, Salt;
 
-		public Dictionary<string, byte[]> PrivateKeys;
+		Dictionary<string, byte[]> _privateKeys;
+		public Dictionary<string, byte[]> PrivateKeys {
+			get {
+				if(IsLocked) { throw new LockedException(); }
+				return _privateKeys;
+			}
+			set {
+				if(IsLocked) { throw new LockedException(); }
+				_privateKeys = value;
+			}
+		}
+
 		public HashSet<string> WatchAddresses;
 		public HashSet<string> PublicAddresses;
 		public HashSet<string> Addresses {
 			get {
+				if(IsLocked)
+					return PublicAddresses;
+
 				HashSet<string> addresses = new HashSet<string>(PrivateKeys.Keys);
 				foreach(string address in PublicAddresses) {
 					if(!addresses.Contains(address))
@@ -88,9 +102,9 @@ namespace Electrolyte {
 			ImportKey(ECKey.FromWalletImportFormat(key), isPublic);
 		}
 
-		void ImportKey(ECKey key, bool isPublic = false) {
-			if(isPublic)
-				PublicAddresses.Add(key.ToAddress().ToString());
+		public void ImportKey(ECKey key, bool isPublic = false) {
+			if(IsLocked) throw new LockedException();
+			if(isPublic) ImportReadOnlyAddress(key.ToAddress());
 			PrivateKeys.Add(key.ToAddress().ToString(), key.PrivateKeyBytes);
 		}
 
@@ -229,7 +243,7 @@ namespace Electrolyte {
 		void LoadPrivateDataFromJson(string json) {
 			JObject data = JObject.Parse(json);
 			foreach(JToken key in data["keys"]) {
-				PrivateKeys.Add(key["addr"].Value<string>(), ECKey.FromWalletImportFormat(key["priv"].Value<string>()).PrivateKeyBytes);
+				_privateKeys.Add(key["addr"].Value<string>(), ECKey.FromWalletImportFormat(key["priv"].Value<string>()).PrivateKeyBytes);
 			}
 		}
 
@@ -358,6 +372,8 @@ namespace Electrolyte {
 		}
 
 		public void Save(string path) {
+			if(IsLocked) { throw new LockedException(); }
+
 			string directory = Path.GetDirectoryName(path);
 			if(!Directory.Exists(directory)) { Directory.CreateDirectory(directory); }
 

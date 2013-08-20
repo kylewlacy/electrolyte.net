@@ -87,9 +87,12 @@ namespace Electrolyte.Test {
 					decryptWallet.Decrypt(reader, "1234");
 			}
 
-			Assert.AreEqual(encryptWallet.Addresses, decryptWallet.Addresses);
+			Assert.AreEqual(encryptWallet.PublicAddresses, decryptWallet.PublicAddresses);
 			Assert.AreEqual(encryptWallet.WatchAddresses, decryptWallet.WatchAddresses);
-			Assert.AreEqual(encryptWallet.PrivateKeys, decryptWallet.PrivateKeys);
+
+			// TODO: Move this test to `LockUnlock`
+//			Assert.AreEqual(encryptWallet.Addresses, decryptWallet.Addresses);
+//			Assert.AreEqual(encryptWallet.PrivateKeys, decryptWallet.PrivateKeys);
 		}
 
 		[Test]
