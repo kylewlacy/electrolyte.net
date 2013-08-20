@@ -28,10 +28,11 @@ namespace Electrolyte {
 
 		public Dictionary<string, byte[]> PrivateKeys;
 		public HashSet<string> WatchAddresses;
+		public HashSet<string> PublicAddresses;
 		public HashSet<string> Addresses {
 			get {
 				HashSet<string> addresses = new HashSet<string>(PrivateKeys.Keys);
-				foreach(string address in WatchAddresses) {
+				foreach(string address in PublicAddresses) {
 					if(!addresses.Contains(address))
 						addresses.Add(address);
 				}
@@ -42,14 +43,18 @@ namespace Electrolyte {
 		protected Wallet() {
 			PrivateKeys = new Dictionary<string, byte[]>();
 			WatchAddresses = new HashSet<string>();
+			PublicAddresses = new HashSet<string>();
 		}
 
 		public Wallet(byte[] passphrase) : this(passphrase, new Dictionary<string, byte[]>()) { }
 
 		public Wallet(byte[] passphrase, Dictionary<string, byte[]> keys) : this(passphrase, keys, new HashSet<string>()) { }
+		
+		public Wallet(byte[] passphrase, Dictionary<string, byte[]> keys, HashSet<string> publicAddresses) : this(passphrase, keys, publicAddresses, new HashSet<string>()) { }
 
-		public Wallet(byte[] passphrase, Dictionary<string, byte[]> keys, HashSet<string> watchAddresses) {
+		public Wallet(byte[] passphrase, Dictionary<string, byte[]> keys, HashSet<string> publicAddresses, HashSet<string> watchAddresses) {
 			PrivateKeys = keys;
+			PublicAddresses = publicAddresses;
 			WatchAddresses = watchAddresses;
 
 			// TODO: Move these lines to another method?
@@ -73,7 +78,7 @@ namespace Electrolyte {
 
 		void ImportKey(ECKey key, bool isPublic) {
 			if(isPublic)
-				WatchAddress(key.ToAddress());
+				PublicAddresses.Add(key.ToAddress().ToString());
 			PrivateKeys.Add(key.ToAddress().ToString(), key.PrivateKeyBytes);
 		}
 
@@ -186,6 +191,10 @@ namespace Electrolyte {
 				foreach(JToken key in data["watch_addresses"])
 					WatchAddresses.Add(key["addr"].Value<string>());
 			}
+
+			if(data["public_addresses"] != null) {
+				foreach(JToken key in data["public_addresses"])
+					PublicAddresses.Add(key["addr"].Value<string>());
 			}
 
 			EncryptedData = Base58.DecodeWithChecksum(data["encrypted"]["data"].Value<string>());
@@ -238,6 +247,7 @@ namespace Electrolyte {
 			Dictionary<string, object> data = new Dictionary<string, object> {
 				{ "version", Version },
 				{ "watch_addresses", new List<object>() },
+				{ "public_addresses", new List<object>() },
 				{ "encrypted", new Dictionary<string, object> {
 						{ "iv", Base58.EncodeWithChecksum(IV) },
 						{ "salt", Base58.EncodeWithChecksum(Salt) },
@@ -247,6 +257,12 @@ namespace Electrolyte {
 
 			foreach(string address in WatchAddresses) {
 				((List<object>)data["watch_addresses"]).Add(new Dictionary<string,object> {
+					{ "addr", address }
+				});
+			}
+
+			foreach(string address in PublicAddresses) {
+				((List<object>)data["public_addresses"]).Add(new Dictionary<string,object> {
 					{ "addr", address }
 				});
 			}

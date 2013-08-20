@@ -28,11 +28,21 @@ namespace Electrolyte.Test {
 			wallet.WatchAddress("1CC3X2gu58d6wXUWMffpuzN9JAfTUWu4Kj");
 			wallet.WatchAddress("1ky1eHUrRR1kxKTbfiCptao9V25W97gDm");
 
-			Assert.Contains("1CC3X2gu58d6wXUWMffpuzN9JAfTUWu4Kj", wallet.Addresses.ToList());
 			Assert.Contains("1CC3X2gu58d6wXUWMffpuzN9JAfTUWu4Kj", wallet.WatchAddresses.ToList());
-
-			Assert.Contains("1ky1eHUrRR1kxKTbfiCptao9V25W97gDm", wallet.Addresses.ToList());
 			Assert.Contains("1ky1eHUrRR1kxKTbfiCptao9V25W97gDm", wallet.WatchAddresses.ToList());
+		}
+
+		[Test]
+		public void PublicAddresses() {
+			Wallet wallet = new Wallet(Encoding.ASCII.GetBytes("1234"));
+			
+			wallet.ImportKey("5Kb8kLf9zgWQnogidDA76MzPL6TsZZY36hWXMssSzNydYXYB9KF");
+			wallet.ImportKey("5KJD58353MLqgAdt6dqgwEGF4jDXcYN8bCpPsC5Qn2cqur6kZSw", true);
+
+			Assert.Contains("1CyuTPXMVqdHpDD7WTVcEvRFe4GmTHZC1Q", wallet.Addresses.ToList());
+			Assert.Contains("1CC3X2gu58d6wXUWMffpuzN9JAfTUWu4Kj", wallet.Addresses.ToList());
+			Assert.Contains("1CyuTPXMVqdHpDD7WTVcEvRFe4GmTHZC1Q", wallet.PublicAddresses.ToList());
+			Assert.IsFalse(wallet.PublicAddresses.Contains("1CC3X2gu58d6wXUWMffpuzN9JAfTUWu4Kj"));
 		}
 
 		[Test]
@@ -162,19 +172,22 @@ namespace Electrolyte.Test {
 
 			Assert.Contains("1CC3X2gu58d6wXUWMffpuzN9JAfTUWu4Kj", wallet.Addresses.ToList());
 			Assert.Contains("1CyuTPXMVqdHpDD7WTVcEvRFe4GmTHZC1Q", wallet.Addresses.ToList());
-			Assert.Contains("1ky1eHUrRR1kxKTbfiCptao9V25W97gDm", wallet.Addresses.ToList());
+			Assert.Contains("1CyuTPXMVqdHpDD7WTVcEvRFe4GmTHZC1Q", wallet.PublicAddresses.ToList());
+			Assert.Contains("1ky1eHUrRR1kxKTbfiCptao9V25W97gDm", wallet.WatchAddresses.ToList());
 
 			wallet.Lock();
-
-			Assert.Contains("1ky1eHUrRR1kxKTbfiCptao9V25W97gDm", wallet.Addresses.ToList());
+			
 			Assert.Contains("1CyuTPXMVqdHpDD7WTVcEvRFe4GmTHZC1Q", wallet.Addresses.ToList());
+			Assert.Contains("1CyuTPXMVqdHpDD7WTVcEvRFe4GmTHZC1Q", wallet.PublicAddresses.ToList());
+			Assert.Contains("1ky1eHUrRR1kxKTbfiCptao9V25W97gDm", wallet.WatchAddresses.ToList());
 			Assert.IsFalse(wallet.Addresses.Contains("1CC3X2gu58d6wXUWMffpuzN9JAfTUWu4Kj"));
 
 			wallet.Unlock("1234");
 
 			Assert.Contains("1CC3X2gu58d6wXUWMffpuzN9JAfTUWu4Kj", wallet.Addresses.ToList());
 			Assert.Contains("1CyuTPXMVqdHpDD7WTVcEvRFe4GmTHZC1Q", wallet.Addresses.ToList());
-			Assert.Contains("1ky1eHUrRR1kxKTbfiCptao9V25W97gDm", wallet.Addresses.ToList());
+			Assert.Contains("1CyuTPXMVqdHpDD7WTVcEvRFe4GmTHZC1Q", wallet.PublicAddresses.ToList());
+			Assert.Contains("1ky1eHUrRR1kxKTbfiCptao9V25W97gDm", wallet.WatchAddresses.ToList());
 		}
 	}
 }
