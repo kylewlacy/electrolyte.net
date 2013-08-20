@@ -113,7 +113,9 @@ namespace Electrolyte {
 		}
 
 		public void ImportReadOnlyAddress(string address) {
+			if(IsLocked) throw new LockedException();
 			PublicAddresses.Add(address);
+			Save();
 		}
 
 		public void ImportWatchAddress(Address address) {
@@ -121,7 +123,9 @@ namespace Electrolyte {
 		}
 
 		public void ImportWatchAddress(string address) {
+			if(IsLocked) throw new LockedException();
 			WatchAddresses.Add(address);
+			Save();
 		}
 
 
