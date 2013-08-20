@@ -39,6 +39,11 @@ namespace Electrolyte {
 			}
 		}
 
+		protected Wallet() {
+			PrivateKeys = new Dictionary<string, byte[]>();
+			WatchAddresses = new HashSet<string>();
+		}
+
 		public Wallet(byte[] passphrase) : this(passphrase, new Dictionary<string, byte[]>()) { }
 
 		public Wallet(byte[] passphrase, Dictionary<string, byte[]> keys) : this(passphrase, keys, new HashSet<string>()) { }
