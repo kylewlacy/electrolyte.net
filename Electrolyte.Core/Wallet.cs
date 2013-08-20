@@ -159,6 +159,21 @@ namespace Electrolyte {
 
 
 
+		public static Wallet Load() {
+			return Wallet.Load(DefaultWalletPath);
+		}
+
+		public static Wallet Load(string path) {
+			using(FileStream stream = new FileStream(path, FileMode.Open, FileAccess.Read)) {
+				using(StreamReader reader = new StreamReader(stream)) {
+					Wallet wallet = new Wallet();
+					wallet.Read(reader);
+
+					return wallet;
+				}
+			}
+		}
+
 		public void LoadFromJson(string json) {
 			JObject data = JObject.Parse(json);
 			if(data["version"].Value<string>() != Version)
@@ -288,6 +303,31 @@ namespace Electrolyte {
 		public void Encrypt(TextWriter writer, string passphrase) {
 			Encrypt(passphrase);
 			Write(writer);
+		}
+
+		public void Save() {
+			Save(DefaultWalletPath);
+		}
+
+		public void Save(string path) {
+			string directory = Path.GetDirectoryName(path);
+			if(!Directory.Exists(directory)) { Directory.CreateDirectory(directory); }
+
+			string backup = String.Join(".", path, "bak");
+			string temp = String.Join(".", path, "new");
+
+			if(File.Exists(temp)) { File.Delete(temp); }
+			if(File.Exists(backup)) { File.Delete(backup); }
+			if(File.Exists(path)) { File.Move(path, backup); }
+
+			using(FileStream stream = new FileStream(path, FileMode.CreateNew, FileAccess.ReadWrite)) {
+				using(StreamWriter writer = new StreamWriter(stream)) {
+					if(!IsLocked)
+						Encrypt(EncryptionKey);
+
+					Write(writer);
+				}
+			}
 		}
 
 		static byte[] PassphraseToKey(byte[] passphrase, byte[] salt) {
