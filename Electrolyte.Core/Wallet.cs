@@ -130,6 +130,73 @@ namespace Electrolyte {
 
 
 
+		public void ShowAddress(Address address) {
+			ShowAddress(address.ToString());
+		}
+
+		public void ShowAddress(string address) {
+			if(IsLocked) throw new LockedException();
+			if(PrivateKeys.ContainsKey(address) && !PublicAddresses.Contains(address)) {
+				PublicAddresses.Add(address);
+				Save();
+			}
+			else {
+				// TODO: Tailor this message for both the key not being present and the address already being public
+				throw new OperationException(String.Format("Address '{0}' isnt private", address));
+			}
+		}
+
+		public void HideAddress(Address address) {
+			HideAddress(address.ToString());
+		}
+
+		public void HideAddress(string address) {
+			if(IsLocked) throw new LockedException();
+			if(PrivateKeys.ContainsKey(address) && PublicAddresses.Contains(address)) {
+				PublicAddresses.Remove(address);
+				Save();
+			}
+			else {
+				// TODO: Tailor this message for both the key not being present and the address already being private
+				throw new OperationException(String.Format("Address '{0}' isnt public", address));
+			}
+		}
+
+
+
+		public void RemoveAddress(Address address) {
+			RemoveAddress(address.ToString());
+		}
+
+		public void RemoveAddress(string address) {
+			if(IsLocked) throw new LockedException();
+
+			if(Addresses.Contains(address)) {
+				if(PrivateKeys.ContainsKey(address))
+					PrivateKeys.Remove(address);
+				if(PublicAddresses.Contains(address))
+					PublicAddresses.Remove(address);
+
+				Save();
+			}
+			else {
+				throw new OperationException(String.Format("Your wallet doesn't contain the address {0}", address));
+			}
+		}
+
+		public void RemoveWatchAddress(string address) {
+			if(IsLocked) throw new LockedException();
+
+			if(WatchAddresses.Contains(address))
+				WatchAddresses.Remove(address);
+			else
+				throw new OperationException(String.Format("You aren't watching the address '{0}'", address));
+
+			Save();
+		}
+
+
+
 		public long GetBalance() {
 			return Addresses.Select(a => Network.GetAddressBalanceAsync(a).Result).Sum();
 		}
