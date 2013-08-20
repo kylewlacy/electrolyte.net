@@ -61,6 +61,8 @@ namespace Electrolyte.Test {
 		public void EncryptDecrypt() {
 			Wallet encryptWallet = new Wallet(Encoding.ASCII.GetBytes("1234"));
 			encryptWallet.ImportKey("5Kb8kLf9zgWQnogidDA76MzPL6TsZZY36hWXMssSzNydYXYB9KF");
+			encryptWallet.ImportKey("5KJD58353MLqgAdt6dqgwEGF4jDXcYN8bCpPsC5Qn2cqur6kZSw", true);
+			encryptWallet.WatchAddress("1ky1eHUrRR1kxKTbfiCptao9V25W97gDm");
 
 			byte[] output;
 			using(MemoryStream stream = new MemoryStream()) {
@@ -76,6 +78,7 @@ namespace Electrolyte.Test {
 			}
 
 			Assert.AreEqual(encryptWallet.Addresses, decryptWallet.Addresses);
+			Assert.AreEqual(encryptWallet.WatchAddresses, decryptWallet.WatchAddresses);
 			Assert.AreEqual(encryptWallet.PrivateKeys, decryptWallet.PrivateKeys);
 		}
 

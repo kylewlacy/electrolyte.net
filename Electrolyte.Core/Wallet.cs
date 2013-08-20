@@ -182,6 +182,12 @@ namespace Electrolyte {
 			IV = Base58.DecodeWithChecksum(data["encrypted"]["iv"].Value<string>());
 			Salt = Base58.DecodeWithChecksum(data["encrypted"]["salt"].Value<string>());
 
+			if(data["watch_addresses"] != null) {
+				foreach(JToken key in data["watch_addresses"])
+					WatchAddresses.Add(key["addr"].Value<string>());
+			}
+			}
+
 			EncryptedData = Base58.DecodeWithChecksum(data["encrypted"]["data"].Value<string>());
 		}
 
