@@ -94,6 +94,14 @@ namespace Electrolyte {
 			PrivateKeys.Add(key.ToAddress().ToString(), key.PrivateKeyBytes);
 		}
 
+		public void ImportReadOnlyAddress(string address) {
+			PublicAddresses.Add(address);
+		}
+
+		public void ImportReadOnlyAddress(Address address) {
+			ImportReadOnlyAddress(address.ToString());
+		}
+
 		public void WatchAddress(string address) {
 			WatchAddresses.Add(address);
 		}
