@@ -25,8 +25,8 @@ namespace Electrolyte.Test {
 		public void WatchAddress() {
 			Wallet wallet = new Wallet(Encoding.ASCII.GetBytes("1234"));
 
-			wallet.WatchAddress("1CC3X2gu58d6wXUWMffpuzN9JAfTUWu4Kj");
-			wallet.WatchAddress("1ky1eHUrRR1kxKTbfiCptao9V25W97gDm");
+			wallet.ImportWatchAddress("1CC3X2gu58d6wXUWMffpuzN9JAfTUWu4Kj");
+			wallet.ImportWatchAddress("1ky1eHUrRR1kxKTbfiCptao9V25W97gDm");
 
 			Assert.Contains("1CC3X2gu58d6wXUWMffpuzN9JAfTUWu4Kj", wallet.WatchAddresses.ToList());
 			Assert.Contains("1ky1eHUrRR1kxKTbfiCptao9V25W97gDm", wallet.WatchAddresses.ToList());
@@ -72,7 +72,7 @@ namespace Electrolyte.Test {
 			Wallet encryptWallet = new Wallet(Encoding.ASCII.GetBytes("1234"));
 			encryptWallet.ImportKey("5Kb8kLf9zgWQnogidDA76MzPL6TsZZY36hWXMssSzNydYXYB9KF");
 			encryptWallet.ImportKey("5KJD58353MLqgAdt6dqgwEGF4jDXcYN8bCpPsC5Qn2cqur6kZSw", true);
-			encryptWallet.WatchAddress("1ky1eHUrRR1kxKTbfiCptao9V25W97gDm");
+			encryptWallet.ImportWatchAddress("1ky1eHUrRR1kxKTbfiCptao9V25W97gDm");
 
 			byte[] output;
 			using(MemoryStream stream = new MemoryStream()) {
@@ -114,7 +114,7 @@ namespace Electrolyte.Test {
 			Wallet wallet = new Wallet(Encoding.ASCII.GetBytes("1234"));
 			wallet.ImportKey("5Kb8kLf9zgWQnogidDA76MzPL6TsZZY36hWXMssSzNydYXYB9KF");
 			wallet.ImportKey("5KJD58353MLqgAdt6dqgwEGF4jDXcYN8bCpPsC5Qn2cqur6kZSw", true);
-			wallet.WatchAddress("1ky1eHUrRR1kxKTbfiCptao9V25W97gDm");
+			wallet.ImportWatchAddress("1ky1eHUrRR1kxKTbfiCptao9V25W97gDm");
 
 			Assert.Contains("1CC3X2gu58d6wXUWMffpuzN9JAfTUWu4Kj", wallet.Addresses.ToList());
 			Assert.Contains("1CyuTPXMVqdHpDD7WTVcEvRFe4GmTHZC1Q", wallet.Addresses.ToList());
@@ -211,7 +211,7 @@ namespace Electrolyte.Test {
 			Wallet wallet = new Wallet(Encoding.ASCII.GetBytes("1234"));
 			wallet.ImportKey("5Kb8kLf9zgWQnogidDA76MzPL6TsZZY36hWXMssSzNydYXYB9KF");
 			wallet.ImportKey("5KJD58353MLqgAdt6dqgwEGF4jDXcYN8bCpPsC5Qn2cqur6kZSw", true);
-			wallet.WatchAddress("1ky1eHUrRR1kxKTbfiCptao9V25W97gDm");
+			wallet.ImportWatchAddress("1ky1eHUrRR1kxKTbfiCptao9V25W97gDm");
 
 			Assert.Contains("1CC3X2gu58d6wXUWMffpuzN9JAfTUWu4Kj", wallet.Addresses.ToList());
 			Assert.Contains("1CyuTPXMVqdHpDD7WTVcEvRFe4GmTHZC1Q", wallet.Addresses.ToList());
