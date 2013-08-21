@@ -41,6 +41,8 @@ namespace Electrolyte {
 		public byte[] EncryptionKey = new byte[] { };
 		public byte[] EncryptedData, IV, Salt;
 
+		public string FilePath;
+
 		Dictionary<Address, ECKey>_privateKeys;
 		public Dictionary<Address, ECKey> PrivateKeys {
 			get {
@@ -69,19 +71,19 @@ namespace Electrolyte {
 			}
 		}
 
-		protected Wallet() {
+		protected Wallet(string path = null) {
 			PrivateKeys = new Dictionary<Address, ECKey>();
 			WatchAddresses = new HashSet<Address>();
 			PublicAddresses = new HashSet<Address>();
+			FilePath = path;
 		}
 
-		public Wallet(byte[] passphrase) : this(passphrase, new Dictionary<Address, ECKey>()) { }
-
-		public Wallet(byte[] passphrase, Dictionary<Address, ECKey> keys) : this(passphrase, keys, new HashSet<Address>()) { }
-		
-		public Wallet(byte[] passphrase, Dictionary<Address, ECKey> keys, HashSet<Address> publicAddresses) : this(passphrase, keys, publicAddresses, new HashSet<Address>()) { }
-
-		public Wallet(byte[] passphrase, Dictionary<Address, ECKey> keys, HashSet<Address> publicAddresses, HashSet<Address> watchAddresses) {
+		public Wallet(byte[] passphrase) : this(passphrase, DefaultWalletPath) { }
+		public Wallet(byte[] passphrase, string path) : this(passphrase, path, new Dictionary<Address, ECKey>()) { }
+		public Wallet(byte[] passphrase, string path, Dictionary<Address, ECKey> keys) : this(passphrase, path, keys, new HashSet<Address>()) { }		
+		public Wallet(byte[] passphrase, string path, Dictionary<Address, ECKey> keys, HashSet<Address> publicAddresses) : this(passphrase, path, keys, publicAddresses, new HashSet<Address>()) { }
+		public Wallet(byte[] passphrase, string path, Dictionary<Address, ECKey> keys, HashSet<Address> publicAddresses, HashSet<Address> watchAddresses) {
+			FilePath = path;
 			PrivateKeys = keys;
 			PublicAddresses = publicAddresses;
 			WatchAddresses = watchAddresses;
@@ -288,7 +290,7 @@ namespace Electrolyte {
 		public static Wallet Load(string path) {
 			using(FileStream stream = new FileStream(path, FileMode.Open, FileAccess.Read)) {
 				using(StreamReader reader = new StreamReader(stream)) {
-					Wallet wallet = new Wallet();
+					Wallet wallet = new Wallet(path);
 					wallet.Read(reader);
 
 					return wallet;
@@ -445,28 +447,33 @@ namespace Electrolyte {
 		}
 
 		public void Save() {
-			Save(DefaultWalletPath);
+			Save(FilePath);
 		}
 
 		public void Save(string path) {
 			if(IsLocked) { throw new LockedException(); }
 
-			string directory = Path.GetDirectoryName(path);
-			if(!Directory.Exists(directory)) { Directory.CreateDirectory(directory); }
+			Console.WriteLine("Trying to save...");
+			if(path != null) {
+				Console.WriteLine("Saving...");
+				string directory = Path.GetDirectoryName(path);
+				if(!Directory.Exists(directory)) { Directory.CreateDirectory(directory); }
 
-			string backup = String.Join(".", path, "bak");
-			string temp = String.Join(".", path, "new");
+				string backup = String.Join(".", path, "bak");
+				string temp = String.Join(".", path, "new");
 
-			if(File.Exists(temp)) { File.Delete(temp); }
-			if(File.Exists(backup)) { File.Delete(backup); }
-			if(File.Exists(path)) { File.Move(path, backup); }
+				if(File.Exists(temp)) { File.Delete(temp); }
+				if(File.Exists(backup)) { File.Delete(backup); }
+				if(File.Exists(path)) { File.Move(path, backup); }
+				
+				// TODO: Set proper file permissions
+				using(FileStream stream = new FileStream(path, FileMode.CreateNew, FileAccess.ReadWrite)) {
+					using(StreamWriter writer = new StreamWriter(stream)) {
+						if(!IsLocked)
+							Encrypt(EncryptionKey);
 
-			using(FileStream stream = new FileStream(path, FileMode.CreateNew, FileAccess.ReadWrite)) {
-				using(StreamWriter writer = new StreamWriter(stream)) {
-					if(!IsLocked)
-						Encrypt(EncryptionKey);
-
-					Write(writer);
+						Write(writer);
+					}
 				}
 			}
 		}
