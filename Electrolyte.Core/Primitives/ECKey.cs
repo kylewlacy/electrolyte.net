@@ -211,6 +211,14 @@ namespace Electrolyte.Primitives {
 			return Verify(data, signature, _pub);
 		}
 
+		public override string ToString() {
+			return ToWalletImportFormat();
+		}
+
+		public override int GetHashCode() {
+			return ToString().GetHashCode();
+		}
+
 //		private static BigInteger ExtractPrivateKeyFromAsn1(byte[] asn1PrivKey) {
 //			// To understand this code, see the definition of the ASN.1 format for EC private keys in the OpenSSL source
 //			// code in ec_asn1.c:
