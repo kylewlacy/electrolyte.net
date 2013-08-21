@@ -42,6 +42,10 @@ namespace Electrolyte {
 			return ID;
 		}
 
+		public override int GetHashCode() {
+			return ToString().GetHashCode();
+		}
+
 		public override bool Equals(object obj) {
 			Address address = obj as Address;
 			return address != null && ID != null && address.ID != null && ID == address.ID;
