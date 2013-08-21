@@ -40,8 +40,8 @@ namespace Electrolyte {
 		public byte[] EncryptionKey = new byte[] { };
 		public byte[] EncryptedData, IV, Salt;
 
-		Dictionary<string, byte[]> _privateKeys;
-		public Dictionary<string, byte[]> PrivateKeys {
+		Dictionary<Address, ECKey>_privateKeys;
+		public Dictionary<Address, ECKey> PrivateKeys {
 			get {
 				if(IsLocked) { throw new LockedException(); }
 				return _privateKeys;
@@ -52,15 +52,15 @@ namespace Electrolyte {
 			}
 		}
 
-		public HashSet<string> WatchAddresses;
-		public HashSet<string> PublicAddresses;
-		public HashSet<string> Addresses {
+		public HashSet<Address> WatchAddresses;
+		public HashSet<Address> PublicAddresses;
+		public HashSet<Address> Addresses {
 			get {
 				if(IsLocked)
 					return PublicAddresses;
 
-				HashSet<string> addresses = new HashSet<string>(PrivateKeys.Keys);
-				foreach(string address in PublicAddresses) {
+				HashSet<Address> addresses = new HashSet<Address>(PrivateKeys.Keys);
+				foreach(Address address in PublicAddresses) {
 					if(!addresses.Contains(address))
 						addresses.Add(address);
 				}
@@ -69,18 +69,18 @@ namespace Electrolyte {
 		}
 
 		protected Wallet() {
-			PrivateKeys = new Dictionary<string, byte[]>();
-			WatchAddresses = new HashSet<string>();
-			PublicAddresses = new HashSet<string>();
+			PrivateKeys = new Dictionary<Address, ECKey>();
+			WatchAddresses = new HashSet<Address>();
+			PublicAddresses = new HashSet<Address>();
 		}
 
-		public Wallet(byte[] passphrase) : this(passphrase, new Dictionary<string, byte[]>()) { }
+		public Wallet(byte[] passphrase) : this(passphrase, new Dictionary<Address, ECKey>()) { }
 
-		public Wallet(byte[] passphrase, Dictionary<string, byte[]> keys) : this(passphrase, keys, new HashSet<string>()) { }
+		public Wallet(byte[] passphrase, Dictionary<Address, ECKey> keys) : this(passphrase, keys, new HashSet<Address>()) { }
 		
-		public Wallet(byte[] passphrase, Dictionary<string, byte[]> keys, HashSet<string> publicAddresses) : this(passphrase, keys, publicAddresses, new HashSet<string>()) { }
+		public Wallet(byte[] passphrase, Dictionary<Address, ECKey> keys, HashSet<Address> publicAddresses) : this(passphrase, keys, publicAddresses, new HashSet<Address>()) { }
 
-		public Wallet(byte[] passphrase, Dictionary<string, byte[]> keys, HashSet<string> publicAddresses, HashSet<string> watchAddresses) {
+		public Wallet(byte[] passphrase, Dictionary<Address, ECKey> keys, HashSet<Address> publicAddresses, HashSet<Address> watchAddresses) {
 			PrivateKeys = keys;
 			PublicAddresses = publicAddresses;
 			WatchAddresses = watchAddresses;
@@ -105,24 +105,24 @@ namespace Electrolyte {
 		public void ImportKey(ECKey key, bool isPublic = false) {
 			if(IsLocked) throw new LockedException();
 			if(isPublic) ImportReadOnlyAddress(key.ToAddress());
-			PrivateKeys.Add(key.ToAddress().ToString(), key.PrivateKeyBytes);
-		}
-
-		public void ImportReadOnlyAddress(Address address) {
-			ImportReadOnlyAddress(address.ToString());
+			PrivateKeys.Add(key.ToAddress(), key);
 		}
 
 		public void ImportReadOnlyAddress(string address) {
+			ImportReadOnlyAddress(new Address(address));
+		}
+
+		public void ImportReadOnlyAddress(Address address) {
 			if(IsLocked) throw new LockedException();
 			PublicAddresses.Add(address);
 			Save();
 		}
 
-		public void ImportWatchAddress(Address address) {
-			ImportWatchAddress(address.ID);
+		public void ImportWatchAddress(string address) {
+			ImportWatchAddress(new Address(address));
 		}
 
-		public void ImportWatchAddress(string address) {
+		public void ImportWatchAddress(Address address) {
 			if(IsLocked) throw new LockedException();
 			WatchAddresses.Add(address);
 			Save();
@@ -130,11 +130,11 @@ namespace Electrolyte {
 
 
 
-		public void ShowAddress(Address address) {
-			ShowAddress(address.ToString());
+		public void ShowAddress(string address) {
+			ShowAddress(new Address(address));
 		}
 
-		public void ShowAddress(string address) {
+		public void ShowAddress(Address address) {
 			if(IsLocked) throw new LockedException();
 			if(PrivateKeys.ContainsKey(address) && !PublicAddresses.Contains(address)) {
 				PublicAddresses.Add(address);
@@ -146,11 +146,11 @@ namespace Electrolyte {
 			}
 		}
 
-		public void HideAddress(Address address) {
-			HideAddress(address.ToString());
+		public void HideAddress(string address) {
+			HideAddress(new Address(address));
 		}
 
-		public void HideAddress(string address) {
+		public void HideAddress(Address address) {
 			if(IsLocked) throw new LockedException();
 			if(PrivateKeys.ContainsKey(address) && PublicAddresses.Contains(address)) {
 				PublicAddresses.Remove(address);
@@ -164,11 +164,11 @@ namespace Electrolyte {
 
 
 
-		public void RemoveAddress(Address address) {
-			RemoveAddress(address.ToString());
+		public void RemoveAddress(string address) {
+			RemoveAddress(new Address(address));
 		}
 
-		public void RemoveAddress(string address) {
+		public void RemoveAddress(Address address) {
 			if(IsLocked) throw new LockedException();
 
 			if(Addresses.Contains(address)) {
@@ -185,6 +185,10 @@ namespace Electrolyte {
 		}
 
 		public void RemoveWatchAddress(string address) {
+			RemoveWatchAddress(new Address(address));
+		}
+
+		public void RemoveWatchAddress(Address address) {
 			if(IsLocked) throw new LockedException();
 
 			if(WatchAddresses.Contains(address))
@@ -223,14 +227,11 @@ namespace Electrolyte {
 				throw new OperationException("Wallet is already locked");
 
 			Encrypt(passphrase);
-			foreach(KeyValuePair<string, byte[]> privateKey in PrivateKeys) {
-				Array.Clear(privateKey.Value, 0, privateKey.Value.Length);
-			}
 
 			Array.Clear(EncryptionKey, 0, EncryptionKey.Length);
 			EncryptionKey = new byte[] { };
 
-			PrivateKeys = new Dictionary<string, byte[]>();
+			PrivateKeys = new Dictionary<Address, ECKey>(); // TODO: Is the garbage collector fast and reliable enough to make this secure?
 			LockTimer.Stop();
 
 			IsLocked = true;
@@ -300,12 +301,12 @@ namespace Electrolyte {
 
 			if(data["watch_addresses"] != null) {
 				foreach(JToken key in data["watch_addresses"])
-					WatchAddresses.Add(key["addr"].Value<string>());
+					WatchAddresses.Add(new Address(key["addr"].Value<string>()));
 			}
 
 			if(data["public_addresses"] != null) {
 				foreach(JToken key in data["public_addresses"])
-					PublicAddresses.Add(key["addr"].Value<string>());
+					PublicAddresses.Add(new Address(key["addr"].Value<string>()));
 			}
 
 			EncryptedData = Base58.DecodeWithChecksum(data["encrypted"]["data"].Value<string>());
@@ -314,7 +315,7 @@ namespace Electrolyte {
 		void LoadPrivateDataFromJson(string json) {
 			JObject data = JObject.Parse(json);
 			foreach(JToken key in data["keys"]) {
-				_privateKeys.Add(key["addr"].Value<string>(), ECKey.FromWalletImportFormat(key["priv"].Value<string>()).PrivateKeyBytes);
+				_privateKeys.Add(new Address(key["addr"].Value<string>()), ECKey.FromWalletImportFormat(key["priv"].Value<string>()));
 			}
 		}
 
@@ -366,15 +367,15 @@ namespace Electrolyte {
 				} }
 			};
 
-			foreach(string address in WatchAddresses) {
+			foreach(Address address in WatchAddresses) {
 				((List<object>)data["watch_addresses"]).Add(new Dictionary<string,object> {
-					{ "addr", address }
+					{ "addr", address.ToString() }
 				});
 			}
 
-			foreach(string address in PublicAddresses) {
+			foreach(Address address in PublicAddresses) {
 				((List<object>)data["public_addresses"]).Add(new Dictionary<string,object> {
-					{ "addr", address }
+					{ "addr", address.ToString() }
 				});
 			}
 
@@ -384,10 +385,10 @@ namespace Electrolyte {
 		string PrivateDataAsJson() {
 			Dictionary<string, object> data = new Dictionary<string, object>();
 			data.Add("keys", new List<object>());
-			foreach(KeyValuePair<string, byte[]> privateKey in PrivateKeys) {
+			foreach(KeyValuePair<Address, ECKey> privateKey in PrivateKeys) {
 				((List<object>)data["keys"]).Add(new Dictionary<string, object> {
-					{ "addr", privateKey.Key },
-					{ "priv", new ECKey(privateKey.Value).ToWalletImportFormat() }
+					{ "addr", privateKey.Key.ToString() },
+					{ "priv", privateKey.Value.ToWalletImportFormat() }
 				});
 			}
 
