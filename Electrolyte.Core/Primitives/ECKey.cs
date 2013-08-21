@@ -16,6 +16,7 @@
  */
 using System;
 using System.IO;
+using System.Linq;
 using System.Security.Cryptography;
 using Org.BouncyCastle.Asn1;
 using Org.BouncyCastle.Asn1.Sec;
@@ -209,6 +210,11 @@ namespace Electrolyte.Primitives {
 		/// <param name="signature">ASN.1 encoded signature.</param>
 		public bool Verify(byte[] data, byte[] signature) {
 			return Verify(data, signature, _pub);
+		}
+
+		public override bool Equals(object obj) {
+			ECKey key = obj as ECKey;
+			return key != null && PrivateKeyBytes.Length > 0 && key.PrivateKeyBytes.Length > 0 && PrivateKeyBytes.SequenceEqual(key.PrivateKeyBytes);
 		}
 
 		public override string ToString() {
