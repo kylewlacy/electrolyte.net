@@ -15,7 +15,7 @@ namespace Electrolyte.Helpers {
 		public static long ByteIncrement = 1000;
 
 		static CoinPicker() {
-			Transaction baseTx = Transaction.Create(new List<Transaction.Output>(), new Dictionary<Address, long>(), new Dictionary<string, ECKey>());
+			Transaction baseTx = Transaction.Create(new List<Transaction.Output>(), new Dictionary<Address, long>(), new Dictionary<Address, ECKey>());
 			using(MemoryStream stream = new MemoryStream()) {
 				using(BinaryWriter writer = new BinaryWriter(stream)) {
 					baseTx.WritePayload(writer);

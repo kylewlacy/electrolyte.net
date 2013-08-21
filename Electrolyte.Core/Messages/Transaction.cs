@@ -342,7 +342,7 @@ namespace Electrolyte.Messages {
 			return tx;
 		}
 
-		public static Transaction Create(List<Output> inpoints, Dictionary<Address, long> destinations, Dictionary<string, ECKey> privateKeys) {
+		public static Transaction Create(List<Output> inpoints, Dictionary<Address, long> destinations, Dictionary<Address, ECKey> privateKeys) {
 			Transaction tx = new Transaction();
 
 			tx.Version = CurrentVersion;
@@ -359,7 +359,7 @@ namespace Electrolyte.Messages {
 			}
 
 			foreach(Input input in tx.Inputs) {
-				ECKey key = privateKeys[input.Outpoint.Recipient.ID];
+				ECKey key = privateKeys[input.Outpoint.Recipient];
 //				byte[] sig = tx.GenerateInputSignature(key, SigHash.All, inpoint.ScriptPubKey.SubScript, inputIndex);
 				byte[] sig = tx.GenerateInputSignature(key, SigHash.All, input.Outpoint.ScriptPubKey, (int)input.Index);
 				input.ScriptSig = Script.Create(sig, key.PubKey);
