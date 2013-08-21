@@ -52,6 +52,7 @@
     <Compile Include="Script\ScriptInterpretationTest.cs" />
     <Compile Include="Primitives\ECKeyTest.cs" />
     <Compile Include="WalletTest.cs" />
+    <Compile Include="Helpers\CoinPickerTest.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
