@@ -10,6 +10,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Electrolyte.Networking;
 using Electrolyte.Primitives;
+using Electrolyte.Messages;
 using Electrolyte.Helpers;
 
 namespace Electrolyte {
@@ -207,6 +208,10 @@ namespace Electrolyte {
 
 		public long GetSpendableBalance() {
 			return PrivateKeys.Keys.Select(a => Network.GetAddressBalanceAsync(a).Result).Sum();
+		}
+
+		public List<Transaction.Output> GetSpendableOutputs() {
+			return PrivateKeys.Keys.SelectMany(a => Network.GetUnspentOutputsAsync(a).Result).ToList();
 		}
 
 
