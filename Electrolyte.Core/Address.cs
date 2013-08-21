@@ -44,7 +44,7 @@ namespace Electrolyte {
 
 		public override bool Equals(object obj) {
 			Address address = obj as Address;
-			return address != null && ID == address.ID;
+			return address != null && ID != null && address.ID != null && ID == address.ID;
 		}
 
 		public static bool operator ==(Address a, Address b) {
