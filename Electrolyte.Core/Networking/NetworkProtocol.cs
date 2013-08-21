@@ -37,7 +37,7 @@ namespace Electrolyte.Networking {
 				foreach(Transaction.Output output in tx.Outputs) {
 					if(output.Recipient == address) {
 						unspentOutputs.Add(Tuple.Create(output.Transaction.Hash, output.Index), output);
-						Console.WriteLine("+{0}:{1} ({2})", tx.Hash, output.Index, output.Value);
+//						Console.WriteLine("+{0}:{1} ({2})", tx.Hash, output.Index, output.Value);
 					}
 				}
 			}
@@ -47,7 +47,7 @@ namespace Electrolyte.Networking {
 					if(input.Sender == address) {
 						// TODO: Provide some means of an input returning an equivalent (so we can use a `List` rather than a `Dictionary`
 						if(unspentOutputs.ContainsKey(Tuple.Create(input.PrevTransactionHash, input.OutpointIndex))) {
-							Console.WriteLine("-{0}:{1} ({2})", input.PrevTransactionHash, input.OutpointIndex, unspentOutputs[Tuple.Create(input.PrevTransactionHash, input.OutpointIndex)].Value);
+//							Console.WriteLine("-{0}:{1} ({2})", input.PrevTransactionHash, input.OutpointIndex, unspentOutputs[Tuple.Create(input.PrevTransactionHash, input.OutpointIndex)].Value);
 							unspentOutputs.Remove(Tuple.Create(input.PrevTransactionHash, input.OutpointIndex));
 						}
 					}
