@@ -1,11 +1,18 @@
 using System;
 using System.IO;
+using System.Linq;
 using System.Collections.Generic;
 using Electrolyte.Primitives;
 using Electrolyte.Messages;
 
 namespace Electrolyte.Helpers {
 	public static class CoinPicker {
+		public class InsufficientFundsException : InvalidOperationException {
+			public InsufficientFundsException () { }
+			public InsufficientFundsException (string message) : base(message) { }
+			public InsufficientFundsException (string message, Exception inner) : base(message, inner) { }
+		}
+
 		public static float PercentError = 0.05f;
 		public static long ApproxBytesPerInput;
 		public static long ApproxBytesPerOutput;
@@ -51,6 +58,34 @@ namespace Electrolyte.Helpers {
 
 		public static long FeeForTx(long numberOfBytes) {
 			return ((long)Math.Ceiling(numberOfBytes / (double)ByteIncrement) * FeePerByteIncrement);
+		}
+
+
+
+		public static List<Transaction.Output> SelectInpoints(List<Transaction.Output> availableInpoints, Dictionary<Address, long> destinations, out long change) {
+			long approxNumberOfInputs = SelectInpoints(availableInpoints, destinations, 0, out change).Count + 1;
+			return SelectInpoints(availableInpoints, destinations, ApproxFeeForTx(approxNumberOfInputs, destinations.Count + 1), out change);
+		}
+
+		public static List<Transaction.Output> SelectInpoints(List<Transaction.Output> availableInpoints, Dictionary<Address, long> destinations, long fee, out long change) {
+			return SelectInpoints(availableInpoints, destinations.Values.Sum(), fee, out change);
+		}
+
+		public static List<Transaction.Output> SelectInpoints(List<Transaction.Output> availableInpoints, long amountToSend, long fee, out long change) {
+			List<Transaction.Output> selectedInpoints = new List<Transaction.Output>();
+			foreach(Transaction.Output output in availableInpoints) {
+				if(selectedInpoints.Select(o => o.Value).Sum() >= amountToSend + fee) break;
+				selectedInpoints.Add(output);
+			}
+
+			long selectedTotal = selectedInpoints.Select(o => o.Value).Sum();
+
+			if(selectedTotal < amountToSend + fee)
+				throw new InsufficientFundsException();
+
+			change = selectedTotal - (amountToSend + fee);
+
+			return selectedInpoints;
 		}
 	}
 }
