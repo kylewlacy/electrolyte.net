@@ -207,6 +207,14 @@ namespace Electrolyte.Messages {
 			get { return Outputs.Select(o => o.Value).Sum(); }
 		}
 
+		public Int64 Fee {
+			get { return Inputs.Select(i => i.Outpoint.Value).Sum() - Value;  }
+		}
+
+		public bool IncludesStandardFee {
+			get { return CoinPicker.FeeForTx(this) == Fee; }
+		}
+
 		public UInt32 LockTime; // TODO: Use a struct
 
 		public override string ExpectedCommand {
