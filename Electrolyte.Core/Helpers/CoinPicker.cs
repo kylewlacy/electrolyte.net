@@ -60,6 +60,15 @@ namespace Electrolyte.Helpers {
 			return ((long)Math.Ceiling(numberOfBytes / (double)ByteIncrement) * FeePerByteIncrement);
 		}
 
+		public static long FeeForTx(Transaction tx) {
+			using(MemoryStream stream = new MemoryStream()) {
+				using(BinaryWriter writer = new BinaryWriter(stream)) {
+					tx.WritePayload(writer);
+					return FeeForTx(stream.ToArray().Length);
+				}
+			}
+		}
+
 
 
 		public static List<Transaction.Output> SelectInpoints(List<Transaction.Output> availableInpoints, Dictionary<Address, long> destinations, out long change) {
