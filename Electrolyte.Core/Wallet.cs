@@ -168,6 +168,34 @@ namespace Electrolyte {
 
 
 
+		public Transaction CreateTransaction(Dictionary<Address, long> destinations, Address changeAddress = null) {
+			long change;
+			List<Transaction.Output> inpoints = CoinPicker.SelectInpoints(GetSpendableOutputs(), destinations, out change);
+			Dictionary<Address, long> destinationsWithChange = new Dictionary<Address, long>(destinations);
+
+			if(change > 0) {
+				changeAddress = changeAddress ?? GenerateAddress();
+				Console.WriteLine("Change address: {0}", changeAddress);
+				destinationsWithChange.Add(changeAddress, change);
+			}
+			else {
+				Console.WriteLine("No change");
+			}
+
+			Console.WriteLine("Selected inpoints: ");
+			foreach(Transaction.Output output in inpoints) {
+				Console.WriteLine("  {0}:{1} ({2})", output.Transaction.Hash, output.Index, output.Value);
+			}
+
+			Transaction tx = Transaction.Create(inpoints, destinationsWithChange, PrivateKeys);
+			if(!tx.IncludesStandardFee)
+				throw new OperationException("Transaction generated without proper fee!");
+
+			return tx;
+		}
+
+
+
 		public void RemoveAddress(string address) {
 			RemoveAddress(new Address(address));
 		}
