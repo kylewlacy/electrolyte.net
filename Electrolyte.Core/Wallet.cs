@@ -109,6 +109,7 @@ namespace Electrolyte {
 			if(IsLocked) throw new LockedException();
 			if(isPublic) ImportReadOnlyAddress(key.ToAddress());
 			PrivateKeys.Add(key.ToAddress(), key);
+			Save();
 		}
 
 		public void ImportReadOnlyAddress(string address) {
@@ -453,9 +454,7 @@ namespace Electrolyte {
 		public void Save(string path) {
 			if(IsLocked) { throw new LockedException(); }
 
-			Console.WriteLine("Trying to save...");
 			if(path != null) {
-				Console.WriteLine("Saving...");
 				string directory = Path.GetDirectoryName(path);
 				if(!Directory.Exists(directory)) { Directory.CreateDirectory(directory); }
 
