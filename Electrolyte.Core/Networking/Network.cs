@@ -5,19 +5,20 @@ using Electrolyte.Messages;
 
 namespace Electrolyte.Networking {
 	public static class Network {
-		public static NetworkProtocol Protocol;
+		public static List<NetworkProtocol> Protocols = new List<NetworkProtocol>();
 
-		static Network() {
-			Protocol = new ElectrumProtocol("electrum.be", 50001);
-			Connect();
+		public static NetworkProtocol Protocol {
+			get { return Protocols[0]; }
 		}
 
-		public static void Connect() {
+		static Network() {
+			Protocols.Add(new ElectrumProtocol("electrum.be", 50001));
 			Protocol.Connect();
 		}
 
 		public static void Disconnect() {
-			Protocol.Disconnect();
+			foreach(NetworkProtocol protocol in Protocols)
+				protocol.Disconnect();
 		}
 
 		public static async Task<Transaction> GetTransactionAsync(TransactionInfo info) {
