@@ -80,6 +80,32 @@ namespace Electrolyte.Test {
 			Assert.AreEqual(Money.Create(10m, "USD"), Money.Create(100m, "ABC").ExchangeTo("USD"));
 			Assert.AreEqual(Money.Create(10m, "ABC"), Money.Create(1m, "USD").ExchangeTo("ABC"));
 		}
+
+		[Test]
+		[Ignore("How should values be rounded?")]
+		public void Rounding() {
+
+		}
+
+		[Test]
+		new public void ToString() {
+			Money.CurrencyType.Register("DEF", "DEF", 1000);
+			Assert.AreEqual("1.000 DEF", Money.Create(1.000m, "DEF").ToString());
+			Assert.AreEqual("12.345 DEF", Money.Create(12.345m, "DEF").ToString());
+			Assert.AreEqual("0.001 DEF", Money.Create(0.001m, "DEF").ToString());
+			Assert.AreEqual("0.000 DEF", Money.Zero("DEF").ToString());
+
+			
+			Money.CurrencyType.Register("GHI", "GHI", 2500);
+			Assert.AreEqual("1.000 GHI", Money.Create(1.0000m, "GHI").ToString());
+			Assert.AreEqual("12.345 GHI", Money.Create(12.3450m, "GHI").ToString());
+			Assert.AreEqual("0.000 GHI", Money.Zero("GHI").ToString());
+
+			Assert.AreEqual("$1.00", Money.Create(1.00m, "USD").ToString(true));
+			Assert.AreEqual("$12.34", Money.Create(12.34m, "USD").ToString(true));
+			Assert.AreEqual("$0.01", Money.Create(0.01m, "USD").ToString(true));
+			Assert.AreEqual("$0.00", Money.Zero("USD").ToString(true));
+		}
 	}
 }
 

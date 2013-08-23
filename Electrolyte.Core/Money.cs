@@ -151,7 +151,12 @@ namespace Electrolyte {
 		}
 
 		public string ToString(bool useSymbol) {
-			return String.Format(useSymbol ? "{2}{0}" : "{0} {1}", Value, Currency.Code, Currency.Symbol);
+			// TODO: Refactor this for clarity
+			// http://stackoverflow.com/a/4483960/1311454
+			int decimals = (int)Math.Floor(Math.Log10(Currency.CentsPerUnit) + 1) - 1;
+			string numberFormat = String.Join("", new string[] { "0", ".", new String('0', decimals) });
+
+			return String.Format(useSymbol ? "{2}{0}" : "{0} {1}", Value.ToString(numberFormat), Currency.Code, Currency.Symbol);
 		}
 
 		public override bool Equals(object obj) {
