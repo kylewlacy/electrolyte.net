@@ -52,6 +52,16 @@ namespace Electrolyte.Networking {
 		public static async Task<Money> GetAddressBalanceAsync(string address) {
 			return await GetAddressBalanceAsync(new Address(address));
 		}
+
+
+
+		public static async Task<decimal> GetCurrencyConversionRateAsync(Money.CurrencyType c1, Money.CurrencyType c2) {
+			return await Protocol.GetCurrencyConversionRateAsync(c1, c2);
+		}
+
+		public static async Task<decimal> GetCurrencyConversionRateAsync(string c1, string c2) {
+			return await GetCurrencyConversionRateAsync(Money.CurrencyType.FindByCode(c1), Money.CurrencyType.FindByCode(c2));
+		}
 	}
 }
 
