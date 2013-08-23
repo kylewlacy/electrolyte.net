@@ -13,6 +13,7 @@ namespace Electrolyte.Networking {
 
 		static Network() {
 			Protocols.Add(new ElectrumProtocol("electrum.be", 50001));
+			Protocols.Add(new BlockchainProtocol("http://blockchain.info"));
 			Protocol.Connect();
 		}
 
