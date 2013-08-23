@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Collections.Generic;
 using Electrolyte.Primitives;
+using Electrolyte.Extensions;
 using Electrolyte.Messages;
 
 namespace Electrolyte.Helpers {
@@ -18,11 +19,11 @@ namespace Electrolyte.Helpers {
 		public static long ApproxBytesPerOutput;
 		public static long MinBytesForTx;
 
-		public static long FeePerByteIncrement = 10000;
+		public static Money FeePerByteIncrement = Money.Create(0.0001m, "BTC");
 		public static long ByteIncrement = 1000;
 
 		static CoinPicker() {
-			Transaction baseTx = Transaction.Create(new List<Transaction.Output>(), new Dictionary<Address, long>(), new Dictionary<Address, ECKey>());
+			Transaction baseTx = Transaction.Create(new List<Transaction.Output>(), new Dictionary<Address, Money>(), new Dictionary<Address, ECKey>());
 			using(MemoryStream stream = new MemoryStream()) {
 				using(BinaryWriter writer = new BinaryWriter(stream)) {
 					baseTx.WritePayload(writer);
@@ -39,7 +40,7 @@ namespace Electrolyte.Helpers {
 				}
 			}
 
-			Transaction.Output output = new Transaction.Output(Script.FromString("OP_DUP OP_HASH160 4da1b9632e160406693b961ff321402b22ce5452 OP_EQUALVERIFY OP_CHECKSIG"), 200000, baseTx, 0);
+			Transaction.Output output = new Transaction.Output(Script.FromString("OP_DUP OP_HASH160 4da1b9632e160406693b961ff321402b22ce5452 OP_EQUALVERIFY OP_CHECKSIG"), Money.Create(0.002m, "BTC"), baseTx, 0);
 			using(MemoryStream stream = new MemoryStream()) {
 				using(BinaryWriter writer = new BinaryWriter(stream)) {
 					output.Write(writer);
@@ -52,15 +53,15 @@ namespace Electrolyte.Helpers {
 			return (numberOfInputs * ApproxBytesPerInput) + (numberOfOutputs * ApproxBytesPerOutput) + MinBytesForTx;
 		}
 
-		public static long ApproxFeeForTx(long numberOfInputs, long numberOfOutputs) {
+		public static Money ApproxFeeForTx(long numberOfInputs, long numberOfOutputs) {
 			return FeeForTx(ApproxSizeOfTx(numberOfInputs, numberOfOutputs));
 		}
 
-		public static long FeeForTx(long numberOfBytes) {
-			return ((long)Math.Ceiling(numberOfBytes / (double)ByteIncrement) * FeePerByteIncrement);
+		public static Money FeeForTx(long numberOfBytes) {
+			return  FeePerByteIncrement * ((long)Math.Ceiling(numberOfBytes / (double)ByteIncrement));
 		}
 
-		public static long FeeForTx(Transaction tx) {
+		public static Money FeeForTx(Transaction tx) {
 			using(MemoryStream stream = new MemoryStream()) {
 				using(BinaryWriter writer = new BinaryWriter(stream)) {
 					tx.WritePayload(writer);
@@ -71,23 +72,23 @@ namespace Electrolyte.Helpers {
 
 
 
-		public static List<Transaction.Output> SelectInpoints(List<Transaction.Output> availableInpoints, Dictionary<Address, long> destinations, out long change) {
-			long approxNumberOfInputs = SelectInpoints(availableInpoints, destinations, 0, out change).Count + 1;
+		public static List<Transaction.Output> SelectInpoints(List<Transaction.Output> availableInpoints, Dictionary<Address, Money> destinations, out Money change) {
+			long approxNumberOfInputs = SelectInpoints(availableInpoints, destinations, new Money(0, "BTC"), out change).Count + 1;
 			return SelectInpoints(availableInpoints, destinations, ApproxFeeForTx(approxNumberOfInputs, destinations.Count + 1), out change);
 		}
 
-		public static List<Transaction.Output> SelectInpoints(List<Transaction.Output> availableInpoints, Dictionary<Address, long> destinations, long fee, out long change) {
+		public static List<Transaction.Output> SelectInpoints(List<Transaction.Output> availableInpoints, Dictionary<Address, Money> destinations, Money fee, out Money change) {
 			return SelectInpoints(availableInpoints, destinations.Values.Sum(), fee, out change);
 		}
 
-		public static List<Transaction.Output> SelectInpoints(List<Transaction.Output> availableInpoints, long amountToSend, long fee, out long change) {
+		public static List<Transaction.Output> SelectInpoints(List<Transaction.Output> availableInpoints, Money amountToSend, Money fee, out Money change) {
 			List<Transaction.Output> selectedInpoints = new List<Transaction.Output>();
 			foreach(Transaction.Output output in availableInpoints) {
 				if(selectedInpoints.Select(o => o.Value).Sum() >= amountToSend + fee) break;
 				selectedInpoints.Add(output);
 			}
 
-			long selectedTotal = selectedInpoints.Select(o => o.Value).Sum();
+			Money selectedTotal = selectedInpoints.Select(o => o.Value).Sum();
 
 			if(selectedTotal < amountToSend + fee)
 				throw new InsufficientFundsException();

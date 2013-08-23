@@ -100,11 +100,11 @@ namespace Electrolyte.Test.Messages {
 					
 					Assert.AreEqual(transaction.Item4.Length, tx.Outputs.Count);
 					for(int i = 0; i < tx.Outputs.Count; i++) {
-						Assert.AreEqual(transaction.Item4[i].Item1, tx.Outputs[i].Value);
+						Assert.AreEqual(transaction.Item4[i].Item1, tx.Outputs[i].Value.Cents);
 					}
 
 					Assert.AreEqual(transaction.Item5, tx.LockTime);
-					Assert.AreEqual(transaction.Item6, tx.Value);
+					Assert.AreEqual(transaction.Item6, tx.Value.Cents);
 				}
 			}
 		}
@@ -143,12 +143,12 @@ namespace Electrolyte.Test.Messages {
 
 				Assert.AreEqual(transaction.Item4.Length, tx.Outputs.Count);
 				for(int i = 0; i < tx.Outputs.Count; i++) {
-					Assert.AreEqual(transaction.Item4[i].Item1, tx.Outputs[i].Value);
+					Assert.AreEqual(transaction.Item4[i].Item1, tx.Outputs[i].Value.Cents);
 //					Assert.AreEqual(transaction.Item4[i].Item2, tx.Outputs[i].ScriptPubKey)
 				}
 
 				Assert.AreEqual(transaction.Item5, tx.LockTime);
-				Assert.AreEqual(transaction.Item6, tx.Value);
+				Assert.AreEqual(transaction.Item6, tx.Value.Cents);
 			}
 		}
 

@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Electrolyte.Extensions;
 using Electrolyte.Messages;
 
 namespace Electrolyte.Networking {
@@ -61,12 +62,12 @@ namespace Electrolyte.Networking {
 			return await GetUnspentOutputsAsync(new Address(address));
 		}
 
-		public async virtual Task<long> GetAddressBalanceAsync(Address address) {
+		public async virtual Task<Money> GetAddressBalanceAsync(Address address) {
 			List<Transaction.Output> unspentOutputs = await GetUnspentOutputsAsync(address);
 			return unspentOutputs.Select(o => o.Value).Sum();
 		}
 
-		public async virtual Task<long> GetAddressBalanceAsync(string address) {
+		public async virtual Task<Money> GetAddressBalanceAsync(string address) {
 			return await GetAddressBalanceAsync(new Address(address));
 		}
 	}

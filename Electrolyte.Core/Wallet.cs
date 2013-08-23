@@ -10,6 +10,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Electrolyte.Networking;
 using Electrolyte.Primitives;
+using Electrolyte.Extensions;
 using Electrolyte.Messages;
 using Electrolyte.Helpers;
 
@@ -168,12 +169,12 @@ namespace Electrolyte {
 
 
 
-		public Transaction CreateTransaction(Dictionary<Address, long> destinations, Address changeAddress = null) {
-			long change;
+		public Transaction CreateTransaction(Dictionary<Address, Money> destinations, Address changeAddress = null) {
+			Money change;
 			List<Transaction.Output> inpoints = CoinPicker.SelectInpoints(GetSpendableOutputs(), destinations, out change);
-			Dictionary<Address, long> destinationsWithChange = new Dictionary<Address, long>(destinations);
+			Dictionary<Address, Money> destinationsWithChange = new Dictionary<Address, Money>(destinations);
 
-			if(change > 0) {
+			if(change > new Money(0, "BTC")) {
 				changeAddress = changeAddress ?? GenerateAddress();
 				Console.WriteLine("Change address: {0}", changeAddress);
 				destinationsWithChange.Add(changeAddress, change);
@@ -233,11 +234,11 @@ namespace Electrolyte {
 
 
 
-		public long GetBalance() {
+		public Money GetBalance() {
 			return Addresses.Select(a => Network.GetAddressBalanceAsync(a).Result).Sum();
 		}
 
-		public long GetSpendableBalance() {
+		public Money GetSpendableBalance() {
 			return PrivateKeys.Keys.Select(a => Network.GetAddressBalanceAsync(a).Result).Sum();
 		}
 

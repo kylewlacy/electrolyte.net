@@ -7,10 +7,10 @@ namespace Electrolyte.Test.Helpers {
 	public class CoinPickerTest {
 		[Test]
 		public void CalculateFee() {
-			Assert.AreEqual(0, CoinPicker.FeeForTx(0));
-			Assert.AreEqual(10000, CoinPicker.FeeForTx(500));
-			Assert.AreEqual(10000, CoinPicker.FeeForTx(1000));
-			Assert.AreEqual(20000, CoinPicker.FeeForTx(1001));
+			Assert.AreEqual(Money.Zero("BTC"), CoinPicker.FeeForTx(0));
+			Assert.AreEqual(Money.Create(0.0001m, "BTC"), CoinPicker.FeeForTx(500));
+			Assert.AreEqual(Money.Create(0.0001m, "BTC"), CoinPicker.FeeForTx(1000));
+			Assert.AreEqual(Money.Create(0.0002m, "BTC"), CoinPicker.FeeForTx(1001));
 		}
 
 		[Test]

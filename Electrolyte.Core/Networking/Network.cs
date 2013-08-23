@@ -44,11 +44,11 @@ namespace Electrolyte.Networking {
 			return await GetUnspentOutputsAsync(new Address(address));
 		}
 
-		public static async Task<long> GetAddressBalanceAsync(Address address) {
+		public static async Task<Money> GetAddressBalanceAsync(Address address) {
 			return await Protocol.GetAddressBalanceAsync(address);
 		}
 
-		public static async Task<long> GetAddressBalanceAsync(string address) {
+		public static async Task<Money> GetAddressBalanceAsync(string address) {
 			return await GetAddressBalanceAsync(new Address(address));
 		}
 	}

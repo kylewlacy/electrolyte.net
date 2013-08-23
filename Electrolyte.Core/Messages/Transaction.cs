@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Security.Cryptography;
 using Newtonsoft.Json.Linq;
 using Electrolyte;
+using Electrolyte.Extensions;
 using Electrolyte.Primitives;
 using Electrolyte.Helpers;
 
@@ -122,7 +123,7 @@ namespace Electrolyte.Messages {
 			public Transaction Transaction;
 			public UInt32 Index;
 			public Script ScriptPubKey;
-			public Int64 Value;
+			public Money Value;
 
 			public Address Recipient {
 				get {
@@ -137,7 +138,7 @@ namespace Electrolyte.Messages {
 				}
 			}
 
-			public Output(Script scriptPubKey, Int64 value, Transaction transaction = null, UInt32 index = 0) {
+			public Output(Script scriptPubKey, Money value, Transaction transaction = null, UInt32 index = 0) {
 				ScriptPubKey = scriptPubKey;
 				Value = value;
 				Transaction = transaction;
@@ -147,24 +148,22 @@ namespace Electrolyte.Messages {
 			protected Output() { }
 
 			protected void ReadPayload(BinaryReader reader) {
-				Value = reader.ReadInt64();
+				Value = new Money(reader.ReadInt64(), "BTC");
 
 				UInt64 scriptLength = VarInt.Read(reader).Value;
 				ScriptPubKey = new Script(reader.ReadBytes((int)scriptLength));
 			}
 
 			public void Write(BinaryWriter writer) {
-				writer.Write(Value);
+				writer.Write(Value.Cents);
 
 				new VarInt(ScriptPubKey.Execution.Count).Write(writer);
 				writer.Write(ScriptPubKey.Execution.ToArray());
 			}
 
 			protected void ReadFromJson(JToken data) {
-				// TODO: Move conversion to a class
-				decimal btc = Decimal.Parse(data["value"].Value<string>());
-				Value = (Int64)Math.Floor(btc * 100000000); // TODO: Is flooring the proper way to round?
-				Console.WriteLine("BTC: {0}\nSAT: {1}", btc, Value);
+				Value = Money.Create(Decimal.Parse(data["value"].Value<string>()), "BTC");
+//				Console.WriteLine("BTC: {0}\nSAT: {1}", btc, Value);
 
 				ScriptPubKey = Script.FromString(data["scriptPubKey"].Value<string>());
 			}
@@ -203,11 +202,11 @@ namespace Electrolyte.Messages {
 			get { return Outputs.Select(o => o.Recipient).ToList(); }
 		}
 
-		public Int64 Value {
+		public Money Value {
 			get { return Outputs.Select(o => o.Value).Sum(); }
 		}
 
-		public Int64 Fee {
+		public Money Fee {
 			get { return Inputs.Select(i => i.Outpoint.Value).Sum() - Value;  }
 		}
 
@@ -350,13 +349,13 @@ namespace Electrolyte.Messages {
 			return tx;
 		}
 
-		public static Transaction Create(List<Output> inpoints, Dictionary<Address, long> destinations, Dictionary<Address, ECKey> privateKeys) {
+		public static Transaction Create(List<Output> inpoints, Dictionary<Address, Money> destinations, Dictionary<Address, ECKey> privateKeys) {
 			Transaction tx = new Transaction();
 
 			tx.Version = CurrentVersion;
 
 			int outputIndex = 0;
-			foreach(KeyValuePair<Address, long> destination in destinations) {
+			foreach(KeyValuePair<Address, Money> destination in destinations) {
 				Script pkScript = Script.Create(Op.Dup, Op.Hash160, ArrayHelpers.SubArray(Base58.DecodeWithChecksum(destination.Key.ID), 1), Op.EqualVerify, Op.CheckSig);
 				tx.Outputs.Add(new Output(pkScript, destination.Value, tx, (uint)outputIndex));
 				outputIndex++;
