@@ -17,15 +17,43 @@ namespace Electrolyte.Networking {
 	}
 
 	public abstract class NetworkProtocol {
-		public abstract void Connect();
-		public abstract void Disconnect();
+		public class NotConnectedException : System.InvalidOperationException {
+			public NotConnectedException() { }
+			public NotConnectedException(string message) : base(message) { }
+			public NotConnectedException(string message, Exception inner) : base(message, inner) { }
+		}
+
+		public bool IsConnected { get; private set; }
+
+		public virtual void Connect() {
+			IsConnected = true;
+		}
+
+		public virtual void Disconnect() {
+			IsConnected = false;
+		}
+
+		public NetworkProtocol NextProtocol {
+			get {
+				int nextIndex = Network.Protocols.LastIndexOf(this) + 1;
+				if(nextIndex >= Network.Protocols.Count)
+					throw new InvalidOperationException();
+				return Network.Protocols[nextIndex];
+			}
+		}
 		
-		public abstract Task<Transaction> GetTransactionAsync(TransactionInfo info);
+		public async virtual Task<Transaction> GetTransactionAsync(TransactionInfo info) {
+			return await NextProtocol.GetTransactionAsync(info);
+		}
+
 		public async virtual Task<Transaction> GetTransactionAsync(string hex, ulong height) {
 			return await GetTransactionAsync(new TransactionInfo(hex, height));
 		}
 
-		public abstract Task<List<Transaction>> GetAddressHistoryAsync(Address address);
+		public async virtual Task<List<Transaction>> GetAddressHistoryAsync(Address address) {
+			return await NextProtocol.GetAddressHistoryAsync(address);
+		}
+
 		public async virtual Task<List<Transaction>> GetAddressHistoryAsync(string address) {
 			return await GetAddressHistoryAsync(new Address(address));
 		}

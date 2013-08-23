@@ -23,10 +23,12 @@ namespace Electrolyte.Networking {
 		
 
 		public override void Connect() {
+			base.Connect();
 			Client.Connect(Server, Port);
 		}
 
 		public override void Disconnect() {
+			base.Disconnect();
 			Client.Close();
 		}
 
