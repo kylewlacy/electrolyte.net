@@ -44,7 +44,6 @@ namespace Electrolyte.Networking {
 			}
 
 			string rpc = String.Format("{{\"id\": 1, \"method\": \"{0}\", \"params\": [{1}]}}", methodName, String.Join(", ", jsonArgs));
-			byte[] bytes = Encoding.ASCII.GetBytes(rpc);
 
 			StreamWriter writer = new StreamWriter(Client.GetStream());
 			await writer.WriteLineAsync(rpc);
@@ -76,8 +75,9 @@ namespace Electrolyte.Networking {
 
 			List<Transaction> transactions = new List<Transaction>();
 			JToken json = JToken.Parse(await GetResponseAsync());
+
 			foreach(JToken tx in json["result"]) {
-				transactions.Add(await GetTransactionAsync(tx["tx_hash"].Value<string>(), tx["height"].Value<ulong>()));
+				transactions.Add(await Network.GetTransactionAsync(tx["tx_hash"].Value<string>(), tx["height"].Value<ulong>()));
 			}
 
 			return transactions;
