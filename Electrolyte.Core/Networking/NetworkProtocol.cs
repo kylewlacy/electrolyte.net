@@ -25,21 +25,24 @@ namespace Electrolyte.Networking {
 
 		public bool IsConnected { get; private set; }
 
+		public NetworkProtocol NextProtocol {
+			get {
+				int nextIndex = Network.Protocols.LastIndexOf(this) + 1;
+				if(nextIndex >= Network.Protocols.Count)
+					throw new InvalidOperationException();
+				NetworkProtocol next = Network.Protocols[nextIndex];
+				if(!next.IsConnected)
+					next.Connect();
+				return next;
+			}
+		}
+
 		public virtual void Connect() {
 			IsConnected = true;
 		}
 
 		public virtual void Disconnect() {
 			IsConnected = false;
-		}
-
-		public NetworkProtocol NextProtocol {
-			get {
-				int nextIndex = Network.Protocols.LastIndexOf(this) + 1;
-				if(nextIndex >= Network.Protocols.Count)
-					throw new InvalidOperationException();
-				return Network.Protocols[nextIndex];
-			}
 		}
 		
 		public async virtual Task<Transaction> GetTransactionAsync(TransactionInfo info) {
@@ -101,12 +104,12 @@ namespace Electrolyte.Networking {
 
 		
 
-		public virtual async Task<decimal> GetCurrencyConversionRateAsync(Money.CurrencyType c1, Money.CurrencyType c2) {
-			return await NextProtocol.GetCurrencyConversionRateAsync(c1, c2);
+		public virtual async Task<decimal> GetExchangeRateAsync(Money.CurrencyType c1, Money.CurrencyType c2) {
+			return await NextProtocol.GetExchangeRateAsync(c1, c2);
 		}
 
-		public virtual async Task<decimal> GetCurrencyConversionRateAsync(string c1, string c2) {
-			return await GetCurrencyConversionRateAsync(Money.CurrencyType.FindByCode(c1), Money.CurrencyType.FindByCode(c2));
+		public virtual async Task<decimal> GetExchangeRateAsync(string c1, string c2) {
+			return await GetExchangeRateAsync(Money.CurrencyType.FindByCode(c1), Money.CurrencyType.FindByCode(c2));
 		}
 	}
 }

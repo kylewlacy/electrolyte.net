@@ -40,14 +40,14 @@ namespace Electrolyte.Networking {
 
 
 
-		public async override Task<decimal> GetCurrencyConversionRateAsync(Money.CurrencyType c1, Money.CurrencyType c2) {
+		public async override Task<decimal> GetExchangeRateAsync(Money.CurrencyType c1, Money.CurrencyType c2) {
 			if(c2 != Money.CurrencyType.FindByCode("BTC"))
-				return await NextProtocol.GetCurrencyConversionRateAsync(c1, c2);
+				return await NextProtocol.GetExchangeRateAsync(c1, c2);
 
-			return GetCurrencyConversionRate(c1, c2, await GetJsonAsync("/ticker"));
+			return GetExchangeRate(c1, c2, await GetJsonAsync("/ticker"));
 		}
 
-		static decimal GetCurrencyConversionRate(Money.CurrencyType c1, Money.CurrencyType c2, JToken rates) {
+		static decimal GetExchangeRate(Money.CurrencyType c1, Money.CurrencyType c2, JToken rates) {
 			if(c2 != Money.CurrencyType.FindByCode("BTC"))
 				throw new NotImplementedException();
 

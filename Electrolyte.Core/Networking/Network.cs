@@ -56,12 +56,12 @@ namespace Electrolyte.Networking {
 
 
 
-		public static async Task<decimal> GetCurrencyConversionRateAsync(Money.CurrencyType c1, Money.CurrencyType c2) {
-			return await Protocol.GetCurrencyConversionRateAsync(c1, c2);
+		public static async Task<decimal> GetExchangeRateAsync(Money.CurrencyType c1, Money.CurrencyType c2) {
+			return await Protocol.GetExchangeRateAsync(c1, c2);
 		}
 
-		public static async Task<decimal> GetCurrencyConversionRateAsync(string c1, string c2) {
-			return await GetCurrencyConversionRateAsync(Money.CurrencyType.FindByCode(c1), Money.CurrencyType.FindByCode(c2));
+		public static async Task<decimal> GetExchangeRateAsync(string c1, string c2) {
+			return await GetExchangeRateAsync(Money.CurrencyType.FindByCode(c1), Money.CurrencyType.FindByCode(c2));
 		}
 	}
 }
