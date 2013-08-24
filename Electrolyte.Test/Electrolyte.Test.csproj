@@ -54,6 +54,7 @@
     <Compile Include="WalletTest.cs" />
     <Compile Include="Helpers\CoinPickerTest.cs" />
     <Compile Include="MoneyTest.cs" />
+    <Compile Include="Helpers\BinaryHelpersTest.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

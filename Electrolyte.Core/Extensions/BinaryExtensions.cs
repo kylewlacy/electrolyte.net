@@ -1,35 +1,9 @@
 using System;
 using System.IO;
 using System.Linq;
+using Electrolyte.Helpers;
 
 namespace Electrolyte.Extensions {
-	public enum Endian { Big, Little }
-
-	public static class BinaryHelpers {
-		public static Endian SystemEndianness {
-			get {
-				if(BitConverter.IsLittleEndian)
-					return Endian.Little;
-				else
-					return Endian.Big;
-			}
-		}
-		
-		public static byte[] SetEndianness(this byte[] bytes, Endian endianness) {
-			if(BinaryHelpers.SystemEndianness == endianness)
-				return bytes;
-
-			return bytes.Reverse().ToArray();
-		}
-
-		public static char[] SetEndianness(this char[] chars, Endian endianness) {
-			if(BinaryHelpers.SystemEndianness == endianness)
-				return chars;
-
-			return chars.Reverse().ToArray();
-		}
-	}
-
 	public static class BinaryReaderExtensions {
 		public static char[] ReadChars(this BinaryReader reader, int count, Endian endianness) {
 			return reader.ReadChars(count).SetEndianness(endianness);
