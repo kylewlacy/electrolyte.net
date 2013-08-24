@@ -21,7 +21,6 @@ namespace Electrolyte.Messages {
 
 			public byte[] PrevTransactionHashBytes;
 			public string PrevTransactionHash {
-//				get { return BitConverter.ToString(PrevTransactionHashBytes.Reverse().ToArray()).Replace("-", "").ToLower(); }
 				get { return BinaryHelpers.ByteArrayToHex(PrevTransactionHashBytes.Reverse().ToArray()); }
 			}
 			public Transaction PreviousTransaciton;
@@ -43,7 +42,6 @@ namespace Electrolyte.Messages {
 					// TODO: Move this out to a method (`Script.Data[1]`)
 					string pubKeyHex = ScriptSig.ToString().Split(' ')[1];
 
-//					byte[] pubKey = Enumerable.Range(0, pubKeyHex.Length).Where(x => x % 2 == 0).Select(x => Convert.ToByte(pubKeyHex.Substring(x, 2), 16)).ToArray();
 					byte[] pubKey = BinaryHelpers.HexToByteArray(pubKeyHex);
 
 					using(RIPEMD160 ripemd = RIPEMD160.Create()) {
@@ -58,7 +56,6 @@ namespace Electrolyte.Messages {
 
 			protected Input() {	}
 			public Input(string prevTxHash, UInt32 outpointIndex, UInt32 index, UInt32 sequence = 0xFFFFFFFF) {
-//				PrevTransactionHashBytes = Enumerable.Range(0, prevTxHash.Length).Where(x => x % 2 == 0).Select(x => Convert.ToByte(prevTxHash.Substring(x, 2), 16)).Reverse().ToArray();
 				PrevTransactionHashBytes = BinaryHelpers.HexToByteArray(prevTxHash).Reverse().ToArray();
 				OutpointIndex = outpointIndex;
 				Index = index;
@@ -135,7 +132,6 @@ namespace Electrolyte.Messages {
 					// TODO: Move this out to a method (`Script.Data[1]`)
 					string pubKeyHex = ScriptPubKey.ToString().Split(' ')[2];
 
-//					byte[] pubKeyHash = Enumerable.Range(0, pubKeyHex.Length).Where(x => x % 2 == 0).Select(x => Convert.ToByte(pubKeyHex.Substring(x, 2), 16)).ToArray();
 					byte[] pubKeyHash = BinaryHelpers.HexToByteArray(pubKeyHex);
 					byte[] addressBytes = ArrayHelpers.ConcatArrays(new byte[] { Address.BytePrefixForNetwork(CurrentNetwork) }, pubKeyHash);
 					return new Address(Base58.EncodeWithChecksum(addressBytes));
@@ -226,14 +222,8 @@ namespace Electrolyte.Messages {
 
 		public string Hash {
 			get {
-				using(MemoryStream stream = new MemoryStream()) {
-					using(BinaryWriter writer = new BinaryWriter(stream)) {
-						WritePayload(writer);
-						using(SHA256 sha256 = SHA256.Create()) {
-//							return BitConverter.ToString(sha256.ComputeHash(sha256.ComputeHash(stream.ToArray())).Reverse().ToArray()).Replace("-", "").ToLower();
-							return BinaryHelpers.ByteArrayToHex(sha256.ComputeHash(sha256.ComputeHash(stream.ToArray())).Reverse().ToArray());
-						}
-					}
+				using(SHA256 sha256 = SHA256.Create()) {
+					return BinaryHelpers.ByteArrayToHex(sha256.ComputeHash(sha256.ComputeHash(ToByteArray())).Reverse().ToArray());
 				}
 			}
 		}
@@ -246,16 +236,17 @@ namespace Electrolyte.Messages {
 			if(hashType.HasFlag(SigHash.AnyoneCanPay))
 				throw new NotImplementedException();
 
-			Transaction copy = new Transaction();
-			using(MemoryStream originalStream = new MemoryStream()) {
-				using(BinaryWriter writer = new BinaryWriter(originalStream))
-					WritePayload(writer);
-
-				using(MemoryStream copyStream = new MemoryStream(originalStream.ToArray())) {
-					using(BinaryReader reader = new BinaryReader(copyStream))
-						copy.ReadPayload(reader);
-				}
-			}
+//			Transaction copy = new Transaction();
+//			using(MemoryStream originalStream = new MemoryStream()) {
+//				using(BinaryWriter writer = new BinaryWriter(originalStream))
+//					WritePayload(writer);
+//
+//				using(MemoryStream copyStream = new MemoryStream(originalStream.ToArray())) {
+//					using(BinaryReader reader = new BinaryReader(copyStream))
+//						copy.ReadPayload(reader);
+//				}
+//			}
+			Transaction copy = Transaction.FromByteArray(ToByteArray());
 
 			foreach(Input input in copy.Inputs) {
 				input.ScriptSig = new Script();
@@ -264,13 +255,13 @@ namespace Electrolyte.Messages {
 			copy.Inputs[inputIndex].ScriptSig = subScript;
 
 			List<byte> verify = new List<byte>();
-			using(MemoryStream stream = new MemoryStream()) {
-				using(BinaryWriter writer = new BinaryWriter(stream))
-					copy.WritePayload(writer);
-
-				verify.AddRange(stream.ToArray());
-			}
-
+//			using(MemoryStream stream = new MemoryStream()) {
+//				using(BinaryWriter writer = new BinaryWriter(stream))
+//					copy.WritePayload(writer);
+//
+//				verify.AddRange(stream.ToArray());
+//			}
+			verify.AddRange(copy.ToByteArray());
 			verify.AddRange(BitConverter.GetBytes((UInt32)hashType));
 
 			using(SHA256 sha256 = SHA256.Create())
@@ -401,7 +392,6 @@ namespace Electrolyte.Messages {
 
 			foreach(Input input in tx.Inputs) {
 				ECKey key = privateKeys[input.Outpoint.Recipient];
-//				byte[] sig = tx.GenerateInputSignature(key, SigHash.All, inpoint.ScriptPubKey.SubScript, inputIndex);
 				byte[] sig = tx.GenerateInputSignature(key, SigHash.All, input.Outpoint.ScriptPubKey, (int)input.Index);
 				input.ScriptSig = Script.Create(sig, key.PubKey);
 			}

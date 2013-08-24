@@ -62,7 +62,6 @@ namespace Electrolyte.Networking {
 
 			string txHex = json["result"].Value<string>();
 
-//			byte[] rawTx = Enumerable.Range(0, txHex.Length).Where(x => x % 2 == 0).Select(x => Convert.ToByte(txHex.Substring(x, 2), 16)).ToArray();
 			byte[] rawTx = BinaryHelpers.HexToByteArray(txHex);
 
 			Transaction tx = new Transaction();
@@ -76,9 +75,8 @@ namespace Electrolyte.Networking {
 			List<Transaction> transactions = new List<Transaction>();
 			JToken json = JToken.Parse(await GetResponseAsync());
 
-			foreach(JToken tx in json["result"]) {
+			foreach(JToken tx in json["result"])
 				transactions.Add(await Network.GetTransactionAsync(tx["tx_hash"].Value<string>(), tx["height"].Value<ulong>()));
-			}
 
 			return transactions;
 		}
