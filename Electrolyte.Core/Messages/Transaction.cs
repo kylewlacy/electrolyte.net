@@ -343,6 +343,35 @@ namespace Electrolyte.Messages {
 				Outputs.Add(Output.FromJson(outputs[i], this, (UInt32)i));
 		}
 
+		
+		public byte[] ToByteArray() {
+			using(MemoryStream stream = new MemoryStream()) {
+				using(BinaryWriter writer = new BinaryWriter(stream)) {
+					WritePayload(writer);
+					return stream.ToArray();
+				}
+			}
+		}
+
+		public string ToHex() {
+			return BinaryHelpers.ByteArrayToHex(ToByteArray());
+		}
+
+		public static Transaction FromByteArray(byte[] bytes) {
+			using(MemoryStream stream = new MemoryStream(bytes)) {
+				using(BinaryReader reader = new BinaryReader(stream)) {
+					Transaction tx = new Transaction();
+					tx.ReadPayload(reader);
+					return tx;
+				}
+			}
+		}
+
+		public static Transaction FromHex(string hex) {
+			return FromByteArray(BinaryHelpers.HexToByteArray(hex));
+		}
+
+
 
 		public static Transaction FromJson(string json) {
 			return FromJson(JToken.Parse(json));
