@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using Electrolyte.Messages;
+using Electrolyte.Helpers;
 
 namespace Electrolyte.Networking {
 	public class ElectrumProtocol : NetworkProtocol {
@@ -61,9 +62,8 @@ namespace Electrolyte.Networking {
 
 			string txHex = json["result"].Value<string>();
 
-			// http://stackoverflow.com/a/13228503/1311454
-			// TODO: Rewrite faster
-			byte[] rawTx = Enumerable.Range(0, txHex.Length).Where(x => x % 2 == 0).Select(x => Convert.ToByte(txHex.Substring(x, 2), 16)).ToArray();
+//			byte[] rawTx = Enumerable.Range(0, txHex.Length).Where(x => x % 2 == 0).Select(x => Convert.ToByte(txHex.Substring(x, 2), 16)).ToArray();
+			byte[] rawTx = BinaryHelpers.HexToByteArray(txHex);
 
 			Transaction tx = new Transaction();
 			tx.ReadPayload(new BinaryReader(new MemoryStream(rawTx)));

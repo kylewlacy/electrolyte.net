@@ -415,7 +415,7 @@ namespace Electrolyte {
 					else if(next == (byte)Op.PushData4)
 						toPush = new SignedInt(dataStack.Pop(4)).Value;
 
-					unpacked.Add(BitConverter.ToString(dataStack.Pop(toPush)).Replace("-", ""));
+					unpacked.Add(BinaryHelpers.ByteArrayToHex(dataStack.Pop(toPush)).ToUpper());
 				}
 
 				else {
