@@ -80,6 +80,19 @@ namespace Electrolyte.Networking {
 
 			return transactions;
 		}
+
+
+
+		public override async Task BroadcastTransactionAsync(Transaction tx) {
+			await SendRPCAsync("blockchain.transaction.broadcast", tx.ToHex());
+			string r = await GetResponseAsync();
+			JToken json = JToken.Parse(await GetResponseAsync());
+
+			if(json["result"].Value<string>() != tx.Hash)
+				throw new Exception("Wat");
+
+			// TODO: Cache the transaction
+		}
 	}
 }
 

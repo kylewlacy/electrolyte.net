@@ -57,6 +57,12 @@ namespace Electrolyte.Networking {
 
 
 
+		public static async Task BroadcastTransactionAsync(Transaction tx) {
+			await Protocol.BroadcastTransactionAsync(tx);
+		}
+
+
+
 		public static async Task<decimal> GetExchangeRateAsync(Money.CurrencyType c1, Money.CurrencyType c2) {
 			return await Protocol.GetExchangeRateAsync(c1, c2);
 		}

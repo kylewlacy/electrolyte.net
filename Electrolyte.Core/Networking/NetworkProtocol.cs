@@ -102,6 +102,12 @@ namespace Electrolyte.Networking {
 			return await GetAddressBalanceAsync(new Address(address));
 		}
 
+
+
+		public async virtual Task BroadcastTransactionAsync(Transaction tx) {
+			await NextProtocol.BroadcastTransactionAsync(tx);
+		}
+
 		
 
 		public virtual async Task<decimal> GetExchangeRateAsync(Money.CurrencyType c1, Money.CurrencyType c2) {
