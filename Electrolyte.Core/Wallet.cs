@@ -37,17 +37,12 @@ namespace Electrolyte {
 
 		public static string Version = "1.0.0.0";
 
-#if !DEBUG
-		public static ulong KeyHashes = 1048576;
-#else
-		public static ulong KeyHashes = 1024;
-#endif
-
 		internal Timer LockTimer = new Timer();
 
 		public bool IsLocked { get; private set; }
 		public byte[] EncryptionKey = new byte[] { };
 		public byte[] EncryptedData, IV, Salt;
+		public ulong KeyHashes = 1024;
 
 		public string FilePath;
 
@@ -358,6 +353,8 @@ namespace Electrolyte {
 			if(data["version"].Value<string>() != Version)
 				throw new FormatException(String.Format("Invalid wallet version: {0}", data["version"].Value<ulong>()));
 
+			KeyHashes = data["key_hashes"].Value<ulong>();
+
 			IV = Base58.DecodeWithChecksum(data["encrypted"]["iv"].Value<string>());
 			Salt = Base58.DecodeWithChecksum(data["encrypted"]["salt"].Value<string>());
 
@@ -427,6 +424,7 @@ namespace Electrolyte {
 				{ "version", Version },
 				{ "watch_addresses", new List<object>() },
 				{ "public_addresses", new List<object>() },
+				{ "key_hashes", KeyHashes },
 				{ "encrypted", new Dictionary<string, object> {
 						{ "iv", Base58.EncodeWithChecksum(IV) },
 						{ "salt", Base58.EncodeWithChecksum(Salt) },
@@ -538,18 +536,22 @@ namespace Electrolyte {
 
 
 
-		static async Task<byte[]> PassphraseToKeyAsync(byte[] passphrase, byte[] salt) {
+		static async Task<byte[]> PassphraseToKeyAsync(byte[] passphrase, byte[] salt, ulong keyHashes) {
 			byte[] key = passphrase;
 
 			await Task.Run(() => {
 				using(SHA256 sha256 = SHA256.Create()) {
-					for(ulong i = 0; i < KeyHashes; i++) {
+					for(ulong i = 0; i < keyHashes; i++) {
 						key = sha256.ComputeHash(ArrayHelpers.ConcatArrays(key, passphrase, salt));
 					}
 				}
 			});
 
 			return ArrayHelpers.SubArray(key, 0, 32);
+		}
+
+		async Task<byte[]> PassphraseToKeyAsync(byte[] passphrase, byte[] salt) {
+			return await PassphraseToKeyAsync(passphrase, salt, KeyHashes);
 		}
 
 		public static string DefaultWalletPath {
