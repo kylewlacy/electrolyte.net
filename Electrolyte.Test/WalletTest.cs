@@ -13,8 +13,8 @@ namespace Electrolyte.Test {
 	public class WalletTest {
 		[Test]
 		public void ImportKeys() {
-			Wallet wallet = new Wallet(Encoding.ASCII.GetBytes("1234"), null);
-			wallet.ImportKey("5Kb8kLf9zgWQnogidDA76MzPL6TsZZY36hWXMssSzNydYXYB9KF");
+			Wallet wallet = Wallet.CreateAsync(Encoding.ASCII.GetBytes("1234"), null).Result;
+			wallet.ImportKeyAsync("5Kb8kLf9zgWQnogidDA76MzPL6TsZZY36hWXMssSzNydYXYB9KF").Wait();
 
 			Assert.Contains(new ECKey(new byte[] { 0xE9, 0x87, 0x3D, 0x79, 0xC6, 0xD8, 0x7D, 0xC0, 0xFB, 0x6A, 0x57, 0x78, 0x63, 0x33, 0x89, 0xF4, 0x45, 0x32, 0x13, 0x30, 0x3D, 0xA6, 0x1F, 0x20, 0xBD, 0x67, 0xFC, 0x23, 0x3A, 0xA3, 0x32, 0x62 }), wallet.PrivateKeys.Values);
 			Assert.Contains(new Address("1CC3X2gu58d6wXUWMffpuzN9JAfTUWu4Kj"), wallet.PrivateKeys.Keys);
@@ -23,10 +23,10 @@ namespace Electrolyte.Test {
 
 		[Test]
 		public void WatchAddress() {
-			Wallet wallet = new Wallet(Encoding.ASCII.GetBytes("1234"), null);
+			Wallet wallet = Wallet.CreateAsync(Encoding.ASCII.GetBytes("1234"), null).Result;
 
-			wallet.ImportWatchAddress("1CC3X2gu58d6wXUWMffpuzN9JAfTUWu4Kj");
-			wallet.ImportWatchAddress("1ky1eHUrRR1kxKTbfiCptao9V25W97gDm");
+			wallet.ImportWatchAddressAsync("1CC3X2gu58d6wXUWMffpuzN9JAfTUWu4Kj").Wait();
+			wallet.ImportWatchAddressAsync("1ky1eHUrRR1kxKTbfiCptao9V25W97gDm").Wait();
 
 			Assert.Contains(new Address("1CC3X2gu58d6wXUWMffpuzN9JAfTUWu4Kj"), wallet.WatchAddresses.ToList());
 			Assert.Contains(new Address("1ky1eHUrRR1kxKTbfiCptao9V25W97gDm"), wallet.WatchAddresses.ToList());
@@ -34,10 +34,10 @@ namespace Electrolyte.Test {
 
 		[Test]
 		public void PublicAddresses() {
-			Wallet wallet = new Wallet(Encoding.ASCII.GetBytes("1234"), null);
+			Wallet wallet = Wallet.CreateAsync(Encoding.ASCII.GetBytes("1234"), null).Result;
 			
-			wallet.ImportKey("5Kb8kLf9zgWQnogidDA76MzPL6TsZZY36hWXMssSzNydYXYB9KF");
-			wallet.ImportKey("5KJD58353MLqgAdt6dqgwEGF4jDXcYN8bCpPsC5Qn2cqur6kZSw", true);
+			wallet.ImportKeyAsync("5Kb8kLf9zgWQnogidDA76MzPL6TsZZY36hWXMssSzNydYXYB9KF").Wait();
+			wallet.ImportKeyAsync("5KJD58353MLqgAdt6dqgwEGF4jDXcYN8bCpPsC5Qn2cqur6kZSw", true).Wait();
 
 			Assert.Contains(new Address("1CyuTPXMVqdHpDD7WTVcEvRFe4GmTHZC1Q"), wallet.Addresses.ToList());
 			Assert.Contains(new Address("1CC3X2gu58d6wXUWMffpuzN9JAfTUWu4Kj"), wallet.Addresses.ToList());
@@ -47,20 +47,20 @@ namespace Electrolyte.Test {
 
 		[Test]
 		public void ReadWritePrivate() {
-			Wallet writeWallet = new Wallet(Encoding.ASCII.GetBytes("1234"), null);
-			writeWallet.ImportKey("5Kb8kLf9zgWQnogidDA76MzPL6TsZZY36hWXMssSzNydYXYB9KF");
+			Wallet writeWallet = Wallet.CreateAsync(Encoding.ASCII.GetBytes("1234"), null).Result;
+			writeWallet.ImportKeyAsync("5Kb8kLf9zgWQnogidDA76MzPL6TsZZY36hWXMssSzNydYXYB9KF").Wait();
 
 			byte[] output;
 			using(MemoryStream stream = new MemoryStream()) {
 				using(StreamWriter writer = new StreamWriter(stream))
-					writeWallet.WritePrivate(writer);
+					writeWallet.WritePrivateAsync(writer).Wait();
 				output = stream.ToArray();
 			}
 			
-			Wallet readWallet = new Wallet(Encoding.ASCII.GetBytes("1234"), null);
+			Wallet readWallet = Wallet.CreateAsync(Encoding.ASCII.GetBytes("1234"), null).Result;
 			using(MemoryStream stream = new MemoryStream(output)) {
 				using(StreamReader reader = new StreamReader(stream))
-					readWallet.ReadPrivate(reader);
+					readWallet.ReadPrivateAsync(reader).Wait();
 			}
 
 			Assert.AreEqual(writeWallet.Addresses, readWallet.Addresses);
@@ -69,22 +69,22 @@ namespace Electrolyte.Test {
 
 		[Test]
 		public void EncryptDecrypt() {
-			Wallet encryptWallet = new Wallet(Encoding.ASCII.GetBytes("1234"), null);
-			encryptWallet.ImportKey("5Kb8kLf9zgWQnogidDA76MzPL6TsZZY36hWXMssSzNydYXYB9KF");
-			encryptWallet.ImportKey("5KJD58353MLqgAdt6dqgwEGF4jDXcYN8bCpPsC5Qn2cqur6kZSw", true);
-			encryptWallet.ImportWatchAddress("1ky1eHUrRR1kxKTbfiCptao9V25W97gDm");
+			Wallet encryptWallet = Wallet.CreateAsync(Encoding.ASCII.GetBytes("1234"), null).Result;
+			encryptWallet.ImportKeyAsync("5Kb8kLf9zgWQnogidDA76MzPL6TsZZY36hWXMssSzNydYXYB9KF").Wait();
+			encryptWallet.ImportKeyAsync("5KJD58353MLqgAdt6dqgwEGF4jDXcYN8bCpPsC5Qn2cqur6kZSw", true).Wait();
+			encryptWallet.ImportWatchAddressAsync("1ky1eHUrRR1kxKTbfiCptao9V25W97gDm").Wait();
 
 			byte[] output;
 			using(MemoryStream stream = new MemoryStream()) {
 				using(StreamWriter writer = new StreamWriter(stream))
-					encryptWallet.Encrypt(writer, "1234");
+					encryptWallet.EncryptAsync(writer, "1234").Wait();
 				output = stream.ToArray();
 			}
 
-			Wallet decryptWallet = new Wallet(Encoding.ASCII.GetBytes("1234"), null);
+			Wallet decryptWallet = Wallet.CreateAsync(Encoding.ASCII.GetBytes("1234"), null).Result;
 			using(MemoryStream stream = new MemoryStream(output)) {
 				using(StreamReader reader = new StreamReader(stream))
-					decryptWallet.Decrypt(reader, "1234");
+					decryptWallet.DecryptAsync(reader, "1234").Wait();
 			}
 
 			Assert.AreEqual(encryptWallet.PublicAddresses, decryptWallet.PublicAddresses);
@@ -93,28 +93,30 @@ namespace Electrolyte.Test {
 
 		[Test]
 		public void InvalidPasscode() {
-			Wallet encryptWallet = new Wallet(Encoding.ASCII.GetBytes("1234"), null);
-			encryptWallet.GenerateAddress();
+			Wallet encryptWallet = Wallet.CreateAsync(Encoding.ASCII.GetBytes("1234"), null).Result;
+			encryptWallet.GenerateAddressAsync().Wait();
 
 			byte[] output;
 			using(MemoryStream stream = new MemoryStream()) {
 				using(StreamWriter writer = new StreamWriter(stream))
-					encryptWallet.Encrypt(writer, "1234");
+					encryptWallet.EncryptAsync(writer, "1234").Wait();
 				output = stream.ToArray();
 			}
 
 			using(MemoryStream stream = new MemoryStream(output)) {
 				using(StreamReader reader = new StreamReader(stream))
-					Assert.Throws<Wallet.InvalidPassphraseException>(() => new Wallet(Encoding.ASCII.GetBytes("1234"), null).Decrypt(reader, "2345"));
+					Assert.Throws<Wallet.InvalidPassphraseException>(() => {
+						try { Wallet.CreateAsync(Encoding.ASCII.GetBytes("1234"), null).Result.DecryptAsync(reader, "2345").Wait(); } catch(AggregateException e) { throw e.InnerException; }
+					});
 			}
 		}
 
 		[Test]
 		public void LockUnlock() {
-			Wallet wallet = new Wallet(Encoding.ASCII.GetBytes("1234"), null);
-			wallet.ImportKey("5Kb8kLf9zgWQnogidDA76MzPL6TsZZY36hWXMssSzNydYXYB9KF");
-			wallet.ImportKey("5KJD58353MLqgAdt6dqgwEGF4jDXcYN8bCpPsC5Qn2cqur6kZSw", true);
-			wallet.ImportWatchAddress("1ky1eHUrRR1kxKTbfiCptao9V25W97gDm");
+			Wallet wallet = Wallet.CreateAsync(Encoding.ASCII.GetBytes("1234"), null).Result;
+			wallet.ImportKeyAsync("5Kb8kLf9zgWQnogidDA76MzPL6TsZZY36hWXMssSzNydYXYB9KF").Wait();
+			wallet.ImportKeyAsync("5KJD58353MLqgAdt6dqgwEGF4jDXcYN8bCpPsC5Qn2cqur6kZSw", true).Wait();
+			wallet.ImportWatchAddressAsync("1ky1eHUrRR1kxKTbfiCptao9V25W97gDm").Wait();
 
 			Assert.Contains(new Address("1CC3X2gu58d6wXUWMffpuzN9JAfTUWu4Kj"), wallet.Addresses.ToList());
 			Assert.Contains(new Address("1CyuTPXMVqdHpDD7WTVcEvRFe4GmTHZC1Q"), wallet.Addresses.ToList());
@@ -122,71 +124,77 @@ namespace Electrolyte.Test {
 
 
 
-			wallet.Lock();
+			wallet.LockAsync().Wait();
 			Assert.IsFalse(wallet.WatchAddresses.Contains(new Address("1CC3X2gu58d6wXUWMffpuzN9JAfTUWu4Kj")));
 			Assert.Contains(new Address("1CyuTPXMVqdHpDD7WTVcEvRFe4GmTHZC1Q"), wallet.Addresses.ToList());
 			Assert.Contains(new Address("1ky1eHUrRR1kxKTbfiCptao9V25W97gDm"), wallet.WatchAddresses.ToList());
 
-			wallet.Unlock("1234");
+			wallet.UnlockAsync("1234").Wait();
 			Assert.Contains(new Address("1CC3X2gu58d6wXUWMffpuzN9JAfTUWu4Kj"), wallet.Addresses.ToList());
 			Assert.Contains(new Address("1CyuTPXMVqdHpDD7WTVcEvRFe4GmTHZC1Q"), wallet.Addresses.ToList());
 			Assert.Contains(new Address("1ky1eHUrRR1kxKTbfiCptao9V25W97gDm"), wallet.WatchAddresses.ToList());
 
 
 
-			wallet.Lock();
+			wallet.LockAsync().Wait();
 			Assert.IsFalse(wallet.WatchAddresses.Contains(new Address("1CC3X2gu58d6wXUWMffpuzN9JAfTUWu4Kj")));
 			Assert.Contains(new Address("1CyuTPXMVqdHpDD7WTVcEvRFe4GmTHZC1Q"), wallet.Addresses.ToList());
 			Assert.Contains(new Address("1ky1eHUrRR1kxKTbfiCptao9V25W97gDm"), wallet.WatchAddresses.ToList());
 
-			wallet.Unlock("1234");
+			wallet.UnlockAsync("1234").Wait();
 			Assert.Contains(new Address("1CC3X2gu58d6wXUWMffpuzN9JAfTUWu4Kj"), wallet.Addresses.ToList());
 			Assert.Contains(new Address("1CyuTPXMVqdHpDD7WTVcEvRFe4GmTHZC1Q"), wallet.Addresses.ToList());
 			Assert.Contains(new Address("1ky1eHUrRR1kxKTbfiCptao9V25W97gDm"), wallet.WatchAddresses.ToList());
 
 
 
-			wallet.Lock();
+			wallet.LockAsync().Wait();
 			Assert.IsFalse(wallet.WatchAddresses.Contains(new Address("1CC3X2gu58d6wXUWMffpuzN9JAfTUWu4Kj")));
 			Assert.Contains(new Address("1CyuTPXMVqdHpDD7WTVcEvRFe4GmTHZC1Q"), wallet.Addresses.ToList());
 			Assert.Contains(new Address("1ky1eHUrRR1kxKTbfiCptao9V25W97gDm"), wallet.WatchAddresses.ToList());
 
-			Assert.Throws<Wallet.InvalidPassphraseException>(() => wallet.Unlock("2345"));
+			Assert.Throws<Wallet.InvalidPassphraseException>(() => {
+				try { wallet.UnlockAsync("2345").Wait(); } catch(AggregateException e) { throw e.InnerException; }
+			});
 			Assert.IsFalse(wallet.WatchAddresses.Contains(new Address("1CC3X2gu58d6wXUWMffpuzN9JAfTUWu4Kj")));
 			Assert.Contains(new Address("1CyuTPXMVqdHpDD7WTVcEvRFe4GmTHZC1Q"), wallet.Addresses.ToList());
 			Assert.Contains(new Address("1ky1eHUrRR1kxKTbfiCptao9V25W97gDm"), wallet.WatchAddresses.ToList());
 
 
 
-			wallet.Unlock("1234");			
+			wallet.UnlockAsync("1234").Wait();
 			Assert.Contains(new Address("1CC3X2gu58d6wXUWMffpuzN9JAfTUWu4Kj"), wallet.Addresses.ToList());
 			Assert.Contains(new Address("1CyuTPXMVqdHpDD7WTVcEvRFe4GmTHZC1Q"), wallet.Addresses.ToList());
 			Assert.Contains(new Address("1ky1eHUrRR1kxKTbfiCptao9V25W97gDm"), wallet.WatchAddresses.ToList());
 
-			Assert.Throws<Wallet.OperationException>(() => wallet.Unlock("1234"));
+			Assert.Throws<Wallet.OperationException>(() => {
+				try { wallet.UnlockAsync("1234").Wait(); } catch (AggregateException e) { throw e.InnerException; }
+			});
 			Assert.Contains(new Address("1CC3X2gu58d6wXUWMffpuzN9JAfTUWu4Kj"), wallet.Addresses.ToList());
 			Assert.Contains(new Address("1CyuTPXMVqdHpDD7WTVcEvRFe4GmTHZC1Q"), wallet.Addresses.ToList());
 			Assert.Contains(new Address("1ky1eHUrRR1kxKTbfiCptao9V25W97gDm"), wallet.WatchAddresses.ToList());
 
 
 
-			wallet.Lock();
-			Assert.Throws<Wallet.OperationException>(wallet.Lock);
-			wallet.Unlock("1234");
+			wallet.LockAsync().Wait();
+			Assert.Throws<Wallet.OperationException>(() => {
+				try { wallet.LockAsync().Wait(); } catch(AggregateException e) { throw e.InnerException; }
+			});
+			wallet.UnlockAsync("1234").Wait();
 
-			wallet.Lock();
-			wallet.Unlock("1234");
+			wallet.LockAsync().Wait();
+			wallet.UnlockAsync("1234").Wait();
 		}
 
 		[Test]
 		public void UnlockTimeout() {
-			Wallet wallet = new Wallet(Encoding.ASCII.GetBytes("1234"), null);
-			wallet.ImportKey("5Kb8kLf9zgWQnogidDA76MzPL6TsZZY36hWXMssSzNydYXYB9KF");
+			Wallet wallet = Wallet.CreateAsync(Encoding.ASCII.GetBytes("1234"), null).Result;
+			wallet.ImportKeyAsync("5Kb8kLf9zgWQnogidDA76MzPL6TsZZY36hWXMssSzNydYXYB9KF").Wait();
 
-			wallet.Lock();
+			wallet.LockAsync().Wait();
 			Assert.IsTrue(wallet.IsLocked);
 
-			wallet.Unlock("1234", 500);
+			wallet.UnlockAsync("1234", 500).Wait();
 			Assert.IsFalse(wallet.IsLocked);
 
 			Thread.Sleep(1000);
@@ -197,8 +205,8 @@ namespace Electrolyte.Test {
 
 		[Test]
 		public void ImportPrivateKey() {
-			Wallet wallet = new Wallet(Encoding.ASCII.GetBytes("1234"), null);
-			wallet.ImportKey("5Kb8kLf9zgWQnogidDA76MzPL6TsZZY36hWXMssSzNydYXYB9KF");
+			Wallet wallet = Wallet.CreateAsync(Encoding.ASCII.GetBytes("1234"), null).Result;
+			wallet.ImportKeyAsync("5Kb8kLf9zgWQnogidDA76MzPL6TsZZY36hWXMssSzNydYXYB9KF").Wait();
 
 			ECKey key = wallet.PrivateKeys.Values.ToArray()[0];
 			Assert.AreEqual("5Kb8kLf9zgWQnogidDA76MzPL6TsZZY36hWXMssSzNydYXYB9KF", key.ToWalletImportFormat());
@@ -208,24 +216,24 @@ namespace Electrolyte.Test {
 
 		[Test]
 		public void AccessLimitation() {
-			Wallet wallet = new Wallet(Encoding.ASCII.GetBytes("1234"), null);
-			wallet.ImportKey("5Kb8kLf9zgWQnogidDA76MzPL6TsZZY36hWXMssSzNydYXYB9KF");
-			wallet.ImportKey("5KJD58353MLqgAdt6dqgwEGF4jDXcYN8bCpPsC5Qn2cqur6kZSw", true);
-			wallet.ImportWatchAddress("1ky1eHUrRR1kxKTbfiCptao9V25W97gDm");
+			Wallet wallet = Wallet.CreateAsync(Encoding.ASCII.GetBytes("1234"), null).Result;
+			wallet.ImportKeyAsync("5Kb8kLf9zgWQnogidDA76MzPL6TsZZY36hWXMssSzNydYXYB9KF").Wait();
+			wallet.ImportKeyAsync("5KJD58353MLqgAdt6dqgwEGF4jDXcYN8bCpPsC5Qn2cqur6kZSw", true).Wait();
+			wallet.ImportWatchAddressAsync("1ky1eHUrRR1kxKTbfiCptao9V25W97gDm").Wait();
 
 			Assert.Contains(new Address("1CC3X2gu58d6wXUWMffpuzN9JAfTUWu4Kj"), wallet.Addresses.ToList());
 			Assert.Contains(new Address("1CyuTPXMVqdHpDD7WTVcEvRFe4GmTHZC1Q"), wallet.Addresses.ToList());
 			Assert.Contains(new Address("1CyuTPXMVqdHpDD7WTVcEvRFe4GmTHZC1Q"), wallet.PublicAddresses.ToList());
 			Assert.Contains(new Address("1ky1eHUrRR1kxKTbfiCptao9V25W97gDm"), wallet.WatchAddresses.ToList());
 
-			wallet.Lock();
+			wallet.LockAsync().Wait();
 			
 			Assert.Contains(new Address("1CyuTPXMVqdHpDD7WTVcEvRFe4GmTHZC1Q"), wallet.Addresses.ToList());
 			Assert.Contains(new Address("1CyuTPXMVqdHpDD7WTVcEvRFe4GmTHZC1Q"), wallet.PublicAddresses.ToList());
 			Assert.Contains(new Address("1ky1eHUrRR1kxKTbfiCptao9V25W97gDm"), wallet.WatchAddresses.ToList());
 			Assert.IsFalse(wallet.Addresses.Contains(new Address("1CC3X2gu58d6wXUWMffpuzN9JAfTUWu4Kj")));
 
-			wallet.Unlock("1234");
+			wallet.UnlockAsync("1234").Wait();
 
 			Assert.Contains(new Address("1CC3X2gu58d6wXUWMffpuzN9JAfTUWu4Kj"), wallet.Addresses.ToList());
 			Assert.Contains(new Address("1CyuTPXMVqdHpDD7WTVcEvRFe4GmTHZC1Q"), wallet.Addresses.ToList());
@@ -235,68 +243,68 @@ namespace Electrolyte.Test {
 
 		[Test]
 		public void AddressManagement() {
-			Wallet wallet = new Wallet(Encoding.ASCII.GetBytes("1234"), null);
-			wallet.ImportKey("5Kb8kLf9zgWQnogidDA76MzPL6TsZZY36hWXMssSzNydYXYB9KF");
-			wallet.ImportKey("5KJD58353MLqgAdt6dqgwEGF4jDXcYN8bCpPsC5Qn2cqur6kZSw", true);
-			wallet.ImportWatchAddress("1ky1eHUrRR1kxKTbfiCptao9V25W97gDm");
+			Wallet wallet = Wallet.CreateAsync(Encoding.ASCII.GetBytes("1234"), null).Result;
+			wallet.ImportKeyAsync("5Kb8kLf9zgWQnogidDA76MzPL6TsZZY36hWXMssSzNydYXYB9KF").Wait();
+			wallet.ImportKeyAsync("5KJD58353MLqgAdt6dqgwEGF4jDXcYN8bCpPsC5Qn2cqur6kZSw", true).Wait();
+			wallet.ImportWatchAddressAsync("1ky1eHUrRR1kxKTbfiCptao9V25W97gDm").Wait();
 
 			Assert.Contains(new Address("1CC3X2gu58d6wXUWMffpuzN9JAfTUWu4Kj"), wallet.Addresses.ToList());
 			Assert.Contains(new Address("1CyuTPXMVqdHpDD7WTVcEvRFe4GmTHZC1Q"), wallet.Addresses.ToList());
 			Assert.Contains(new Address("1ky1eHUrRR1kxKTbfiCptao9V25W97gDm"), wallet.WatchAddresses.ToList());
 
-			wallet.Lock();
+			wallet.LockAsync().Wait();
 
 			Assert.Contains(new Address("1CyuTPXMVqdHpDD7WTVcEvRFe4GmTHZC1Q"), wallet.Addresses.ToList());
 			Assert.Contains(new Address("1ky1eHUrRR1kxKTbfiCptao9V25W97gDm"), wallet.WatchAddresses.ToList());
 			Assert.IsFalse(wallet.Addresses.Contains(new Address("1CC3X2gu58d6wXUWMffpuzN9JAfTUWu4Kj")));
 
-			wallet.Unlock("1234");
+			wallet.UnlockAsync("1234").Wait();
 
 			Assert.Contains(new Address("1CC3X2gu58d6wXUWMffpuzN9JAfTUWu4Kj"), wallet.Addresses.ToList());
 			Assert.Contains(new Address("1CyuTPXMVqdHpDD7WTVcEvRFe4GmTHZC1Q"), wallet.Addresses.ToList());
 			Assert.Contains(new Address("1ky1eHUrRR1kxKTbfiCptao9V25W97gDm"), wallet.WatchAddresses.ToList());
 
-			wallet.ShowAddress("1CC3X2gu58d6wXUWMffpuzN9JAfTUWu4Kj");
-			wallet.Lock();
+			wallet.ShowAddressAsync("1CC3X2gu58d6wXUWMffpuzN9JAfTUWu4Kj").Wait();
+			wallet.LockAsync().Wait();
 
 			Assert.Contains(new Address("1CC3X2gu58d6wXUWMffpuzN9JAfTUWu4Kj"), wallet.Addresses.ToList());
 			Assert.Contains(new Address("1CyuTPXMVqdHpDD7WTVcEvRFe4GmTHZC1Q"), wallet.Addresses.ToList());
 			Assert.Contains(new Address("1ky1eHUrRR1kxKTbfiCptao9V25W97gDm"), wallet.WatchAddresses.ToList());
 
-			wallet.Unlock("1234");
-			wallet.HideAddress("1CyuTPXMVqdHpDD7WTVcEvRFe4GmTHZC1Q");
+			wallet.UnlockAsync("1234").Wait();
+			wallet.HideAddressAsync("1CyuTPXMVqdHpDD7WTVcEvRFe4GmTHZC1Q").Wait();
 
 			Assert.Contains(new Address("1CC3X2gu58d6wXUWMffpuzN9JAfTUWu4Kj"), wallet.Addresses.ToList());
 			Assert.Contains(new Address("1CyuTPXMVqdHpDD7WTVcEvRFe4GmTHZC1Q"), wallet.Addresses.ToList());
 			Assert.Contains(new Address("1ky1eHUrRR1kxKTbfiCptao9V25W97gDm"), wallet.WatchAddresses.ToList());
 
-			wallet.Lock();
+			wallet.LockAsync().Wait();
 
 			Assert.Contains(new Address("1CC3X2gu58d6wXUWMffpuzN9JAfTUWu4Kj"), wallet.Addresses.ToList());
 			Assert.Contains(new Address("1ky1eHUrRR1kxKTbfiCptao9V25W97gDm"), wallet.WatchAddresses.ToList());
 			Assert.IsFalse(wallet.Addresses.Contains(new Address("1CyuTPXMVqdHpDD7WTVcEvRFe4GmTHZC1Q")));
 
-			wallet.Unlock("1234");
-			wallet.RemoveWatchAddress("1ky1eHUrRR1kxKTbfiCptao9V25W97gDm");
+			wallet.UnlockAsync("1234").Wait();
+			wallet.RemoveWatchAddressAsync("1ky1eHUrRR1kxKTbfiCptao9V25W97gDm").Wait();
 
 			Assert.Contains(new Address("1CC3X2gu58d6wXUWMffpuzN9JAfTUWu4Kj"), wallet.Addresses.ToList());
 			Assert.Contains(new Address("1CyuTPXMVqdHpDD7WTVcEvRFe4GmTHZC1Q"), wallet.Addresses.ToList());
 			Assert.IsFalse(wallet.Addresses.Contains(new Address("1ky1eHUrRR1kxKTbfiCptao9V25W97gDm")));
 
-			wallet.Lock();
+			wallet.LockAsync().Wait();
 
 			Assert.Contains(new Address("1CC3X2gu58d6wXUWMffpuzN9JAfTUWu4Kj"), wallet.Addresses.ToList());
 			Assert.IsFalse(wallet.Addresses.Contains(new Address("1CyuTPXMVqdHpDD7WTVcEvRFe4GmTHZC1Q")));
 			Assert.IsFalse(wallet.Addresses.Contains(new Address("1ky1eHUrRR1kxKTbfiCptao9V25W97gDm")));
 
-			wallet.Unlock("1234");
-			wallet.RemoveAddress("1CyuTPXMVqdHpDD7WTVcEvRFe4GmTHZC1Q");
+			wallet.UnlockAsync("1234").Wait();
+			wallet.RemoveAddressAsync("1CyuTPXMVqdHpDD7WTVcEvRFe4GmTHZC1Q").Wait();
 
 			Assert.Contains(new Address("1CC3X2gu58d6wXUWMffpuzN9JAfTUWu4Kj"), wallet.Addresses.ToList());
 			Assert.IsFalse(wallet.Addresses.Contains(new Address("1CyuTPXMVqdHpDD7WTVcEvRFe4GmTHZC1Q")));
 			Assert.IsFalse(wallet.Addresses.Contains(new Address("1ky1eHUrRR1kxKTbfiCptao9V25W97gDm")));
 
-			wallet.Lock();
+			wallet.LockAsync().Wait();
 
 			Assert.Contains(new Address("1CC3X2gu58d6wXUWMffpuzN9JAfTUWu4Kj"), wallet.Addresses.ToList());
 			Assert.IsFalse(wallet.Addresses.Contains(new Address("1CyuTPXMVqdHpDD7WTVcEvRFe4GmTHZC1Q")));

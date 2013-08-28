@@ -3,6 +3,7 @@ using System.IO;
 using System.Text;
 using System.Linq;
 using System.Timers;
+using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Security.Cryptography;
 using Org.BouncyCastle.Security;
@@ -78,78 +79,86 @@ namespace Electrolyte {
 			}
 		}
 
-		protected Wallet(string path = null) {
-			PrivateKeys = new Dictionary<Address, ECKey>();
-			WatchAddresses = new HashSet<Address>();
-			PublicAddresses = new HashSet<Address>();
+		protected Wallet(string path = null, Dictionary<Address, ECKey> keys = null, HashSet<Address> publicAddresses = null, HashSet<Address> watchAddresses = null) {
+			PrivateKeys = keys ?? new Dictionary<Address, ECKey>();
+			WatchAddresses = watchAddresses ?? new HashSet<Address>();
+			PublicAddresses = publicAddresses ?? new HashSet<Address>();
 			FilePath = path;
 		}
 
-		public Wallet(byte[] passphrase) : this(passphrase, DefaultWalletPath) { }
-		public Wallet(byte[] passphrase, string path) : this(passphrase, path, new Dictionary<Address, ECKey>()) { }
-		public Wallet(byte[] passphrase, string path, Dictionary<Address, ECKey> keys) : this(passphrase, path, keys, new HashSet<Address>()) { }		
-		public Wallet(byte[] passphrase, string path, Dictionary<Address, ECKey> keys, HashSet<Address> publicAddresses) : this(passphrase, path, keys, publicAddresses, new HashSet<Address>()) { }
-		public Wallet(byte[] passphrase, string path, Dictionary<Address, ECKey> keys, HashSet<Address> publicAddresses, HashSet<Address> watchAddresses) {
-			FilePath = path;
-			PrivateKeys = keys;
-			PublicAddresses = publicAddresses;
-			WatchAddresses = watchAddresses;
+//		public Wallet(byte[] passphrase) : this(passphrase, DefaultWalletPath) { }
+//		public Wallet(byte[] passphrase, string path) : this(passphrase, path, new Dictionary<Address, ECKey>()) { }
+//		public Wallet(byte[] passphrase, string path, Dictionary<Address, ECKey> keys) : this(passphrase, path, keys, new HashSet<Address>()) { }		
+//		public Wallet(byte[] passphrase, string path, Dictionary<Address, ECKey> keys, HashSet<Address> publicAddresses) : this(passphrase, path, keys, publicAddresses, new HashSet<Address>()) { }
+//		public Wallet(byte[] passphrase, string path, Dictionary<Address, ECKey> keys, HashSet<Address> publicAddresses, HashSet<Address> watchAddresses) {
+//			FilePath = path;
+//			PrivateKeys = keys;
+//			PublicAddresses = publicAddresses;
+//			WatchAddresses = watchAddresses;
+//
+//			// TODO: Move these lines to another method?
+//			Lock(passphrase);
+//			await UnlockAsync(passphrase);
+//		}
 
-			// TODO: Move these lines to another method?
-			Lock(passphrase);
-			Unlock(passphrase);
+		public static async Task<Wallet> CreateAsync(byte[] passphrase, string path = null, Dictionary<Address, ECKey> keys = null, HashSet<Address> publicAddresses = null, HashSet<Address> watchAddresses = null) {
+			Wallet wallet = new Wallet(path, keys, publicAddresses, watchAddresses);
+			await wallet.LockAsync(passphrase);
+			await wallet.UnlockAsync(passphrase);
+
+			return wallet;
 		}
 
 
 
-		public Address GenerateAddress() {
+		public async Task<Address> GenerateAddressAsync() {
 			ECKey key = new ECKey();
-			ImportKey(key);
+			await ImportKeyAsync(key);
 			return key.ToAddress();
 		}
 
-		public void ImportKey(string key, bool isPublic = false) {
-			ImportKey(ECKey.FromWalletImportFormat(key), isPublic);
+		public async Task ImportKeyAsync(string key, bool isPublic = false) {
+			await ImportKeyAsync(ECKey.FromWalletImportFormat(key), isPublic);
 		}
 
-		public void ImportKey(ECKey key, bool isPublic = false) {
+		public async Task ImportKeyAsync(ECKey key, bool isPublic = false) {
 			if(IsLocked) throw new LockedException();
-			if(isPublic) ImportReadOnlyAddress(key.ToAddress());
+			if(isPublic) await ImportReadOnlyAddressAsync(key.ToAddress());
 			PrivateKeys.Add(key.ToAddress(), key);
-			Save();
+			await SaveAsync();
 		}
 
-		public void ImportReadOnlyAddress(string address) {
-			ImportReadOnlyAddress(new Address(address));
+		public async Task ImportReadOnlyAddressAsync(string address) {
+			await ImportReadOnlyAddressAsync(new Address(address));
 		}
 
-		public void ImportReadOnlyAddress(Address address) {
+		public async Task ImportReadOnlyAddressAsync(Address address) {
 			if(IsLocked) throw new LockedException();
 			PublicAddresses.Add(address);
-			Save();
+			await SaveAsync();
 		}
 
-		public void ImportWatchAddress(string address) {
-			ImportWatchAddress(new Address(address));
+		public async Task ImportWatchAddressAsync(string address) {
+			await ImportWatchAddressAsync(new Address(address));
 		}
 
-		public void ImportWatchAddress(Address address) {
+		public async Task ImportWatchAddressAsync(Address address) {
 			if(IsLocked) throw new LockedException();
 			WatchAddresses.Add(address);
-			Save();
+			await SaveAsync();
 		}
 
 
 
-		public void ShowAddress(string address) {
-			ShowAddress(new Address(address));
+		public async Task ShowAddressAsync(string address) {
+			await ShowAddressAsync(new Address(address));
 		}
 
-		public void ShowAddress(Address address) {
+		public async Task ShowAddressAsync(Address address) {
 			if(IsLocked) throw new LockedException();
 			if(PrivateKeys.ContainsKey(address) && !PublicAddresses.Contains(address)) {
 				PublicAddresses.Add(address);
-				Save();
+				await SaveAsync();
 			}
 			else {
 				// TODO: Tailor this message for both the key not being present and the address already being public
@@ -157,15 +166,15 @@ namespace Electrolyte {
 			}
 		}
 
-		public void HideAddress(string address) {
-			HideAddress(new Address(address));
+		public async Task HideAddressAsync(string address) {
+			await HideAddressAsync(new Address(address));
 		}
 
-		public void HideAddress(Address address) {
+		public async Task HideAddressAsync(Address address) {
 			if(IsLocked) throw new LockedException();
 			if(PrivateKeys.ContainsKey(address) && PublicAddresses.Contains(address)) {
 				PublicAddresses.Remove(address);
-				Save();
+				await SaveAsync();
 			}
 			else {
 				// TODO: Tailor this message for both the key not being present and the address already being private
@@ -175,13 +184,13 @@ namespace Electrolyte {
 
 
 
-		public Transaction CreateTransaction(Dictionary<Address, Money> destinations, Address changeAddress = null) {
+		public async Task<Transaction> CreateTransactionAsync(Dictionary<Address, Money> destinations, Address changeAddress = null) {
 			Money change;
-			List<Transaction.Output> inpoints = CoinPicker.SelectInpoints(GetSpendableOutputs(), destinations, out change);
+			List<Transaction.Output> inpoints = CoinPicker.SelectInpoints(await GetSpendableOutputsAsync(), destinations, out change);
 			Dictionary<Address, Money> destinationsWithChange = new Dictionary<Address, Money>(destinations);
 
 			if(change > new Money(0, "BTC")) {
-				changeAddress = changeAddress ?? GenerateAddress();
+				changeAddress = changeAddress ?? await GenerateAddressAsync();
 				Console.WriteLine("Change address: {0}", changeAddress);
 				destinationsWithChange.Add(changeAddress, change);
 			}
@@ -203,11 +212,11 @@ namespace Electrolyte {
 
 
 
-		public void RemoveAddress(string address) {
-			RemoveAddress(new Address(address));
+		public async Task RemoveAddressAsync(string address) {
+			await RemoveAddressAsync(new Address(address));
 		}
 
-		public void RemoveAddress(Address address) {
+		public async Task RemoveAddressAsync(Address address) {
 			if(IsLocked) throw new LockedException();
 
 			if(Addresses.Contains(address)) {
@@ -216,18 +225,18 @@ namespace Electrolyte {
 				if(PublicAddresses.Contains(address))
 					PublicAddresses.Remove(address);
 
-				Save();
+				await SaveAsync();
 			}
 			else {
 				throw new OperationException(String.Format("Your wallet doesn't contain the address {0}", address));
 			}
 		}
 
-		public void RemoveWatchAddress(string address) {
-			RemoveWatchAddress(new Address(address));
+		public async Task RemoveWatchAddressAsync(string address) {
+			await RemoveWatchAddressAsync(new Address(address));
 		}
 
-		public void RemoveWatchAddress(Address address) {
+		public async Task RemoveWatchAddressAsync(Address address) {
 			if(IsLocked) throw new LockedException();
 
 			if(WatchAddresses.Contains(address))
@@ -235,41 +244,51 @@ namespace Electrolyte {
 			else
 				throw new OperationException(String.Format("You aren't watching the address '{0}'", address));
 
-			Save();
+			await SaveAsync();
 		}
 
 
 
-		public Money GetBalance() {
-			return Addresses.Select(a => Network.GetAddressBalanceAsync(a).Result).Sum();
+		public async Task<Money> GetBalanceAsync() {
+			if(Addresses.Count <= 0) return Money.Zero("BTC");
+			IEnumerable<Task<Money>> balances = Addresses.Select(async (a) => await Network.GetAddressBalanceAsync(a));
+			return (await Task.WhenAll(balances)).Sum();
 		}
 
-		public Money GetSpendableBalance() {
-			return PrivateKeys.Keys.Select(a => Network.GetAddressBalanceAsync(a).Result).Sum();
+		public async Task<Money> GetSpendableBalanceAsync() {
+			if(PrivateKeys.Count <= 0) return Money.Zero("BTC");
+			IEnumerable<Task<Money>> balances = PrivateKeys.Keys.Select(async (a) => await Network.GetAddressBalanceAsync(a));
+			return (await Task.WhenAll(balances)).Sum();
 		}
 
-		public List<Transaction.Output> GetSpendableOutputs() {
-			return PrivateKeys.Keys.SelectMany(a => Network.GetUnspentOutputsAsync(a).Result).ToList();
+		public async Task<List<Transaction.Output>> GetSpendableOutputsAsync() {
+			if(PrivateKeys.Count <= 0) return new List<Transaction.Output>();
+
+			List<Transaction.Output> outputs = new List<Transaction.Output>();
+			foreach(Address address in PrivateKeys.Keys)
+				outputs.AddRange(await Network.GetUnspentOutputsAsync(address));
+
+			return outputs;
 		}
 
 
 
-		public void Lock() {
-			Lock(EncryptionKey);
+		public async Task LockAsync() {
+			await LockAsync(EncryptionKey);
 
 			Array.Clear(EncryptionKey, 0, EncryptionKey.Length);
 			EncryptionKey = new byte[] { };
 		}
 
-		public void Lock(object sender, ElapsedEventArgs e) {
-			Lock();
+		public async void LockAsync(object sender, ElapsedEventArgs e) {
+			await LockAsync();
 		}
 
-		void Lock(byte[] passphrase) {
+		async Task LockAsync(byte[] passphrase) {
 			if(IsLocked)
 				throw new OperationException("Wallet is already locked");
 
-			Encrypt(passphrase);
+			await EncryptAsync(passphrase);
 
 			Array.Clear(EncryptionKey, 0, EncryptionKey.Length);
 			EncryptionKey = new byte[] { };
@@ -280,15 +299,15 @@ namespace Electrolyte {
 			IsLocked = true;
 		}
 
-		void Lock(string passphrase) {
-			Lock(Encoding.UTF8.GetBytes(passphrase));
+		async void LockAsync(string passphrase) {
+			await LockAsync(Encoding.UTF8.GetBytes(passphrase));
 		}
 
-		public void Unlock(byte[] passphrase, double timeout) {
+		public async Task UnlockAsync(byte[] passphrase, double timeout) {
 			if(!IsLocked)
 				throw new OperationException("Wallet is already unlocked");
 
-			Decrypt(passphrase);
+			await DecryptAsync(passphrase);
 
 			Array.Clear(EncryptedData, 0, EncryptedData.Length);
 			EncryptedData = new byte[] { };
@@ -298,36 +317,36 @@ namespace Electrolyte {
 			Array.Clear(passphrase, 0, passphrase.Length);
 
 			LockTimer = new Timer(timeout);
-			LockTimer.Elapsed += new ElapsedEventHandler(Lock);
+			LockTimer.Elapsed += new ElapsedEventHandler(LockAsync);
 			LockTimer.AutoReset = false;
 			LockTimer.Start();
 
 			IsLocked = false;
 		}
 
-		public void Unlock(byte[] passphrase) {
-			Unlock(passphrase, 1000 * 60 * 15);
+		public async Task UnlockAsync(byte[] passphrase) {
+			await UnlockAsync(passphrase, 1000 * 60 * 15);
 		}
 
-		public void Unlock(string passphrase, double timeout) {
-			Unlock(Encoding.UTF8.GetBytes(passphrase), timeout);
+		public async Task UnlockAsync(string passphrase, double timeout) {
+			await UnlockAsync(Encoding.UTF8.GetBytes(passphrase), timeout);
 		}
 
-		public void Unlock(string passphrase) {
-			Unlock(Encoding.UTF8.GetBytes(passphrase));
+		public async Task UnlockAsync(string passphrase) {
+			await UnlockAsync(Encoding.UTF8.GetBytes(passphrase));
 		}
 
 
 
-		public static Wallet Load() {
-			return Wallet.Load(DefaultWalletPath);
+		public async static Task<Wallet> LoadAsync() {
+			return await Wallet.LoadAsync(DefaultWalletPath);
 		}
 
-		public static Wallet Load(string path) {
+		public async static Task<Wallet> LoadAsync(string path) {
 			using(FileStream stream = new FileStream(path, FileMode.Open, FileAccess.Read)) {
 				using(StreamReader reader = new StreamReader(stream)) {
 					Wallet wallet = new Wallet(path);
-					wallet.Read(reader);
+					await wallet.ReadAsync(reader);
 
 					return wallet;
 				}
@@ -362,26 +381,26 @@ namespace Electrolyte {
 			}
 		}
 
-		public void Read(TextReader reader) {
-			LoadFromJson(reader.ReadToEnd());
+		public async Task ReadAsync(TextReader reader) {
+			LoadFromJson(await reader.ReadToEndAsync());
 			IsLocked = true;
 		}
 
-		public void ReadPrivate(TextReader reader) {
-			LoadPrivateDataFromJson(reader.ReadToEnd());
+		public async Task ReadPrivateAsync(TextReader reader) {
+			LoadPrivateDataFromJson(await reader.ReadToEndAsync());
 		}
 
-		public void Decrypt(byte[] passphrase) {
+		public async Task DecryptAsync(byte[] passphrase) {
 			Aes aes = Aes.Create();
 			aes.Mode = CipherMode.CBC;
 			aes.IV = IV;
-			aes.Key = PassphraseToKey(passphrase, Salt);
+			aes.Key = await PassphraseToKeyAsync(passphrase, Salt);
 
 			try {
 				using(MemoryStream stream = new MemoryStream(EncryptedData)) {
 					using(CryptoStream cryptoStream = new CryptoStream(stream, aes.CreateDecryptor(), CryptoStreamMode.Read))
 						using(StreamReader streamReader = new StreamReader(cryptoStream))
-							ReadPrivate(streamReader);
+							await ReadPrivateAsync(streamReader);
 				}
 			}
 			catch(CryptographicException) {
@@ -389,18 +408,18 @@ namespace Electrolyte {
 			}
 		}
 
-		public void Decrypt(string passphrase) {
-			Decrypt(Encoding.UTF8.GetBytes(passphrase));
+		public async Task DecryptAsync(string passphrase) {
+			await DecryptAsync(Encoding.UTF8.GetBytes(passphrase));
 		}
 
-		public void Decrypt(TextReader reader, byte[] passphrase) {
-			Read(reader);
-			Decrypt(passphrase);
+		public async Task DecryptAsync(TextReader reader, byte[] passphrase) {
+			await ReadAsync(reader);
+			await DecryptAsync(passphrase);
 		}
 
-		public void Decrypt(TextReader reader, string passphrase) {
-			Read(reader);
-			Decrypt(passphrase);
+		public async Task DecryptAsync(TextReader reader, string passphrase) {
+			await ReadAsync(reader);
+			await DecryptAsync(passphrase);
 		}
 
 		public string DataAsJson() {
@@ -443,15 +462,15 @@ namespace Electrolyte {
 			return JsonConvert.SerializeObject(data);
 		}
 
-		public void Write(TextWriter writer) {
-			writer.Write(DataAsJson());
+		public async Task WriteAsync(TextWriter writer) {
+			await writer.WriteAsync(DataAsJson());
 		}
 
-		public void WritePrivate(TextWriter writer) {
-			writer.Write(PrivateDataAsJson());
+		public async Task WritePrivateAsync(TextWriter writer) {
+			await writer.WriteAsync(PrivateDataAsJson());
 		}
 
-		public void Encrypt(byte[] passphrase) {
+		public async Task EncryptAsync(byte[] passphrase) {
 			SecureRandom random = new SecureRandom();
 
 			IV = new byte[16];
@@ -463,35 +482,35 @@ namespace Electrolyte {
 			Aes aes = Aes.Create();
 			aes.Mode = CipherMode.CBC;
 			aes.IV = IV;
-			aes.Key = PassphraseToKey(passphrase, Salt);
+			aes.Key = await PassphraseToKeyAsync(passphrase, Salt);
 
 			using(MemoryStream stream = new MemoryStream()) {
 				using(CryptoStream cryptoStream = new CryptoStream(stream, aes.CreateEncryptor(), CryptoStreamMode.Write))
 					using(StreamWriter streamWriter = new StreamWriter(cryptoStream))
-						WritePrivate(streamWriter);
+						await WritePrivateAsync(streamWriter);
 				EncryptedData = stream.ToArray();
 			}
 		}
 
-		public void Encrypt(string passphrase) {
-			Encrypt(Encoding.UTF8.GetBytes(passphrase));
+		public async Task EncryptAsync(string passphrase) {
+			await EncryptAsync(Encoding.UTF8.GetBytes(passphrase));
 		}
 
-		public void Encrypt(TextWriter writer, byte[] passphrase) {
-			Encrypt(passphrase);
-			Write(writer);
+		public async Task EncryptAsync(TextWriter writer, byte[] passphrase) {
+			await EncryptAsync(passphrase);
+			await WriteAsync(writer);
 		}
 
-		public void Encrypt(TextWriter writer, string passphrase) {
-			Encrypt(passphrase);
-			Write(writer);
+		public async Task EncryptAsync(TextWriter writer, string passphrase) {
+			await EncryptAsync(passphrase);
+			await WriteAsync(writer);
 		}
 
-		public void Save() {
-			Save(FilePath);
+		public async Task SaveAsync() {
+			await SaveAsync(FilePath);
 		}
 
-		public void Save(string path) {
+		public async Task SaveAsync(string path) {
 			if(IsLocked) { throw new LockedException(); }
 
 			if(path != null) {
@@ -509,9 +528,9 @@ namespace Electrolyte {
 				using(FileStream stream = new FileStream(path, FileMode.CreateNew, FileAccess.ReadWrite)) {
 					using(StreamWriter writer = new StreamWriter(stream)) {
 						if(!IsLocked)
-							Encrypt(EncryptionKey);
+							await EncryptAsync(EncryptionKey);
 
-						Write(writer);
+						await WriteAsync(writer);
 					}
 				}
 			}
@@ -519,14 +538,16 @@ namespace Electrolyte {
 
 
 
-		static byte[] PassphraseToKey(byte[] passphrase, byte[] salt) {
+		static async Task<byte[]> PassphraseToKeyAsync(byte[] passphrase, byte[] salt) {
 			byte[] key = passphrase;
 
-			using(SHA256 sha256 = SHA256.Create()) {
-				for(ulong i = 0; i < KeyHashes; i++) {
-					key = sha256.ComputeHash(ArrayHelpers.ConcatArrays(key, passphrase, salt));
+			await Task.Run(() => {
+				using(SHA256 sha256 = SHA256.Create()) {
+					for(ulong i = 0; i < KeyHashes; i++) {
+						key = sha256.ComputeHash(ArrayHelpers.ConcatArrays(key, passphrase, salt));
+					}
 				}
-			}
+			});
 
 			return ArrayHelpers.SubArray(key, 0, 32);
 		}
