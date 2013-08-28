@@ -105,7 +105,7 @@ namespace Electrolyte.Test {
 
 			using(MemoryStream stream = new MemoryStream(output)) {
 				using(StreamReader reader = new StreamReader(stream))
-					Assert.Throws<CryptographicException>(() => new Wallet(Encoding.ASCII.GetBytes("1234"), null).Decrypt(reader, "2345"));
+					Assert.Throws<Wallet.InvalidPassphraseException>(() => new Wallet(Encoding.ASCII.GetBytes("1234"), null).Decrypt(reader, "2345"));
 			}
 		}
 
@@ -151,7 +151,7 @@ namespace Electrolyte.Test {
 			Assert.Contains(new Address("1CyuTPXMVqdHpDD7WTVcEvRFe4GmTHZC1Q"), wallet.Addresses.ToList());
 			Assert.Contains(new Address("1ky1eHUrRR1kxKTbfiCptao9V25W97gDm"), wallet.WatchAddresses.ToList());
 
-			Assert.Throws<CryptographicException>(() => wallet.Unlock("2345"));
+			Assert.Throws<Wallet.InvalidPassphraseException>(() => wallet.Unlock("2345"));
 			Assert.IsFalse(wallet.WatchAddresses.Contains(new Address("1CC3X2gu58d6wXUWMffpuzN9JAfTUWu4Kj")));
 			Assert.Contains(new Address("1CyuTPXMVqdHpDD7WTVcEvRFe4GmTHZC1Q"), wallet.Addresses.ToList());
 			Assert.Contains(new Address("1ky1eHUrRR1kxKTbfiCptao9V25W97gDm"), wallet.WatchAddresses.ToList());

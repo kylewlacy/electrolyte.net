@@ -28,6 +28,12 @@ namespace Electrolyte {
 			public LockedException(string message, Exception inner) : base(message, inner) { }
 		}
 
+		public class InvalidPassphraseException : OperationException {
+			public InvalidPassphraseException() { }
+			public InvalidPassphraseException(string message) : base(message) { }
+			public InvalidPassphraseException(string message, Exception inner) : base(message, inner) { }
+		}
+
 		public static string Version = "1.0.0.0";
 
 #if !DEBUG
@@ -371,10 +377,15 @@ namespace Electrolyte {
 			aes.IV = IV;
 			aes.Key = PassphraseToKey(passphrase, Salt);
 
-			using(MemoryStream stream = new MemoryStream(EncryptedData)) {
-				using(CryptoStream cryptoStream = new CryptoStream(stream, aes.CreateDecryptor(), CryptoStreamMode.Read))
-					using(StreamReader streamReader = new StreamReader(cryptoStream))
-						ReadPrivate(streamReader);
+			try {
+				using(MemoryStream stream = new MemoryStream(EncryptedData)) {
+					using(CryptoStream cryptoStream = new CryptoStream(stream, aes.CreateDecryptor(), CryptoStreamMode.Read))
+						using(StreamReader streamReader = new StreamReader(cryptoStream))
+							ReadPrivate(streamReader);
+				}
+			}
+			catch(CryptographicException) {
+				throw new InvalidPassphraseException();
 			}
 		}
 
