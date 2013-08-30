@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Electrolyte.Messages;
@@ -29,6 +30,14 @@ namespace Electrolyte.Networking {
 
 		public static async Task<Transaction> GetTransactionAsync(string hex, ulong height) {
 			return await GetTransactionAsync(new TransactionInfo(hex, height));
+		}
+
+		public static async Task<List<Task<Transaction>>> GetAddressHistoryListAsync(Address address) {
+			return await Protocol.GetAddressHistoryListAsync(address);
+		}
+
+		public static async Task<List<Task<Transaction>>> GetAddressHistoryListAsync(string address) {
+			return await GetAddressHistoryListAsync(new Address(address));
 		}
 
 		public static async Task<List<Transaction>> GetAddressHistoryAsync(Address address) {

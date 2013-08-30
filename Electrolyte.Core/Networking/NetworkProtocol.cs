@@ -49,8 +49,16 @@ namespace Electrolyte.Networking {
 			return await NextProtocol.GetTransactionAsync(info);
 		}
 
-		public async virtual Task<List<Transaction>> GetAddressHistoryAsync(Address address) {
-			return await NextProtocol.GetAddressHistoryAsync(address);
+		public async virtual Task<List<Task<Transaction>>> GetAddressHistoryListAsync(Address address) {
+			return await NextProtocol.GetAddressHistoryListAsync(address);
+		}
+
+		public async Task<List<Transaction>> GetAddressHistoryAsync(Address address) {
+			List<Task<Transaction>> historyList = await GetAddressHistoryListAsync(address);
+			if(historyList.Count <= 0)
+				return new List<Transaction>();
+
+			return (await Task.WhenAll(historyList)).ToList();
 		}
 
 		public async Task<List<Transaction.Output>> GetUnspentOutputsAsync(Address address) {

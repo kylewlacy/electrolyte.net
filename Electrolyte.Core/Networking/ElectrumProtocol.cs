@@ -68,7 +68,6 @@ namespace Electrolyte.Networking {
 			JToken json = JToken.Parse(await SendRPCAsync("blockchain.transaction.get", info.Hex, info.Height));
 
 			string txHex = json["result"].Value<string>();
-
 			byte[] rawTx = BinaryHelpers.HexToByteArray(txHex);
 
 			Transaction tx = new Transaction();
@@ -76,14 +75,14 @@ namespace Electrolyte.Networking {
 			return tx;
 		}
 
-		public async override Task<List<Transaction>> GetAddressHistoryAsync(Address address) {
-			List<Transaction> transactions = new List<Transaction>();
+		public async override Task<List<Task<Transaction>>> GetAddressHistoryListAsync(Address address) {
+			List<Task<Transaction>> transactionTasks = new List<Task<Transaction>>();
 			JToken json = JToken.Parse(await SendRPCAsync("blockchain.address.get_history", address.ID));
 
 			foreach(JToken tx in json["result"])
-				transactions.Add(await Network.GetTransactionAsync(tx["tx_hash"].Value<string>(), tx["height"].Value<ulong>()));
+				transactionTasks.Add(Network.GetTransactionAsync(tx["tx_hash"].Value<string>(), tx["height"].Value<ulong>()));
 
-			return transactions;
+			return transactionTasks;
 		}
 
 		public async override Task<Money> GetAddressBalanceAsync(Address address) {
