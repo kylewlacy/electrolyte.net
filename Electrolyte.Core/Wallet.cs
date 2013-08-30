@@ -35,7 +35,7 @@ namespace Electrolyte {
 			public InvalidPassphraseException(string message, Exception inner) : base(message, inner) { }
 		}
 
-		public static string Version = "1.0.0.0";
+		public static string Version = "0.0.1";
 
 		internal Timer LockTimer = new Timer();
 
