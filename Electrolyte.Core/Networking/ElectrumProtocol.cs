@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using Electrolyte.Messages;
 using Electrolyte.Helpers;
+using Electrolyte.Extensions;
 
 namespace Electrolyte.Networking {
 	public class ElectrumProtocol : NetworkProtocol {
@@ -94,6 +95,11 @@ namespace Electrolyte.Networking {
 				transactions.Add(await Network.GetTransactionAsync(tx["tx_hash"].Value<string>(), tx["height"].Value<ulong>()));
 
 			return transactions;
+		}
+
+		public async override Task<Money> GetAddressBalanceAsync(Address address) {
+			List<Transaction.Output> unspentOutputs = await Network.GetUnspentOutputsAsync(address);
+			return unspentOutputs.Select(o => o.Value).Sum();
 		}
 
 

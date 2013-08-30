@@ -94,8 +94,7 @@ namespace Electrolyte.Networking {
 		}
 
 		public async virtual Task<Money> GetAddressBalanceAsync(Address address) {
-			List<Transaction.Output> unspentOutputs = await GetUnspentOutputsAsync(address);
-			return unspentOutputs.Select(o => o.Value).Sum();
+			return await NextProtocol.GetAddressBalanceAsync(address);
 		}
 
 		public async virtual Task<Money> GetAddressBalanceAsync(string address) {
