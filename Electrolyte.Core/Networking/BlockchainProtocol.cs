@@ -1,18 +1,15 @@
 using System;
-using System.IO;
-using System.Text;
-using System.Linq;
 using System.Net;
-using System.Net.Sockets;
-using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
-using Electrolyte.Messages;
 
 namespace Electrolyte.Networking {
 	public class BlockchainProtocol : NetworkProtocol {
-		public WebClient Client;
 		public Uri Address;
+
+		WebClient Client;
+		static readonly SemaphoreSlim clientLock = new SemaphoreSlim(1);
 
 		public BlockchainProtocol(string address) {
 			Client = new WebClient();
@@ -31,11 +28,23 @@ namespace Electrolyte.Networking {
 
 		async Task<string> GetContentAsync(string path) {
 			// TODO: Use `Client.DownloadStringTaskAsync` (once it becomes available?)
-			return await Task.Run(() => Client.DownloadString(new Uri(Address, path)));
+			await clientLock.WaitAsync();
+			try {
+				return await Task.Run(() => Client.DownloadString(new Uri(Address, path)));
+			}
+			finally {
+				clientLock.Release();
+			}
 		}
 
 		async Task<JToken> GetJsonAsync(string path) {
 			return JToken.Parse(await GetContentAsync(path));
+		}
+
+
+		public override async Task<Money> GetAddressBalanceAsync(Address address) {
+			JToken data = await GetJsonAsync(String.Format("/address/{0}?format=json", address));
+			return new Money(data["final_balance"].Value<long>(), "BTC");
 		}
 
 
