@@ -33,7 +33,7 @@ namespace Electrolyte.Test {
 		}
 
 		[Test]
-		public void PublicAddresses() {
+		public void PublicPrivateAddresses() {
 			Wallet wallet = Wallet.CreateAsync(Encoding.ASCII.GetBytes("1234"), null).Result;
 			
 			wallet.ImportKeyAsync("5Kb8kLf9zgWQnogidDA76MzPL6TsZZY36hWXMssSzNydYXYB9KF", false).Wait();
@@ -43,6 +43,8 @@ namespace Electrolyte.Test {
 			Assert.Contains(new Address("1CC3X2gu58d6wXUWMffpuzN9JAfTUWu4Kj"), wallet.Addresses.ToList());
 			Assert.Contains(new Address("1CyuTPXMVqdHpDD7WTVcEvRFe4GmTHZC1Q"), wallet.PublicAddresses.ToList());
 			Assert.IsFalse(wallet.PublicAddresses.Contains(new Address("1CC3X2gu58d6wXUWMffpuzN9JAfTUWu4Kj")));
+			Assert.IsFalse(wallet.PrivateAddresses.Contains(new Address("1CyuTPXMVqdHpDD7WTVcEvRFe4GmTHZC1Q")));
+			Assert.Contains(new Address("1CC3X2gu58d6wXUWMffpuzN9JAfTUWu4Kj"), wallet.PrivateAddresses.ToList());
 		}
 
 		[Test]

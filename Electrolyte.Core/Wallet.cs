@@ -60,6 +60,14 @@ namespace Electrolyte {
 
 		public HashSet<Address> WatchAddresses;
 		public HashSet<Address> PublicAddresses;
+
+		public HashSet<Address> PrivateAddresses {
+			get {
+				if(IsLocked) { throw new LockedException(); }
+				return new HashSet<Address>(Addresses.Except(PublicAddresses));
+			}
+		}
+
 		public HashSet<Address> Addresses {
 			get {
 				if(IsLocked)
