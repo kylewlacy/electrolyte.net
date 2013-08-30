@@ -112,11 +112,11 @@ namespace Electrolyte {
 			return key.ToAddress();
 		}
 
-		public async Task ImportKeyAsync(string key, bool isPublic = false) {
+		public async Task ImportKeyAsync(string key, bool isPublic = true) {
 			await ImportKeyAsync(ECKey.FromWalletImportFormat(key), isPublic);
 		}
 
-		public async Task ImportKeyAsync(ECKey key, bool isPublic = false) {
+		public async Task ImportKeyAsync(ECKey key, bool isPublic = true) {
 			if(IsLocked) throw new LockedException();
 			if(isPublic) await ImportReadOnlyAddressAsync(key.ToAddress());
 			PrivateKeys.Add(key.ToAddress(), key);
