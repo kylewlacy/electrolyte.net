@@ -49,16 +49,8 @@ namespace Electrolyte.Networking {
 			return await NextProtocol.GetTransactionAsync(info);
 		}
 
-		public async virtual Task<Transaction> GetTransactionAsync(string hex, ulong height) {
-			return await GetTransactionAsync(new TransactionInfo(hex, height));
-		}
-
 		public async virtual Task<List<Transaction>> GetAddressHistoryAsync(Address address) {
 			return await NextProtocol.GetAddressHistoryAsync(address);
-		}
-
-		public async virtual Task<List<Transaction>> GetAddressHistoryAsync(string address) {
-			return await GetAddressHistoryAsync(new Address(address));
 		}
 
 		public async Task<List<Transaction.Output>> GetUnspentOutputsAsync(Address address) {
@@ -89,16 +81,8 @@ namespace Electrolyte.Networking {
 			return unspentOutputs.Values.ToList();
 		}
 
-		public async Task<List<Transaction.Output>> GetUnspentOutputsAsync(string address) {
-			return await GetUnspentOutputsAsync(new Address(address));
-		}
-
 		public async virtual Task<Money> GetAddressBalanceAsync(Address address) {
 			return await NextProtocol.GetAddressBalanceAsync(address);
-		}
-
-		public async virtual Task<Money> GetAddressBalanceAsync(string address) {
-			return await GetAddressBalanceAsync(new Address(address));
 		}
 
 
@@ -111,10 +95,6 @@ namespace Electrolyte.Networking {
 
 		public virtual async Task<decimal> GetExchangeRateAsync(Money.CurrencyType c1, Money.CurrencyType c2) {
 			return await NextProtocol.GetExchangeRateAsync(c1, c2);
-		}
-
-		public virtual async Task<decimal> GetExchangeRateAsync(string c1, string c2) {
-			return await GetExchangeRateAsync(Money.CurrencyType.FindByCode(c1), Money.CurrencyType.FindByCode(c2));
 		}
 	}
 }
