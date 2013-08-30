@@ -32,7 +32,7 @@ namespace Electrolyte.Networking {
 
 		public async override Task<Transaction> GetTransactionAsync(TransactionInfo info) {
 			if(!TransactionCache.ContainsKey(info.Hex))
-				TransactionCache.Add(info.Hex, await NextProtocol.GetTransactionAsync(info));
+				TransactionCache.Add(info.Hex, await base.GetTransactionAsync(info));
 
 			return TransactionCache[info.Hex];
 		}
@@ -52,7 +52,7 @@ namespace Electrolyte.Networking {
 				ExchangeRateCache[c1].Remove(c2);
 			}
 
-			decimal rate = await NextProtocol.GetExchangeRateAsync(c1, c2);
+			decimal rate = await base.GetExchangeRateAsync(c1, c2);
 			ExchangeRateCache[c1].Add(c2, new ExchangeRateInfo(rate));
 			return rate;
 		}
