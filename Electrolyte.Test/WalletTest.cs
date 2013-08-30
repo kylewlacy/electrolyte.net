@@ -36,7 +36,7 @@ namespace Electrolyte.Test {
 		public void PublicAddresses() {
 			Wallet wallet = Wallet.CreateAsync(Encoding.ASCII.GetBytes("1234"), null).Result;
 			
-			wallet.ImportKeyAsync("5Kb8kLf9zgWQnogidDA76MzPL6TsZZY36hWXMssSzNydYXYB9KF").Wait();
+			wallet.ImportKeyAsync("5Kb8kLf9zgWQnogidDA76MzPL6TsZZY36hWXMssSzNydYXYB9KF", false).Wait();
 			wallet.ImportKeyAsync("5KJD58353MLqgAdt6dqgwEGF4jDXcYN8bCpPsC5Qn2cqur6kZSw", true).Wait();
 
 			Assert.Contains(new Address("1CyuTPXMVqdHpDD7WTVcEvRFe4GmTHZC1Q"), wallet.Addresses.ToList());
@@ -217,7 +217,7 @@ namespace Electrolyte.Test {
 		[Test]
 		public void AccessLimitation() {
 			Wallet wallet = Wallet.CreateAsync(Encoding.ASCII.GetBytes("1234"), null).Result;
-			wallet.ImportKeyAsync("5Kb8kLf9zgWQnogidDA76MzPL6TsZZY36hWXMssSzNydYXYB9KF").Wait();
+			wallet.ImportKeyAsync("5Kb8kLf9zgWQnogidDA76MzPL6TsZZY36hWXMssSzNydYXYB9KF", false).Wait();
 			wallet.ImportKeyAsync("5KJD58353MLqgAdt6dqgwEGF4jDXcYN8bCpPsC5Qn2cqur6kZSw", true).Wait();
 			wallet.ImportWatchAddressAsync("1ky1eHUrRR1kxKTbfiCptao9V25W97gDm").Wait();
 
@@ -244,7 +244,7 @@ namespace Electrolyte.Test {
 		[Test]
 		public void AddressManagement() {
 			Wallet wallet = Wallet.CreateAsync(Encoding.ASCII.GetBytes("1234"), null).Result;
-			wallet.ImportKeyAsync("5Kb8kLf9zgWQnogidDA76MzPL6TsZZY36hWXMssSzNydYXYB9KF").Wait();
+			wallet.ImportKeyAsync("5Kb8kLf9zgWQnogidDA76MzPL6TsZZY36hWXMssSzNydYXYB9KF", false).Wait();
 			wallet.ImportKeyAsync("5KJD58353MLqgAdt6dqgwEGF4jDXcYN8bCpPsC5Qn2cqur6kZSw", true).Wait();
 			wallet.ImportWatchAddressAsync("1ky1eHUrRR1kxKTbfiCptao9V25W97gDm").Wait();
 
