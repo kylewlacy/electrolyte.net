@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using Electrolyte.Messages;
@@ -14,7 +15,9 @@ namespace Electrolyte.Networking {
 	public class ElectrumProtocol : NetworkProtocol {
 		public string Server;
 		public int Port;
-		public TcpClient Client;
+
+		TcpClient Client;
+		static readonly SemaphoreSlim clientLock = new SemaphoreSlim(1);
 
 		public ElectrumProtocol(string server, int port) {
 			Client = new TcpClient();
@@ -46,14 +49,26 @@ namespace Electrolyte.Networking {
 
 			string rpc = String.Format("{{\"id\": 1, \"method\": \"{0}\", \"params\": [{1}]}}", methodName, String.Join(", ", jsonArgs));
 
-			StreamWriter writer = new StreamWriter(Client.GetStream());
-			await writer.WriteLineAsync(rpc);
-			await writer.FlushAsync();
+			await clientLock.WaitAsync();
+			try {
+				StreamWriter writer = new StreamWriter(Client.GetStream());
+				await writer.WriteLineAsync(rpc);
+				await writer.FlushAsync();
+			}
+			finally {
+				clientLock.Release();
+			}
 		}
 
 		async Task<string> GetResponseAsync() {
-			StreamReader reader = new StreamReader(Client.GetStream());
-			return await reader.ReadLineAsync();
+			await clientLock.WaitAsync();
+			try {
+				StreamReader reader = new StreamReader(Client.GetStream());
+				return await reader.ReadLineAsync();
+			}
+			finally {
+				clientLock.Release();
+			}
 		}
 
 		public async override Task<Transaction> GetTransactionAsync(TransactionInfo info) {
@@ -85,7 +100,6 @@ namespace Electrolyte.Networking {
 
 		public override async Task BroadcastTransactionAsync(Transaction tx) {
 			await SendRPCAsync("blockchain.transaction.broadcast", tx.ToHex());
-			string r = await GetResponseAsync();
 			JToken json = JToken.Parse(await GetResponseAsync());
 
 			if(json["result"].Value<string>() != tx.Hash)
