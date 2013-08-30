@@ -37,7 +37,7 @@ namespace Electrolyte.Networking {
 			Client.Close();
 		}
 
-		async Task SendRPCAsync(string methodName, params object[] args) {
+		async Task<string> SendRPCAsync(string methodName, params object[] args) {
 			List<string> jsonArgs = new List<string>();
 			foreach(object arg in args) {
 				if(arg is string) {
@@ -55,15 +55,7 @@ namespace Electrolyte.Networking {
 				StreamWriter writer = new StreamWriter(Client.GetStream());
 				await writer.WriteLineAsync(rpc);
 				await writer.FlushAsync();
-			}
-			finally {
-				clientLock.Release();
-			}
-		}
 
-		async Task<string> GetResponseAsync() {
-			await clientLock.WaitAsync();
-			try {
 				StreamReader reader = new StreamReader(Client.GetStream());
 				return await reader.ReadLineAsync();
 			}
@@ -73,8 +65,7 @@ namespace Electrolyte.Networking {
 		}
 
 		public async override Task<Transaction> GetTransactionAsync(TransactionInfo info) {
-			await SendRPCAsync("blockchain.transaction.get", info.Hex, info.Height);
-			JToken json = JToken.Parse(await GetResponseAsync());
+			JToken json = JToken.Parse(await SendRPCAsync("blockchain.transaction.get", info.Hex, info.Height));
 
 			string txHex = json["result"].Value<string>();
 
@@ -86,10 +77,8 @@ namespace Electrolyte.Networking {
 		}
 
 		public async override Task<List<Transaction>> GetAddressHistoryAsync(Address address) {
-			await SendRPCAsync("blockchain.address.get_history", address.ID);
-
 			List<Transaction> transactions = new List<Transaction>();
-			JToken json = JToken.Parse(await GetResponseAsync());
+			JToken json = JToken.Parse(await SendRPCAsync("blockchain.address.get_history", address.ID));
 
 			foreach(JToken tx in json["result"])
 				transactions.Add(await Network.GetTransactionAsync(tx["tx_hash"].Value<string>(), tx["height"].Value<ulong>()));
@@ -105,8 +94,7 @@ namespace Electrolyte.Networking {
 
 
 		public override async Task BroadcastTransactionAsync(Transaction tx) {
-			await SendRPCAsync("blockchain.transaction.broadcast", tx.ToHex());
-			JToken json = JToken.Parse(await GetResponseAsync());
+			JToken json = JToken.Parse(await SendRPCAsync("blockchain.transaction.broadcast", tx.ToHex()));
 
 			if(json["result"].Value<string>() != tx.Hash)
 				throw new Exception("Wat");
