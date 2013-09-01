@@ -275,6 +275,39 @@ namespace Electrolyte {
 		}
 
 
+		public async Task<Dictionary<Transaction, Money>> GetTransactionDeltasAsync() {
+			Dictionary<Transaction, Money> deltas = new Dictionary<Transaction, Money>();
+
+			// TODO: Order this by block height to avoid two `foreach` loops
+			// Two loops exist because 'subtract' inputs may come before 'add' outputs
+			List<List<Transaction>> walletHistoryList = (await Task.WhenAll(Addresses.Select(async (a) => await Network.GetAddressHistoryAsync(a)).ToArray())).ToList();
+			List<Transaction> walletHistory = walletHistoryList.SelectMany(h => h).ToList();
+
+			foreach(Transaction tx in walletHistory) {
+				foreach(Transaction.Output output in tx.Outputs) {
+					if(Addresses.Contains(output.Recipient)) {
+						if(!deltas.ContainsKey(tx)) { deltas.Add(tx, Money.Zero("BTC")); }
+						deltas[tx] += output.Value;
+					}
+				}
+			}
+
+			foreach(Transaction tx in walletHistory) {
+				foreach(Transaction.Input input in tx.Inputs) {
+					if(Addresses.Contains(input.Sender)) {
+						Transaction prevTx = deltas.Keys.FirstOrDefault(t => input.PrevTransactionHash == t.Hash);
+						if(deltas.ContainsKey(prevTx)) {
+							if(!deltas.ContainsKey(tx)) { deltas.Add(tx, Money.Zero("BTC")); }
+							deltas[tx] -= prevTx.Outputs[(int)input.OutpointIndex].Value;
+						}
+					}
+				}
+			}
+
+			return deltas;
+		}
+
+
 
 		public async Task LockAsync() {
 			await LockAsync(EncryptionKey);
