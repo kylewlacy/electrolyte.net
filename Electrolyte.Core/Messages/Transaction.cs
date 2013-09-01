@@ -190,6 +190,7 @@ namespace Electrolyte.Messages {
 		}
 
 		public UInt32 Version;
+		public ulong? Height;
 
 		public List<Input> Inputs = new List<Input>();
 		public List<Output> Outputs = new List<Output>();
@@ -226,6 +227,12 @@ namespace Electrolyte.Messages {
 					return BinaryHelpers.ByteArrayToHex(sha256.ComputeHash(sha256.ComputeHash(ToByteArray())).Reverse().ToArray());
 				}
 			}
+		}
+
+		public Transaction() { }
+
+		public Transaction(ulong height) {
+			Height = height;
 		}
 
 		public byte[] InputHash(SigHash hashType, Script subScript, int inputIndex) {

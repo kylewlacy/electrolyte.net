@@ -70,7 +70,7 @@ namespace Electrolyte.Networking {
 			string txHex = json["result"].Value<string>();
 			byte[] rawTx = BinaryHelpers.HexToByteArray(txHex);
 
-			Transaction tx = new Transaction();
+			Transaction tx = new Transaction(info.Height);
 			tx.ReadPayload(new BinaryReader(new MemoryStream(rawTx)));
 			return tx;
 		}
