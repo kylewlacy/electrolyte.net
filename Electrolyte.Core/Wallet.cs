@@ -39,6 +39,10 @@ namespace Electrolyte {
 
 		internal Timer LockTimer = new Timer();
 
+		// http://stackoverflow.com/a/340618
+		public event EventHandler DidLock = delegate { };
+		public event EventHandler DidUnlock = delegate { };
+
 		public bool IsLocked { get; private set; }
 		public byte[] EncryptionKey = new byte[] { };
 		public byte[] EncryptedData, IV, Salt;
@@ -88,21 +92,6 @@ namespace Electrolyte {
 			PublicAddresses = publicAddresses ?? new HashSet<Address>();
 			FilePath = path;
 		}
-
-//		public Wallet(byte[] passphrase) : this(passphrase, DefaultWalletPath) { }
-//		public Wallet(byte[] passphrase, string path) : this(passphrase, path, new Dictionary<Address, ECKey>()) { }
-//		public Wallet(byte[] passphrase, string path, Dictionary<Address, ECKey> keys) : this(passphrase, path, keys, new HashSet<Address>()) { }		
-//		public Wallet(byte[] passphrase, string path, Dictionary<Address, ECKey> keys, HashSet<Address> publicAddresses) : this(passphrase, path, keys, publicAddresses, new HashSet<Address>()) { }
-//		public Wallet(byte[] passphrase, string path, Dictionary<Address, ECKey> keys, HashSet<Address> publicAddresses, HashSet<Address> watchAddresses) {
-//			FilePath = path;
-//			PrivateKeys = keys;
-//			PublicAddresses = publicAddresses;
-//			WatchAddresses = watchAddresses;
-//
-//			// TODO: Move these lines to another method?
-//			Lock(passphrase);
-//			await UnlockAsync(passphrase);
-//		}
 
 		public static async Task<Wallet> CreateAsync(byte[] passphrase, string path = null, Dictionary<Address, ECKey> keys = null, HashSet<Address> publicAddresses = null, HashSet<Address> watchAddresses = null) {
 			Wallet wallet = new Wallet(path, keys, publicAddresses, watchAddresses);
@@ -333,6 +322,7 @@ namespace Electrolyte {
 			LockTimer.Stop();
 
 			IsLocked = true;
+			DidLock(this, new EventArgs());
 		}
 
 		async void LockAsync(string passphrase) {
@@ -358,6 +348,7 @@ namespace Electrolyte {
 			LockTimer.Start();
 
 			IsLocked = false;
+			DidUnlock(this, new EventArgs());
 		}
 
 		public async Task UnlockAsync(byte[] passphrase) {
