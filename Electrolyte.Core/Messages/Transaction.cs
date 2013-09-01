@@ -334,6 +334,13 @@ namespace Electrolyte.Messages {
 				Outputs.Add(Output.FromJson(outputs[i], this, (UInt32)i));
 		}
 
+
+
+		public override int GetHashCode() {
+			return Hash.GetHashCode();
+		}
+
+
 		
 		public byte[] ToByteArray() {
 			using(MemoryStream stream = new MemoryStream()) {
