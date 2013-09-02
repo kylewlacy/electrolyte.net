@@ -7,11 +7,11 @@ using Electrolyte.Messages;
 
 namespace Electrolyte.Networking {
 	public struct TransactionInfo {
-		public string Hex;
+		public string Hash;
 		public ulong Height;
 
-		public TransactionInfo(string hex, ulong height) {
-			Hex = hex;
+		public TransactionInfo(string hash, ulong height) {
+			Hash = hash;
 			Height = height;
 		}
 	}

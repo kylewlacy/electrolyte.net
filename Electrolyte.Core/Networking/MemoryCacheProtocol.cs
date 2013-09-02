@@ -37,14 +37,14 @@ namespace Electrolyte.Networking {
 		public async override Task<Transaction> GetTransactionAsync(TransactionInfo info) {
 			await txCacheLock.WaitAsync();
 			try {
-				if(!TransactionCache.ContainsKey(info.Hex))
-					TransactionCache.Add(info.Hex, await base.GetTransactionAsync(info));
+				if(!TransactionCache.ContainsKey(info.Hash))
+					TransactionCache.Add(info.Hash, await base.GetTransactionAsync(info));
 			}
 			finally {
 				txCacheLock.Release();
 			}
 
-			return TransactionCache[info.Hex];
+			return TransactionCache[info.Hash];
 		}
 
 		public override async Task<decimal> GetExchangeRateAsync(Money.CurrencyType c1, Money.CurrencyType c2) {
