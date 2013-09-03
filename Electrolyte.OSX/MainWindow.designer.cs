@@ -116,9 +116,6 @@ namespace Electrolyte.OSX
 		[Outlet]
 		MonoMac.AppKit.NSButton sendButton { get; set; }
 
-		[Outlet]
-		Electrolyte.OSX.TransactionDataSource txData { get; set; }
-
 		[Action ("SendClick:")]
 		partial void SendClick (MonoMac.Foundation.NSObject sender);
 		
@@ -132,11 +129,6 @@ namespace Electrolyte.OSX
 			if (sendButton != null) {
 				sendButton.Dispose ();
 				sendButton = null;
-			}
-
-			if (txData != null) {
-				txData.Dispose ();
-				txData = null;
 			}
 		}
 	}

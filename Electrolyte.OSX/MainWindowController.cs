@@ -1,4 +1,5 @@
 using System;
+using System.Drawing;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,7 +14,7 @@ namespace Electrolyte.OSX {
 			get { return (MainWindow)base.Window; }
 		}
 
-		TransactionDataSource transactionData;
+		TransactionTableData transactionTableData;
 		Wallet wallet;
 		
 		[Export("initWithCoder:")]
@@ -24,12 +25,17 @@ namespace Electrolyte.OSX {
 		void Initialize() { }
 
 		public override async void AwakeFromNib() {
+			Window.ContentMinSize = new SizeF(530, 240);
+
+			sendButton.Enabled = false;
+
 			wallet = await Wallet.LoadAsync();
 			wallet.DidLock += LockToggled;
 			wallet.DidUnlock += LockToggled;
 
-			transactionData = new TransactionDataSource();
-			transactionTable.DataSource = transactionData;
+			transactionTableData = new TransactionTableData();
+			transactionTable.DataSource = transactionTableData.DataSource;
+			transactionTable.Delegate = transactionTableData.Delegate;
 
 			Task balance = UpdateBalanceAsync();
 			Task history = UpdateHistoryAsync();
@@ -48,7 +54,7 @@ namespace Electrolyte.OSX {
 			List<KeyValuePair<Transaction, Money>> deltas = (await wallet.GetTransactionDeltasAsync()).ToList();
 			deltas.Sort((first, next) => { return first.Key.Height.Value.CompareTo(next.Key.Height.Value); });
 
-			transactionData.TransactionDeltas = deltas;
+			transactionTableData.TransactionDeltas = deltas;
 			transactionTable.ReloadData();
 		}
 
@@ -75,6 +81,8 @@ namespace Electrolyte.OSX {
 		}
 
 		public void LockToggled(object sender = null, EventArgs e = null) {
+			sendButton.Enabled = !wallet.IsLocked;
+
 			lockUnlockToggleButton.Enabled = true;
 			lockUnlockToggleButton.Title = wallet.IsLocked ? "Unlock" : "Lock";
 		}
