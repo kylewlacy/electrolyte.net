@@ -17,7 +17,7 @@ using Electrolyte.Helpers;
 
 namespace Electrolyte {
 	public class Wallet {
-		public class OperationException : System.InvalidOperationException {
+		public class OperationException : InvalidOperationException {
 			public OperationException() { }
 			public OperationException(string message) : base(message) { }
 			public OperationException(string message, Exception inner) : base(message, inner) { }
@@ -183,16 +183,7 @@ namespace Electrolyte {
 
 			if(change > new Money(0, "BTC")) {
 				changeAddress = changeAddress ?? await GenerateAddressAsync();
-				Console.WriteLine("Change address: {0}", changeAddress);
 				destinationsWithChange.Add(changeAddress, change);
-			}
-			else {
-				Console.WriteLine("No change");
-			}
-
-			Console.WriteLine("Selected inpoints: ");
-			foreach(Transaction.Output output in inpoints) {
-				Console.WriteLine("  {0}:{1} ({2})", output.Transaction.Hash, output.Index, output.Value);
 			}
 
 			Transaction tx = Transaction.Create(inpoints, destinationsWithChange, PrivateKeys);
@@ -242,58 +233,20 @@ namespace Electrolyte {
 
 
 		public async Task<Money> GetBalanceAsync() {
-			if(Addresses.Count <= 0) return Money.Zero("BTC");
-			IEnumerable<Task<Money>> balances = Addresses.Select(async (a) => await Network.GetAddressBalanceAsync(a));
-			return (await Task.WhenAll(balances)).Sum();
+			return await Network.GetAddressBalancesAsync(Addresses.ToList());
 		}
 
 		public async Task<Money> GetSpendableBalanceAsync() {
-			if(PrivateKeys.Count <= 0) return Money.Zero("BTC");
-			IEnumerable<Task<Money>> balances = PrivateKeys.Keys.Select(async (a) => await Network.GetAddressBalanceAsync(a));
-			return (await Task.WhenAll(balances)).Sum();
+			return await Network.GetAddressBalancesAsync(PrivateKeys.Keys.ToList());
 		}
 
 		public async Task<List<Transaction.Output>> GetSpendableOutputsAsync() {
-			if(PrivateKeys.Count <= 0) return new List<Transaction.Output>();
-
-			List<Transaction.Output> outputs = new List<Transaction.Output>();
-			foreach(Address address in PrivateKeys.Keys)
-				outputs.AddRange(await Network.GetUnspentOutputsAsync(address));
-
-			return outputs;
+			return await Network.GetUnspentOutputsAsync(PrivateKeys.Keys.ToList());
 		}
 
 
 		public async Task<Dictionary<Transaction, Money>> GetTransactionDeltasAsync() {
-			Dictionary<Transaction, Money> deltas = new Dictionary<Transaction, Money>();
-
-			// TODO: Order this by block height to avoid two `foreach` loops
-			// Two loops exist because 'subtract' inputs may come before 'add' outputs
-			List<List<Transaction>> walletHistoryList = (await Task.WhenAll(Addresses.Select(async (a) => await Network.GetAddressHistoryAsync(a)).ToArray())).ToList();
-			List<Transaction> walletHistory = walletHistoryList.SelectMany(h => h).ToList();
-
-			foreach(Transaction tx in walletHistory) {
-				foreach(Transaction.Output output in tx.Outputs) {
-					if(Addresses.Contains(output.Recipient)) {
-						if(!deltas.ContainsKey(tx)) { deltas.Add(tx, Money.Zero("BTC")); }
-						deltas[tx] += output.Value;
-					}
-				}
-			}
-
-			foreach(Transaction tx in walletHistory) {
-				foreach(Transaction.Input input in tx.Inputs) {
-					if(Addresses.Contains(input.Sender)) {
-						Transaction prevTx = deltas.Keys.FirstOrDefault(t => input.PrevTransactionHash == t.Hash);
-						if(deltas.ContainsKey(prevTx)) {
-							if(!deltas.ContainsKey(tx)) { deltas.Add(tx, Money.Zero("BTC")); }
-							deltas[tx] -= prevTx.Outputs[(int)input.OutpointIndex].Value;
-						}
-					}
-				}
-			}
-
-			return deltas;
+			return await Network.GetDeltasForAddressesAsync(Addresses.ToList());
 		}
 
 

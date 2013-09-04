@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Electrolyte.Extensions;
 using Electrolyte.Messages;
 
 namespace Electrolyte.Networking {
@@ -56,12 +57,62 @@ namespace Electrolyte.Networking {
 			return await GetUnspentOutputsAsync(new Address(address));
 		}
 
+		public static async Task<List<Transaction.Output>> GetUnspentOutputsAsync(List<Address> addresses) {
+			if(addresses.Count <= 0) return new List<Transaction.Output>();
+
+			List<Transaction.Output> outputs = new List<Transaction.Output>();
+			foreach(Address address in addresses)
+				outputs.AddRange(await Network.GetUnspentOutputsAsync(address));
+
+			return outputs;
+		}
+
+
+
+		public static async Task<Dictionary<Transaction, Money>> GetDeltasForAddressesAsync(List<Address> addresses) {
+			Dictionary<Transaction, Money> deltas = new Dictionary<Transaction, Money>();
+
+			// TODO: Order this by block height to avoid two `foreach` loops
+			// Two loops exist because 'subtract' inputs may come before 'add' outputs
+			List<List<Transaction>> historyList = (await Task.WhenAll(addresses.Select(async (a) => await Network.GetAddressHistoryAsync(a)).ToArray())).ToList();
+			List<Transaction> history = historyList.SelectMany(h => h).ToList();
+
+			foreach(Transaction tx in history) {
+				foreach(Transaction.Output output in tx.Outputs) {
+					if(addresses.Contains(output.Recipient)) {
+						if(!deltas.ContainsKey(tx)) { deltas.Add(tx, Money.Zero("BTC")); }
+						deltas[tx] += output.Value;
+					}
+				}
+			}
+
+			foreach(Transaction tx in history) {
+				foreach(Transaction.Input input in tx.Inputs) {
+					if(addresses.Contains(input.Sender)) {
+						Transaction prevTx = deltas.Keys.FirstOrDefault(t => input.PrevTransactionHash == t.Hash);
+						if(deltas.ContainsKey(prevTx)) {
+							if(!deltas.ContainsKey(tx)) { deltas.Add(tx, Money.Zero("BTC")); }
+							deltas[tx] -= prevTx.Outputs[(int)input.OutpointIndex].Value;
+						}
+					}
+				}
+			}
+
+			return deltas;
+		}
+
 		public static async Task<Money> GetAddressBalanceAsync(Address address) {
 			return await Protocol.GetAddressBalanceAsync(address);
 		}
 
 		public static async Task<Money> GetAddressBalanceAsync(string address) {
 			return await GetAddressBalanceAsync(new Address(address));
+		}
+
+		public static async Task<Money> GetAddressBalancesAsync(List<Address> addresses) {
+			if(addresses.Count <= 0) return Money.Zero("BTC");
+			IEnumerable<Task<Money>> balances = addresses.Select(async (a) => await Network.GetAddressBalanceAsync(a));
+			return (await Task.WhenAll(balances)).Sum();
 		}
 
 
