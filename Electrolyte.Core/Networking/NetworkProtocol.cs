@@ -6,16 +6,6 @@ using Electrolyte.Extensions;
 using Electrolyte.Messages;
 
 namespace Electrolyte.Networking {
-	public struct TransactionInfo {
-		public string Hash;
-		public ulong Height;
-
-		public TransactionInfo(string hash, ulong height) {
-			Hash = hash;
-			Height = height;
-		}
-	}
-
 	public abstract class NetworkProtocol {
 		public class NotConnectedException : System.InvalidOperationException {
 			public NotConnectedException() { }
@@ -45,7 +35,7 @@ namespace Electrolyte.Networking {
 			IsConnected = false;
 		}
 		
-		public async virtual Task<Transaction> GetTransactionAsync(TransactionInfo info) {
+		public async virtual Task<Transaction> GetTransactionAsync(Transaction.Info info) {
 			return await NextProtocol.GetTransactionAsync(info);
 		}
 

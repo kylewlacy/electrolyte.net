@@ -34,7 +34,7 @@ namespace Electrolyte.Networking {
 		Dictionary<Money.CurrencyType, Dictionary<Money.CurrencyType, ExchangeRateInfo>> ExchangeRateCache = new Dictionary<Money.CurrencyType, Dictionary<Money.CurrencyType,ExchangeRateInfo>>();
 		static readonly SemaphoreSlim exchangeRateLock = new SemaphoreSlim(1);
 
-		public async override Task<Transaction> GetTransactionAsync(TransactionInfo info) {
+		public async override Task<Transaction> GetTransactionAsync(Transaction.Info info) {
 			await txCacheLock.WaitAsync();
 			try {
 				if(!TransactionCache.ContainsKey(info.Hash))

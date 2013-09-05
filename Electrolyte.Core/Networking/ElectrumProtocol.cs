@@ -64,7 +64,7 @@ namespace Electrolyte.Networking {
 			}
 		}
 
-		public async override Task<Transaction> GetTransactionAsync(TransactionInfo info) {
+		public async override Task<Transaction> GetTransactionAsync(Transaction.Info info) {
 			JToken json = JToken.Parse(await SendRPCAsync("blockchain.transaction.get", info.Hash, info.Height));
 
 			string txHex = json["result"].Value<string>();

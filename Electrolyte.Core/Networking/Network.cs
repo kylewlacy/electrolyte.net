@@ -25,12 +25,12 @@ namespace Electrolyte.Networking {
 				protocol.Disconnect();
 		}
 
-		public static async Task<Transaction> GetTransactionAsync(TransactionInfo info) {
+		public static async Task<Transaction> GetTransactionAsync(Transaction.Info info) {
 			return await Protocol.GetTransactionAsync(info);
 		}
 
 		public static async Task<Transaction> GetTransactionAsync(string hex, ulong height) {
-			return await GetTransactionAsync(new TransactionInfo(hex, height));
+			return await GetTransactionAsync(new Transaction.Info(hex, height));
 		}
 
 		public static async Task<List<Task<Transaction>>> GetAddressHistoryListAsync(Address address) {
