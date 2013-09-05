@@ -51,8 +51,8 @@ namespace Electrolyte.OSX {
 		}
 
 		public async Task UpdateHistoryAsync() {
-			List<KeyValuePair<Transaction, Money>> deltas = (await wallet.GetTransactionDeltasAsync()).ToList();
-			deltas.Sort((first, next) => { return first.Key.Height.Value.CompareTo(next.Key.Height.Value); });
+			List<Transaction.Delta> deltas = (await wallet.GetTransactionDeltasAsync());
+			deltas.Sort((a,b) => { return a.Transaction.Height.Value.CompareTo(b.Transaction.Height.Value); });
 
 			transactionTableData.TransactionDeltas = deltas;
 			transactionTable.ReloadData();

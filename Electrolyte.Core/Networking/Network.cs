@@ -69,7 +69,7 @@ namespace Electrolyte.Networking {
 
 
 
-		public static async Task<Dictionary<Transaction, Money>> GetDeltasForAddressesAsync(List<Address> addresses) {
+		public static async Task<List<Transaction.Delta>> GetDeltasForAddressesAsync(List<Address> addresses) {
 			Dictionary<Transaction, Money> deltas = new Dictionary<Transaction, Money>();
 
 			// TODO: Order this by block height to avoid two `foreach` loops
@@ -98,7 +98,7 @@ namespace Electrolyte.Networking {
 				}
 			}
 
-			return deltas;
+			return deltas.Select(p => new Transaction.Delta(p.Key, p.Value)).ToList();
 		}
 
 		public static async Task<Money> GetAddressBalanceAsync(Address address) {

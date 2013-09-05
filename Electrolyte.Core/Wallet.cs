@@ -245,7 +245,7 @@ namespace Electrolyte {
 		}
 
 
-		public async Task<Dictionary<Transaction, Money>> GetTransactionDeltasAsync() {
+		public async Task<List<Transaction.Delta>> GetTransactionDeltasAsync() {
 			return await Network.GetDeltasForAddressesAsync(Addresses.ToList());
 		}
 

@@ -20,6 +20,16 @@ namespace Electrolyte.Messages {
 				Height = height;
 			}
 		}
+
+		public struct Delta {
+			public Transaction Transaction;
+			public Money Value;
+
+			public Delta(Transaction tx, Money value) {
+				Transaction = tx;
+				Value = value;
+			}
+		}
 	}
 }
 

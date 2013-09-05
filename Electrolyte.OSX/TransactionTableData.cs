@@ -52,11 +52,11 @@ namespace Electrolyte.OSX {
 
 				switch(tableColumn.Identifier) {
 				case "transactions":
-					KeyValuePair<Transaction, Money> delta = Data.TransactionDeltas[row];
+					Transaction.Delta delta = Data.TransactionDeltas[row];
 
 					tableCellView = (TransactionTableCellView)tableView.MakeView("transaction", this);
 					tableCellView.Value = String.Format("{0}{1}", delta.Value > Money.Zero("BTC") ? "+" : "", delta.Value);
-					tableCellView.Hash = delta.Key.Hash;
+					tableCellView.Hash = delta.Transaction.Hash;
 
 					NSColor backgroundColor;
 					if(delta.Value > Money.Zero("BTC"))
@@ -83,12 +83,12 @@ namespace Electrolyte.OSX {
 
 		public TransactionDataSource DataSource;
 		public TransactionDelegate Delegate;
-		public List<KeyValuePair<Transaction, Money>> TransactionDeltas;
+		public List<Transaction.Delta> TransactionDeltas;
 
 		public TransactionTableData() {
 			DataSource = new TransactionDataSource(this);
 			Delegate = new TransactionDelegate(this);
-			TransactionDeltas = new List<KeyValuePair<Transaction, Money>>();
+			TransactionDeltas = new List<Transaction.Delta>();
 		}
 	}
 }
