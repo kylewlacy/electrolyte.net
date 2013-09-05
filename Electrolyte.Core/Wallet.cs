@@ -3,6 +3,7 @@ using System.IO;
 using System.Text;
 using System.Linq;
 using System.Timers;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Security.Cryptography;
@@ -14,6 +15,7 @@ using Electrolyte.Primitives;
 using Electrolyte.Extensions;
 using Electrolyte.Messages;
 using Electrolyte.Helpers;
+using Timer = System.Timers.Timer;
 
 namespace Electrolyte {
 	public class Wallet {
@@ -42,8 +44,11 @@ namespace Electrolyte {
 		// http://stackoverflow.com/a/340618
 		public event EventHandler DidLock = delegate { };
 		public event EventHandler DidUnlock = delegate { };
-
+		public event EventHandler DidFailToUnlock = delegate { };
+		
+		static readonly SemaphoreSlim lockLock = new SemaphoreSlim(1);
 		public bool IsLocked { get; private set; }
+
 		public byte[] EncryptionKey = new byte[] { };
 		public byte[] EncryptedData, IV, Salt;
 		public ulong KeyHashes = 1024;
@@ -263,19 +268,25 @@ namespace Electrolyte {
 		}
 
 		async Task LockAsync(byte[] passphrase) {
-			if(IsLocked)
-				throw new OperationException("Wallet is already locked");
+			await lockLock.WaitAsync();
+			try {
+				if(IsLocked)
+					throw new OperationException("Wallet is already locked");
 
-			await EncryptAsync(passphrase);
+				await EncryptAsync(passphrase);
 
-			Array.Clear(EncryptionKey, 0, EncryptionKey.Length);
-			EncryptionKey = new byte[] { };
+				Array.Clear(EncryptionKey, 0, EncryptionKey.Length);
+				EncryptionKey = new byte[] { };
 
-			PrivateKeys = new Dictionary<Address, ECKey>(); // TODO: Is the garbage collector fast and reliable enough to make this secure?
-			LockTimer.Stop();
+				PrivateKeys = new Dictionary<Address, ECKey>(); // TODO: Is the garbage collector fast and reliable enough to make this secure?
+				LockTimer.Stop();
 
-			IsLocked = true;
-			DidLock(this, new EventArgs());
+				IsLocked = true;
+				DidLock(this, new EventArgs());
+			}
+			finally {
+				lockLock.Release();
+			}
 		}
 
 		async void LockAsync(string passphrase) {
@@ -283,25 +294,37 @@ namespace Electrolyte {
 		}
 
 		public async Task UnlockAsync(byte[] passphrase, double timeout) {
-			if(!IsLocked)
-				throw new OperationException("Wallet is already unlocked");
+			await lockLock.WaitAsync();
+			try {
+				if(!IsLocked)
+					throw new OperationException("Wallet is already unlocked");
 
-			await DecryptAsync(passphrase);
+				try {
+					await DecryptAsync(passphrase);
 
-			Array.Clear(EncryptedData, 0, EncryptedData.Length);
-			EncryptedData = new byte[] { };
+					Array.Clear(EncryptedData, 0, EncryptedData.Length);
+					EncryptedData = new byte[] { };
 
-			EncryptionKey = new byte[passphrase.Length];
-			Array.Copy(passphrase, EncryptionKey, passphrase.Length); // TODO: Is this safe?
-			Array.Clear(passphrase, 0, passphrase.Length);
+					EncryptionKey = new byte[passphrase.Length];
+					Array.Copy(passphrase, EncryptionKey, passphrase.Length); // TODO: Is this safe?
+					Array.Clear(passphrase, 0, passphrase.Length);
 
-			LockTimer = new Timer(timeout);
-			LockTimer.Elapsed += new ElapsedEventHandler(LockAsync);
-			LockTimer.AutoReset = false;
-			LockTimer.Start();
+					LockTimer = new Timer(timeout);
+					LockTimer.Elapsed += new ElapsedEventHandler(LockAsync);
+					LockTimer.AutoReset = false;
+					LockTimer.Start();
 
-			IsLocked = false;
-			DidUnlock(this, new EventArgs());
+					IsLocked = false;
+					DidUnlock(this, new EventArgs());
+				}
+				catch {
+					DidFailToUnlock(this, new EventArgs());
+					throw;
+				}
+			}
+			finally {
+				lockLock.Release();
+			}
 		}
 
 		public async Task UnlockAsync(byte[] passphrase) {
