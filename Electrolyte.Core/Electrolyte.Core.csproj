@@ -58,6 +58,7 @@
     <Compile Include="Networking\BlockchainProtocol.cs" />
     <Compile Include="Networking\MemoryCacheProtocol.cs" />
     <Compile Include="Helpers\BinaryHelpers.cs" />
+    <Compile Include="Messages\Transaction.InOut.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <ItemGroup>
