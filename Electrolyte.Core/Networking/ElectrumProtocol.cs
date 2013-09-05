@@ -1,6 +1,6 @@
 using System;
 using System.IO;
-using System.Text;
+using System.Text.RegularExpressions;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
@@ -94,9 +94,28 @@ namespace Electrolyte.Networking {
 
 		public override async Task BroadcastTransactionAsync(Transaction tx) {
 			JToken json = JToken.Parse(await SendRPCAsync("blockchain.transaction.broadcast", tx.ToHex()));
+			string result = json["result"].Value<string>();
 
-			if(json["result"].Value<string>() != tx.Hash)
-				throw new Exception("Wat");
+			int? errorCode = null;
+			try {
+				// TODO: Handle Python string literals properly
+				JToken resultError = JToken.Parse(Regex.Replace(result, "u'(?<text>[^']*)'", "\"${text}\""));
+
+				errorCode = resultError["code"].Value<int>();
+				Console.WriteLine("There was an error: {0} ({1})\n{2}", errorCode, resultError["message"], result);
+			}
+			catch { }
+
+			switch(errorCode) {
+			case -22:
+				Console.WriteLine("Transaction not accepted by Electrum server");
+				await NextProtocol.BroadcastTransactionAsync(tx);
+				break;
+			default:
+				if(json["result"].Value<string>() != tx.Hash)
+					throw new Exception("Wat");
+				break;
+			}
 
 			// TODO: Cache the transaction
 		}

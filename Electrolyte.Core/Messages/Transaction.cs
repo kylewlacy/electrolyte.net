@@ -389,6 +389,7 @@ namespace Electrolyte.Messages {
 		}
 
 		public static Transaction Create(List<Output> inpoints, Dictionary<Address, Money> destinations, Dictionary<Address, ECKey> privateKeys) {
+			// TODO: Check for dust (< 0.543 * minimum fee; https://bitcointalk.org/index.php?topic=219504)
 			Transaction tx = new Transaction();
 
 			tx.Version = CurrentVersion;
@@ -410,7 +411,7 @@ namespace Electrolyte.Messages {
 				input.ScriptSig = Script.Create(sig, key.PubKey);
 			}
 
-			tx.LockTime = 0;
+			tx.LockTime = 0U;
 
 			return tx;
 		}
