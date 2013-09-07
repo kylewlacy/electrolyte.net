@@ -206,7 +206,6 @@
 									<string key="NSFrame">{{1, 210}, {564, 16}}</string>
 									<reference key="NSSuperview" ref="41379146"/>
 									<reference key="NSWindow"/>
-									<reference key="NSNextKeyView"/>
 									<string key="NSReuseIdentifierKey">_NS:60</string>
 									<bool key="NSAllowsLogicalLayoutDirection">NO</bool>
 									<int key="NSsFlags">1</int>
@@ -311,7 +310,7 @@
 						<object class="NSTextField" id="738802136">
 							<reference key="NSNextResponder" ref="312036702"/>
 							<int key="NSvFlags">266</int>
-							<string key="NSFrame">{{65, 295}, {476, 44}}</string>
+							<string key="NSFrame">{{65, 297}, {476, 44}}</string>
 							<reference key="NSSuperview" ref="312036702"/>
 							<reference key="NSWindow"/>
 							<reference key="NSNextKeyView" ref="507054849"/>
@@ -349,7 +348,7 @@
 						<object class="NSButton" id="316573150">
 							<reference key="NSNextResponder" ref="312036702"/>
 							<int key="NSvFlags">268</int>
-							<string key="NSFrame">{{16, 292}, {48, 44}}</string>
+							<string key="NSFrame">{{18, 297}, {48, 44}}</string>
 							<reference key="NSSuperview" ref="312036702"/>
 							<reference key="NSWindow"/>
 							<reference key="NSNextKeyView" ref="738802136"/>
@@ -654,13 +653,13 @@
 						<reference key="object" ref="312036702"/>
 						<object class="NSMutableArray" key="children">
 							<bool key="EncodedWithXMLCoder">YES</bool>
-							<reference ref="316573150"/>
 							<reference ref="713501971"/>
 							<reference ref="507054849"/>
-							<reference ref="738802136"/>
 							<reference ref="405680141"/>
 							<reference ref="481789258"/>
 							<reference ref="41379146"/>
+							<reference ref="316573150"/>
+							<reference ref="738802136"/>
 						</object>
 						<reference key="parent" ref="748157544"/>
 					</object>
