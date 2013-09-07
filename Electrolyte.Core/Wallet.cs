@@ -562,24 +562,24 @@ namespace Electrolyte {
 			return await PassphraseToKeyAsync(passphrase, salt, KeyHashes);
 		}
 
-		public static string DefaultWalletPath {
+
+
+		public static string DefaultStoragePath {
 			get {
-				string storageDir;
 				switch((int)Environment.OSVersion.Platform) {
 				case 4:   // PlatformID.Unix
 				case 128:
-					storageDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".electrolyte");
-					break;
+					return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".electrolyte");
 				case 6:   // PlatformID.MacOSX (TODO: Create a more ambiguous version; OS X returns PlatformID.Unix)
-					storageDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Library", "Application Support", "Electrolyte");
-					break;
+					return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Library", "Application Support", "Electrolyte");
 				default:
-					storageDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Electrolyte");
-					break;
+					return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Electrolyte");
 				}
-
-				return Path.Combine(storageDir, "wallet.json");
 			}
+		}
+
+		public static string DefaultWalletPath {
+			get { return Path.Combine(DefaultStoragePath, "wallet.json"); }
 		}
 	}
 }
