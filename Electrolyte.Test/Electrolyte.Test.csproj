@@ -28,12 +28,12 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
-    <Reference Include="nunit.framework">
-      <Private>False</Private>
-    </Reference>
     <Reference Include="System.Core" />
     <Reference Include="mscorlib">
       <HintPath>..\..\..\..\..\..\..\Library\Frameworks\Mono.framework\Versions\3.0.10\lib\mono\4.0\mscorlib.dll</HintPath>
+    </Reference>
+    <Reference Include="nunit.framework">
+      <HintPath>..\..\..\Deps\NUnit\bin\framework\nunit.framework.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
