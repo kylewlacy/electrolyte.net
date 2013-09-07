@@ -17,8 +17,9 @@ namespace Electrolyte.Networking {
 		public string Server;
 		public int Port;
 
-		TcpClient Client;
-		static readonly SemaphoreSlim clientLock = new SemaphoreSlim(1);
+		protected TcpClient Client;
+		protected Stream ClientStream;
+		protected static readonly SemaphoreSlim clientLock = new SemaphoreSlim(1);
 
 		public ElectrumProtocol(string server, int port) {
 			Client = new TcpClient();
@@ -30,11 +31,14 @@ namespace Electrolyte.Networking {
 		public override void Connect() {
 			base.Connect();
 			Client.Connect(Server, Port);
+			ClientStream = Client.GetStream();
 		}
 
 		public override void Disconnect() {
 			base.Disconnect();
+			ClientStream.Close();
 			Client.Close();
+			ClientStream = null;
 		}
 
 		async Task<string> SendRPCAsync(string methodName, params object[] args) {
@@ -52,11 +56,11 @@ namespace Electrolyte.Networking {
 
 			await clientLock.WaitAsync();
 			try {
-				StreamWriter writer = new StreamWriter(Client.GetStream());
+				StreamWriter writer = new StreamWriter(ClientStream);
 				await writer.WriteLineAsync(rpc);
 				await writer.FlushAsync();
 
-				StreamReader reader = new StreamReader(Client.GetStream());
+				StreamReader reader = new StreamReader(ClientStream);
 				return await reader.ReadLineAsync();
 			}
 			finally {
