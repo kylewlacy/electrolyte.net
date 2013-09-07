@@ -55,18 +55,10 @@ namespace Electrolyte.OSX {
 					Transaction.Delta delta = Data.TransactionDeltas[row];
 
 					tableCellView = (TransactionTableCellView)tableView.MakeView("transaction", this);
-					tableCellView.Value = String.Format("{0}{1}", delta.Value > Money.Zero("BTC") ? "+" : "", delta.Value);
-					tableCellView.Hash = delta.Transaction.Hash;
+//					tableCellView.Value = String.Format("{0}{1}", delta.Value > Money.Zero("BTC") ? "+" : "", delta.Value);
+//					tableCellView.Hash = delta.Transaction.Hash;
+					tableCellView.Delta = delta;
 
-					NSColor backgroundColor;
-					if(delta.Value > Money.Zero("BTC"))
-						backgroundColor = TransactionTableCellView.PositiveColor;
-					else if(delta.Value < Money.Zero("BTC"))
-						backgroundColor = TransactionTableCellView.NegativeColor;
-					else
-						backgroundColor = TransactionTableCellView.NeutralColor;
-
-					tableCellView.BackgroundColor = backgroundColor;
 					break;
 
 				default:

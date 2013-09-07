@@ -1,9 +1,7 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using MonoMac.Foundation;
 using MonoMac.AppKit;
-using MonoMac.CoreGraphics;
+using Electrolyte.Messages;
 
 namespace Electrolyte.OSX {
 	[Register ("TransactionTableCellView")]
@@ -20,30 +18,48 @@ namespace Electrolyte.OSX {
 			get { return NSColor.FromDeviceRgba(0.54f, 0.54f, 0.54f, 1.00f); }
 		}
 
-		public NSColor BackgroundColor;
+		Transaction.Delta _delta;
+		public Transaction.Delta Delta {
+			get { return _delta; }
+			set {
+				_delta = value;
+				Hash = _delta.Transaction.Hash;
+				// Time = DateTime.Now - _delta.Transaction.Time;
+				Value = _delta.ToString();
 
-		[Outlet]
-		MonoMac.AppKit.NSTextField hashLabel { get; set; }
-
-		[Outlet]
-		MonoMac.AppKit.NSTextField timeLabel { get; set; }
-
-		[Outlet]
-		MonoMac.AppKit.NSTextField valueLabel { get; set; }
-
-		public string Value {
-			get { return valueLabel.StringValue; }
-			set { valueLabel.StringValue = value; }
+				if(_delta.Value > Money.Zero("BTC"))
+					BackgroundColor = PositiveColor;
+				else if(_delta.Value < Money.Zero("BTC"))
+					BackgroundColor = NegativeColor;
+				else
+					BackgroundColor = NeutralColor;
+			}
 		}
+
+		public NSColor BackgroundColor { get; private set; }
+
+		[Outlet]
+		NSTextField hashLabel { get; set; }
+
+		[Outlet]
+		NSTextField timeLabel { get; set; }
+
+		[Outlet]
+		NSTextField valueLabel { get; set; }
 
 		public string Hash {
 			get { return hashLabel.StringValue; }
-			set { hashLabel.StringValue = value; }
+			private set { hashLabel.StringValue = value; }
 		}
 
 		public string Time {
 			get { return timeLabel.StringValue; }
-			set { timeLabel.StringValue = value; }
+			private set { timeLabel.StringValue = value; }
+		}
+
+		public string Value {
+			get { return valueLabel.StringValue; }
+			private set { valueLabel.StringValue = value; }
 		}
 
 		[Export ("initWithCoder:")]
