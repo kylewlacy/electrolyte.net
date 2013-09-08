@@ -15,6 +15,7 @@ namespace Electrolyte.Networking {
 
 		static Network() {
 			Protocols.Add(new MemoryCacheProtocol());
+			Protocols.Add(new FileCacheProtocol());
 			Protocols.Add(new SecureElectrumProtocol("btc.medoix.com", 50002));
 			Protocols.Add(new BlockchainProtocol("http://blockchain.info"));
 			Protocol.Connect();
