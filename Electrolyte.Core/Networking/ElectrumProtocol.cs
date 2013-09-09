@@ -79,18 +79,19 @@ namespace Electrolyte.Networking {
 			return tx;
 		}
 
-		public async override Task<List<Task<Transaction>>> GetAddressHistoryListAsync(Address address) {
+		public async override Task<List<Task<Transaction>>> GetAddressHistoryListAsync(Address address, ulong startHeight = 0) {
 			List<Task<Transaction>> transactionTasks = new List<Task<Transaction>>();
 			JToken json = JToken.Parse(await SendRPCAsync("blockchain.address.get_history", address.ID));
+			List<Transaction.Info> transactions = json["result"].Select(t => new Transaction.Info(t["tx_hash"].Value<string>(), t["height"].Value<ulong>())).ToList();
 
-			foreach(JToken tx in json["result"])
-				transactionTasks.Add(Network.GetTransactionAsync(tx["tx_hash"].Value<string>(), tx["height"].Value<ulong>()));
+			foreach(Transaction.Info tx in transactions.Where(i => i.Height >= startHeight))
+				transactionTasks.Add(Network.GetTransactionAsync(tx));
 
 			return transactionTasks;
 		}
 
-		public async override Task<Money> GetAddressBalanceAsync(Address address) {
-			List<Transaction.Output> unspentOutputs = await Network.GetUnspentOutputsAsync(address);
+		public async override Task<Money> GetAddressBalanceAsync(Address address, ulong startHeight = 0) {
+			List<Transaction.Output> unspentOutputs = await Network.GetUnspentOutputsAsync(address, startHeight);
 			return unspentOutputs.Select(o => o.Value).Sum();
 		}
 

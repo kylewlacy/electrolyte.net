@@ -39,20 +39,20 @@ namespace Electrolyte.Networking {
 			return await NextProtocol.GetTransactionAsync(info);
 		}
 
-		public async virtual Task<List<Task<Transaction>>> GetAddressHistoryListAsync(Address address) {
-			return await NextProtocol.GetAddressHistoryListAsync(address);
+		public async virtual Task<List<Task<Transaction>>> GetAddressHistoryListAsync(Address address, ulong startHeight = 0) {
+			return await NextProtocol.GetAddressHistoryListAsync(address, startHeight);
 		}
 
-		public async Task<List<Transaction>> GetAddressHistoryAsync(Address address) {
-			List<Task<Transaction>> historyList = await GetAddressHistoryListAsync(address);
+		public async Task<List<Transaction>> GetAddressHistoryAsync(Address address, ulong startHeight = 0) {
+			List<Task<Transaction>> historyList = await GetAddressHistoryListAsync(address, startHeight);
 			if(historyList.Count <= 0)
 				return new List<Transaction>();
 
 			return (await Task.WhenAll(historyList)).ToList();
 		}
 
-		public async Task<List<Transaction.Output>> GetUnspentOutputsAsync(Address address) {
-			List<Transaction> addressHistory = await GetAddressHistoryAsync(address);
+		public async Task<List<Transaction.Output>> GetUnspentOutputsAsync(Address address, ulong startHeight = 0) {
+			List<Transaction> addressHistory = await GetAddressHistoryAsync(address, startHeight);
 			Dictionary<Tuple<string, uint>, Transaction.Output> unspentOutputs = new Dictionary<Tuple<string, uint>, Transaction.Output>();
 
 			foreach(Transaction tx in addressHistory) {
@@ -79,8 +79,8 @@ namespace Electrolyte.Networking {
 			return unspentOutputs.Values.ToList();
 		}
 
-		public async virtual Task<Money> GetAddressBalanceAsync(Address address) {
-			return await NextProtocol.GetAddressBalanceAsync(address);
+		public async virtual Task<Money> GetAddressBalanceAsync(Address address, ulong startHeight = 0) {
+			return await NextProtocol.GetAddressBalanceAsync(address, startHeight);
 		}
 
 

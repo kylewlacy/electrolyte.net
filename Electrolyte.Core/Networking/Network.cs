@@ -34,48 +34,48 @@ namespace Electrolyte.Networking {
 			return await GetTransactionAsync(new Transaction.Info(hex, height));
 		}
 
-		public static async Task<List<Task<Transaction>>> GetAddressHistoryListAsync(Address address) {
-			return await Protocol.GetAddressHistoryListAsync(address);
+		public static async Task<List<Task<Transaction>>> GetAddressHistoryListAsync(Address address, ulong startHeight = 0) {
+			return await Protocol.GetAddressHistoryListAsync(address, startHeight);
 		}
 
-		public static async Task<List<Task<Transaction>>> GetAddressHistoryListAsync(string address) {
-			return await GetAddressHistoryListAsync(new Address(address));
+		public static async Task<List<Task<Transaction>>> GetAddressHistoryListAsync(string address, ulong startHeight = 0) {
+			return await GetAddressHistoryListAsync(new Address(address), startHeight);
 		}
 
-		public static async Task<List<Transaction>> GetAddressHistoryAsync(Address address) {
-			return await Protocol.GetAddressHistoryAsync(address);
+		public static async Task<List<Transaction>> GetAddressHistoryAsync(Address address, ulong startHeight = 0) {
+			return await Protocol.GetAddressHistoryAsync(address, startHeight);
 		}
 
-		public static async Task<List<Transaction>> GetAddressHistoryAsync(string address) {
-			return await GetAddressHistoryAsync(new Address(address));
+		public static async Task<List<Transaction>> GetAddressHistoryAsync(string address, ulong startHeight = 0) {
+			return await GetAddressHistoryAsync(new Address(address), startHeight);
 		}
 
-		public static async Task<List<Transaction.Output>> GetUnspentOutputsAsync(Address address) {
-			return await Protocol.GetUnspentOutputsAsync(address);
+		public static async Task<List<Transaction.Output>> GetUnspentOutputsAsync(Address address, ulong startHeight = 0) {
+			return await Protocol.GetUnspentOutputsAsync(address, startHeight);
 		}
 
-		public static async Task<List<Transaction.Output>> GetUnspentOutputsAsync(string address) {
-			return await GetUnspentOutputsAsync(new Address(address));
+		public static async Task<List<Transaction.Output>> GetUnspentOutputsAsync(string address, ulong startHeight = 0) {
+			return await GetUnspentOutputsAsync(new Address(address), startHeight);
 		}
 
-		public static async Task<List<Transaction.Output>> GetUnspentOutputsAsync(List<Address> addresses) {
+		public static async Task<List<Transaction.Output>> GetUnspentOutputsAsync(List<Address> addresses, ulong startHeight = 0) {
 			if(addresses.Count <= 0) return new List<Transaction.Output>();
 
 			List<Transaction.Output> outputs = new List<Transaction.Output>();
 			foreach(Address address in addresses)
-				outputs.AddRange(await Network.GetUnspentOutputsAsync(address));
+				outputs.AddRange(await Network.GetUnspentOutputsAsync(address, startHeight));
 
 			return outputs;
 		}
 
 
 
-		public static async Task<List<Transaction.Delta>> GetDeltasForAddressesAsync(List<Address> addresses) {
+		public static async Task<List<Transaction.Delta>> GetDeltasForAddressesAsync(List<Address> addresses, ulong startHeight = 0) {
 			Dictionary<Transaction, Money> deltas = new Dictionary<Transaction, Money>();
 
 			// TODO: Order this by block height to avoid two `foreach` loops
 			// Two loops exist because 'subtract' inputs may come before 'add' outputs
-			List<List<Transaction>> historyList = (await Task.WhenAll(addresses.Select(async (a) => await Network.GetAddressHistoryAsync(a)).ToArray())).ToList();
+			List<List<Transaction>> historyList = (await Task.WhenAll(addresses.Select(async (a) => await Network.GetAddressHistoryAsync(a, startHeight)).ToArray())).ToList();
 			List<Transaction> history = historyList.SelectMany(h => h).ToList();
 
 			foreach(Transaction tx in history) {
@@ -102,17 +102,17 @@ namespace Electrolyte.Networking {
 			return deltas.Select(p => new Transaction.Delta(p.Key, p.Value)).ToList();
 		}
 
-		public static async Task<Money> GetAddressBalanceAsync(Address address) {
-			return await Protocol.GetAddressBalanceAsync(address);
+		public static async Task<Money> GetAddressBalanceAsync(Address address, ulong startHeight = 0) {
+			return await Protocol.GetAddressBalanceAsync(address, startHeight);
 		}
 
-		public static async Task<Money> GetAddressBalanceAsync(string address) {
-			return await GetAddressBalanceAsync(new Address(address));
+		public static async Task<Money> GetAddressBalanceAsync(string address, ulong startHeight = 0) {
+			return await GetAddressBalanceAsync(new Address(address), startHeight);
 		}
 
-		public static async Task<Money> GetAddressBalancesAsync(List<Address> addresses) {
+		public static async Task<Money> GetAddressBalancesAsync(List<Address> addresses, ulong startHeight = 0) {
 			if(addresses.Count <= 0) return Money.Zero("BTC");
-			IEnumerable<Task<Money>> balances = addresses.Select(async (a) => await Network.GetAddressBalanceAsync(a));
+			IEnumerable<Task<Money>> balances = addresses.Select(async (a) => await Network.GetAddressBalanceAsync(a, startHeight));
 			return (await Task.WhenAll(balances)).Sum();
 		}
 

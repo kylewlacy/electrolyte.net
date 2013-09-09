@@ -42,7 +42,9 @@ namespace Electrolyte.Networking {
 		}
 
 
-		public override async Task<Money> GetAddressBalanceAsync(Address address) {
+		public override async Task<Money> GetAddressBalanceAsync(Address address, ulong startHeight = 0) {
+			if(startHeight > 0)
+				return await NextProtocol.GetAddressBalanceAsync(address, startHeight);
 			JToken data = await GetJsonAsync(String.Format("/address/{0}?format=json", address));
 			return new Money(data["final_balance"].Value<long>(), "BTC");
 		}

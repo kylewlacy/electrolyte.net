@@ -237,21 +237,21 @@ namespace Electrolyte {
 
 
 
-		public async Task<Money> GetBalanceAsync() {
-			return await Network.GetAddressBalancesAsync(Addresses.ToList());
+		public async Task<Money> GetBalanceAsync(ulong startHeight = 0) {
+			return await Network.GetAddressBalancesAsync(Addresses.ToList(), startHeight);
 		}
 
-		public async Task<Money> GetSpendableBalanceAsync() {
-			return await Network.GetAddressBalancesAsync(PrivateKeys.Keys.ToList());
+		public async Task<Money> GetSpendableBalanceAsync(ulong startHeight = 0) {
+			return await Network.GetAddressBalancesAsync(PrivateKeys.Keys.ToList(), startHeight);
 		}
 
-		public async Task<List<Transaction.Output>> GetSpendableOutputsAsync() {
-			return await Network.GetUnspentOutputsAsync(PrivateKeys.Keys.ToList());
+		public async Task<List<Transaction.Output>> GetSpendableOutputsAsync(ulong startHeight = 0) {
+			return await Network.GetUnspentOutputsAsync(PrivateKeys.Keys.ToList(), startHeight);
 		}
 
 
-		public async Task<List<Transaction.Delta>> GetTransactionDeltasAsync() {
-			return await Network.GetDeltasForAddressesAsync(Addresses.ToList());
+		public async Task<List<Transaction.Delta>> GetTransactionDeltasAsync(ulong startHeight = 0) {
+			return await Network.GetDeltasForAddressesAsync(Addresses.ToList(), startHeight);
 		}
 
 
