@@ -5,7 +5,7 @@ using System.Collections.Generic;
 namespace Electrolyte {
 	// Based on https://github.com/RubyMoney/money
 	public class Money {
-		public class OperationException : System.InvalidOperationException {
+		public class OperationException : InvalidOperationException {
 			public OperationException() { }
 			public OperationException(string message) : base(message) { }
 			public OperationException(string message, Exception inner) : base(message, inner) { }
@@ -112,7 +112,7 @@ namespace Electrolyte {
 			}
 
 			public static CurrencyType Register(string code, string symbol, ulong centsPerUnit) {
-				CurrencyType currency = new CurrencyType(code, symbol, centsPerUnit);
+				var currency = new CurrencyType(code, symbol, centsPerUnit);
 				RegisteredCurrencies.Add(code, currency);
 				return currency;
 			}
@@ -160,7 +160,7 @@ namespace Electrolyte {
 		}
 
 		public override bool Equals(object obj) {
-			Money money = obj as Money;
+			var money = obj as Money;
 			return money != null && money.Currency == Currency && money.Cents == Cents;
 		}
 

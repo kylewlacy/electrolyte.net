@@ -25,7 +25,7 @@ namespace Electrolyte.Primitives {
 		}
 
 		public void Write(BinaryWriter writer) {
-			VarInt v = new VarInt(Value.Length);
+			var v = new VarInt(Value.Length);
 			v.Write(writer);
 			writer.Write(Encoding.UTF8.GetBytes(Value));
 		}

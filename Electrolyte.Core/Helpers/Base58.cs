@@ -4,8 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Electrolyte.Helpers {
 	// Implements https://en.bitcoin.it/wiki/Base58Check_encoding
@@ -25,10 +23,7 @@ namespace Electrolyte.Helpers {
 			byte[] result = ArrayHelpers.SubArray(data, 0, data.Length - ChecksumSizeInBytes);
 			byte[] givenCheckSum = ArrayHelpers.SubArray(data, data.Length - ChecksumSizeInBytes);
 			byte[] correctCheckSum = GetChecksum(result);
-			if(givenCheckSum.SequenceEqual(correctCheckSum))
-				return result;
-			else
-				return null;
+			return givenCheckSum.SequenceEqual(correctCheckSum) ? result : null;
 		}
 
 		private const string Digits = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";

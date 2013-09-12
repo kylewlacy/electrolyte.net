@@ -2,12 +2,11 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Electrolyte.Extensions;
 using Electrolyte.Messages;
 
 namespace Electrolyte.Networking {
 	public abstract class NetworkProtocol {
-		public class NotConnectedException : System.InvalidOperationException {
+		public class NotConnectedException : InvalidOperationException {
 			public NotConnectedException() { }
 			public NotConnectedException(string message) : base(message) { }
 			public NotConnectedException(string message, Exception inner) : base(message, inner) { }
@@ -53,25 +52,21 @@ namespace Electrolyte.Networking {
 
 		public async Task<List<Transaction.Output>> GetUnspentOutputsAsync(Address address, ulong startHeight = 0) {
 			List<Transaction> addressHistory = await GetAddressHistoryAsync(address, startHeight);
-			Dictionary<Tuple<string, uint>, Transaction.Output> unspentOutputs = new Dictionary<Tuple<string, uint>, Transaction.Output>();
+			var unspentOutputs = new Dictionary<Tuple<string, uint>, Transaction.Output>();
 
-			foreach(Transaction tx in addressHistory) {
-				foreach(Transaction.Output output in tx.Outputs) {
-					if(output.Recipient == address) {
+			foreach(var tx in addressHistory) {
+				foreach(var output in tx.Outputs) {
+					if(output.Recipient == address)
 						unspentOutputs.Add(Tuple.Create(output.Transaction.Hash, output.Index), output);
-//						Console.WriteLine("+{0}:{1} ({2})", tx.Hash, output.Index, output.Value);
-					}
 				}
 			}
 
-			foreach(Transaction tx in addressHistory) {
-				foreach(Transaction.Input input in tx.Inputs) {
+			foreach(var tx in addressHistory) {
+				foreach(var input in tx.Inputs) {
 					if(input.Sender == address) {
 						// TODO: Provide some means of an input returning an equivalent (so we can use a `List` rather than a `Dictionary`
-						if(unspentOutputs.ContainsKey(Tuple.Create(input.PrevTransactionHash, input.OutpointIndex))) {
-//							Console.WriteLine("-{0}:{1} ({2})", input.PrevTransactionHash, input.OutpointIndex, unspentOutputs[Tuple.Create(input.PrevTransactionHash, input.OutpointIndex)].Value);
+						if(unspentOutputs.ContainsKey(Tuple.Create(input.PrevTransactionHash, input.OutpointIndex)))
 							unspentOutputs.Remove(Tuple.Create(input.PrevTransactionHash, input.OutpointIndex));
-						}
 					}
 				}
 			}

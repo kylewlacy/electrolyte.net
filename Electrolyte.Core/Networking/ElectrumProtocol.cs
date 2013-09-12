@@ -2,7 +2,6 @@ using System;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Linq;
-using System.Net;
 using System.Net.Sockets;
 using System.Collections.Generic;
 using System.Threading;
@@ -19,7 +18,7 @@ namespace Electrolyte.Networking {
 
 		protected TcpClient Client;
 		protected Stream ClientStream;
-		protected static readonly SemaphoreSlim clientLock = new SemaphoreSlim(1);
+		protected static readonly SemaphoreSlim ClientLock = new SemaphoreSlim(1);
 
 		public ElectrumProtocol(string server, int port) {
 			Client = new TcpClient();
@@ -42,8 +41,8 @@ namespace Electrolyte.Networking {
 		}
 
 		async Task<string> SendRPCAsync(string methodName, params object[] args) {
-			List<string> jsonArgs = new List<string>();
-			foreach(object arg in args) {
+			var jsonArgs = new List<string>();
+			foreach(var arg in args) {
 				if(arg is string) {
 					jsonArgs.Add(String.Format("\"{0}\"", arg));
 				}
@@ -54,17 +53,17 @@ namespace Electrolyte.Networking {
 
 			string rpc = String.Format("{{\"id\": 1, \"method\": \"{0}\", \"params\": [{1}]}}", methodName, String.Join(", ", jsonArgs));
 
-			await clientLock.WaitAsync();
+			await ClientLock.WaitAsync();
 			try {
-				StreamWriter writer = new StreamWriter(ClientStream);
+				var writer = new StreamWriter(ClientStream);
 				await writer.WriteLineAsync(rpc);
 				await writer.FlushAsync();
 
-				StreamReader reader = new StreamReader(ClientStream);
+				var reader = new StreamReader(ClientStream);
 				return await reader.ReadLineAsync();
 			}
 			finally {
-				clientLock.Release();
+				ClientLock.Release();
 			}
 		}
 
@@ -74,17 +73,17 @@ namespace Electrolyte.Networking {
 			string txHex = json["result"].Value<string>();
 			byte[] rawTx = BinaryHelpers.HexToByteArray(txHex);
 
-			Transaction tx = new Transaction(info.Height);
+			var tx = new Transaction(info.Height);
 			tx.ReadPayload(new BinaryReader(new MemoryStream(rawTx)));
 			return tx;
 		}
 
 		public async override Task<List<Task<Transaction>>> GetAddressHistoryListAsync(Address address, ulong startHeight = 0) {
-			List<Task<Transaction>> transactionTasks = new List<Task<Transaction>>();
-			JToken json = JToken.Parse(await SendRPCAsync("blockchain.address.get_history", address.ID));
+			var transactionTasks = new List<Task<Transaction>>();
+			var json = JToken.Parse(await SendRPCAsync("blockchain.address.get_history", address.ID));
 			List<Transaction.Info> transactions = json["result"].Select(t => new Transaction.Info(t["tx_hash"].Value<string>(), t["height"].Value<ulong>())).ToList();
 
-			foreach(Transaction.Info tx in transactions.Where(i => i.Height >= startHeight))
+			foreach(var tx in transactions.Where(i => i.Height >= startHeight))
 				transactionTasks.Add(Network.GetTransactionAsync(tx));
 
 			return transactionTasks;

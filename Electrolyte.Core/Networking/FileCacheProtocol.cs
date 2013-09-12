@@ -1,16 +1,11 @@
 using System;
 using System.IO;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using Electrolyte;
 using Electrolyte.Messages;
 
 namespace Electrolyte.Networking {
 	public class FileCacheProtocol : NetworkProtocol {
-		public static Dictionary<Type, string> FileExtensions = new Dictionary<Type, string> {
-			{ typeof(Transaction), "tx" }
-		};
-
 		public override void Connect() {
 			if(!Directory.Exists(DefaultCachePath))
 				Directory.CreateDirectory(DefaultCachePath);

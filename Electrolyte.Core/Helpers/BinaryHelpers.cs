@@ -7,10 +7,7 @@ namespace Electrolyte.Helpers {
 	public static class BinaryHelpers {
 		public static Endian SystemEndianness {
 			get {
-				if(BitConverter.IsLittleEndian)
-					return Endian.Little;
-				else
-					return Endian.Big;
+				return BitConverter.IsLittleEndian ? Endian.Little : Endian.Big;
 			}
 		}
 

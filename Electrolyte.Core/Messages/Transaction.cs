@@ -68,16 +68,6 @@ namespace Electrolyte.Messages {
 			if(hashType.HasFlag(SigHash.AnyoneCanPay))
 				throw new NotImplementedException();
 
-//			Transaction copy = new Transaction();
-//			using(MemoryStream originalStream = new MemoryStream()) {
-//				using(BinaryWriter writer = new BinaryWriter(originalStream))
-//					WritePayload(writer);
-//
-//				using(MemoryStream copyStream = new MemoryStream(originalStream.ToArray())) {
-//					using(BinaryReader reader = new BinaryReader(copyStream))
-//						copy.ReadPayload(reader);
-//				}
-//			}
 			Transaction copy = Transaction.FromByteArray(ToByteArray());
 
 			foreach(Input input in copy.Inputs) {
@@ -86,7 +76,7 @@ namespace Electrolyte.Messages {
 
 			copy.Inputs[inputIndex].ScriptSig = subScript;
 
-			List<byte> verify = new List<byte>();
+			var verify = new List<byte>();
 //			using(MemoryStream stream = new MemoryStream()) {
 //				using(BinaryWriter writer = new BinaryWriter(stream))
 //					copy.WritePayload(writer);
@@ -96,13 +86,13 @@ namespace Electrolyte.Messages {
 			verify.AddRange(copy.ToByteArray());
 			verify.AddRange(BitConverter.GetBytes((UInt32)hashType));
 
-			using(SHA256 sha256 = SHA256.Create())
+			using(var sha256 = SHA256.Create())
 				return sha256.ComputeHash(sha256.ComputeHash(verify.ToArray()));
 		}
 
 		public bool SigIsValid(byte[] pubKey, byte[] sigWithHashType, Script subScript, int inputIndex) {
 			byte[] sig = ArrayHelpers.SubArray(sigWithHashType, 0, sigWithHashType.Length - 1);
-			SigHash hashType = (SigHash)sigWithHashType[sigWithHashType.Length - 1];
+			var hashType = (SigHash)sigWithHashType[sigWithHashType.Length - 1];
 
 			return ECKey.Verify(InputHash(hashType, subScript, inputIndex), sig, pubKey);
 		}
@@ -175,8 +165,8 @@ namespace Electrolyte.Messages {
 
 		
 		public byte[] ToByteArray() {
-			using(MemoryStream stream = new MemoryStream()) {
-				using(BinaryWriter writer = new BinaryWriter(stream)) {
+			using(var stream = new MemoryStream()) {
+				using(var writer = new BinaryWriter(stream)) {
 					WritePayload(writer);
 					return stream.ToArray();
 				}
@@ -188,9 +178,9 @@ namespace Electrolyte.Messages {
 		}
 
 		public static Transaction FromByteArray(byte[] bytes) {
-			using(MemoryStream stream = new MemoryStream(bytes)) {
-				using(BinaryReader reader = new BinaryReader(stream)) {
-					Transaction tx = new Transaction();
+			using(var stream = new MemoryStream(bytes)) {
+				using(var reader = new BinaryReader(stream)) {
+					var tx = new Transaction();
 					tx.ReadPayload(reader);
 					return tx;
 				}
@@ -208,14 +198,14 @@ namespace Electrolyte.Messages {
 		}
 
 		static Transaction FromJson(JToken data) {
-			Transaction tx = new Transaction();
+			var tx = new Transaction();
 			tx.ReadFromJson(data);
 			return tx;
 		}
 
-		public static Transaction Create(List<Output> inpoints, Dictionary<Address, Money> destinations, Dictionary<Address, ECKey> privateKeys) {
+		public static Transaction Create(List<Output> inpoints, Dictionary<Address, Money> destinations, IDictionary<Address, ECKey> privateKeys) {
 			// TODO: Check for dust (< 0.543 * minimum fee; https://bitcointalk.org/index.php?topic=219504)
-			Transaction tx = new Transaction();
+			var tx = new Transaction();
 
 			tx.Version = CurrentVersion;
 

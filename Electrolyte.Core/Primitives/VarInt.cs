@@ -59,12 +59,11 @@ namespace Electrolyte.Primitives {
 		static int intLength(byte first) {
 			if(first <= 252)
 				return 8;
-			else if(first <= 253)
+			if(first <= 253)
 				return 16;
-			else if(first <= 254)
+			if(first <= 254)
 				return 32;
-			else
-				return 64;
+			return 64;
 
 		}
 	}

@@ -12,9 +12,9 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Electrolyte.Networking;
 using Electrolyte.Primitives;
-using Electrolyte.Extensions;
 using Electrolyte.Messages;
 using Electrolyte.Helpers;
+
 using Timer = System.Timers.Timer;
 
 namespace Electrolyte {
@@ -49,7 +49,7 @@ namespace Electrolyte {
 		static readonly SemaphoreSlim lockLock = new SemaphoreSlim(1);
 		public bool IsLocked { get; private set; }
 
-		public byte[] EncryptionKey = new byte[] { };
+		public byte[] EncryptionKey = { };
 		public byte[] EncryptedData, IV, Salt;
 		public ulong KeyHashes = 1024;
 
@@ -82,7 +82,7 @@ namespace Electrolyte {
 				if(IsLocked)
 					return PublicAddresses;
 
-				HashSet<Address> addresses = new HashSet<Address>(PrivateKeys.Keys);
+				var addresses = new HashSet<Address>(PrivateKeys.Keys);
 				foreach(Address address in PublicAddresses) {
 					if(!addresses.Contains(address))
 						addresses.Add(address);
@@ -99,7 +99,7 @@ namespace Electrolyte {
 		}
 
 		public static async Task<Wallet> CreateAsync(byte[] passphrase, string path = null, Dictionary<Address, ECKey> keys = null, HashSet<Address> publicAddresses = null, HashSet<Address> watchAddresses = null) {
-			Wallet wallet = new Wallet(path, keys, publicAddresses, watchAddresses);
+			var wallet = new Wallet(path, keys, publicAddresses, watchAddresses);
 			await wallet.LockAsync(passphrase);
 			await wallet.UnlockAsync(passphrase);
 
@@ -109,7 +109,7 @@ namespace Electrolyte {
 
 
 		public async Task<Address> GenerateAddressAsync() {
-			ECKey key = new ECKey();
+			var key = new ECKey();
 			await ImportKeyAsync(key);
 			return key.ToAddress();
 		}
@@ -184,7 +184,7 @@ namespace Electrolyte {
 		public async Task<Transaction> CreateTransactionAsync(Dictionary<Address, Money> destinations, Address changeAddress = null) {
 			Money change;
 			List<Transaction.Output> inpoints = CoinPicker.SelectInpoints(await GetSpendableOutputsAsync(), destinations, out change);
-			Dictionary<Address, Money> destinationsWithChange = new Dictionary<Address, Money>(destinations);
+			var destinationsWithChange = new Dictionary<Address, Money>(destinations);
 
 			if(change > new Money(0, "BTC")) {
 				changeAddress = changeAddress ?? await GenerateAddressAsync();
@@ -346,9 +346,9 @@ namespace Electrolyte {
 		}
 
 		public async static Task<Wallet> LoadAsync(string path) {
-			using(FileStream stream = new FileStream(path, FileMode.Open, FileAccess.Read)) {
-				using(StreamReader reader = new StreamReader(stream)) {
-					Wallet wallet = new Wallet(path);
+			using(var stream = new FileStream(path, FileMode.Open, FileAccess.Read)) {
+				using(var reader = new StreamReader(stream)) {
+					var wallet = new Wallet(path);
 					await wallet.ReadAsync(reader);
 
 					return wallet;
@@ -402,9 +402,9 @@ namespace Electrolyte {
 			aes.Key = await PassphraseToKeyAsync(passphrase, Salt);
 
 			try {
-				using(MemoryStream stream = new MemoryStream(EncryptedData)) {
-					using(CryptoStream cryptoStream = new CryptoStream(stream, aes.CreateDecryptor(), CryptoStreamMode.Read))
-						using(StreamReader streamReader = new StreamReader(cryptoStream))
+				using(var stream = new MemoryStream(EncryptedData)) {
+					using(var cryptoStream = new CryptoStream(stream, aes.CreateDecryptor(), CryptoStreamMode.Read))
+						using(var streamReader = new StreamReader(cryptoStream))
 							await ReadPrivateAsync(streamReader);
 				}
 			}
@@ -428,7 +428,7 @@ namespace Electrolyte {
 		}
 
 		public string DataAsJson() {
-			Dictionary<string, object> data = new Dictionary<string, object> {
+			var data = new Dictionary<string, object> {
 				{ "version", Version },
 				{ "watch_addresses", new List<object>() },
 				{ "public_addresses", new List<object>() },
@@ -456,7 +456,7 @@ namespace Electrolyte {
 		}
 
 		string PrivateDataAsJson() {
-			Dictionary<string, object> data = new Dictionary<string, object>();
+			var data = new Dictionary<string, object>();
 			data.Add("keys", new List<object>());
 			foreach(KeyValuePair<Address, ECKey> privateKey in PrivateKeys) {
 				((List<object>)data["keys"]).Add(new Dictionary<string, object> {
@@ -477,7 +477,7 @@ namespace Electrolyte {
 		}
 
 		public async Task EncryptAsync(byte[] passphrase) {
-			SecureRandom random = new SecureRandom();
+			var random = new SecureRandom();
 
 			IV = new byte[16];
 			random.NextBytes(IV);
@@ -490,9 +490,9 @@ namespace Electrolyte {
 			aes.IV = IV;
 			aes.Key = await PassphraseToKeyAsync(passphrase, Salt);
 
-			using(MemoryStream stream = new MemoryStream()) {
-				using(CryptoStream cryptoStream = new CryptoStream(stream, aes.CreateEncryptor(), CryptoStreamMode.Write))
-					using(StreamWriter streamWriter = new StreamWriter(cryptoStream))
+			using(var stream = new MemoryStream()) {
+				using(var cryptoStream = new CryptoStream(stream, aes.CreateEncryptor(), CryptoStreamMode.Write))
+					using(var streamWriter = new StreamWriter(cryptoStream))
 						await WritePrivateAsync(streamWriter);
 				EncryptedData = stream.ToArray();
 			}
@@ -530,12 +530,12 @@ namespace Electrolyte {
 				if(File.Exists(backup)) { File.Delete(backup); }
 				if(File.Exists(path)) { File.Move(path, backup); }
 				
-				// TODO: Set proper file permissions
-				using(FileStream stream = new FileStream(path, FileMode.CreateNew, FileAccess.ReadWrite)) {
-					using(StreamWriter writer = new StreamWriter(stream)) {
-						if(!IsLocked)
-							await EncryptAsync(EncryptionKey);
+				if(!IsLocked)
+					await EncryptAsync(EncryptionKey);
 
+				// TODO: Set proper file permissions
+				using(var stream = new FileStream(path, FileMode.CreateNew, FileAccess.ReadWrite)) {
+					using(var writer = new StreamWriter(stream)) {
 						await WriteAsync(writer);
 					}
 				}

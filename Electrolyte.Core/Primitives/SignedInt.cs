@@ -5,7 +5,7 @@ namespace Electrolyte.Primitives {
 		public Int32 Value;
 
 		public SignedInt(byte[] bytes) {
-			byte[] b = new byte[bytes.Length];
+			var b = new byte[bytes.Length];
 			bytes.CopyTo(b, 0);
 
 			if(b.Length > 4)
@@ -31,7 +31,7 @@ namespace Electrolyte.Primitives {
 			bool isNegative = Value < 0;
 			int abs = Math.Abs(Value);
 
-			byte[] bytes = new byte[] { };
+			var bytes = new byte[] { };
 			switch(Length(Value)) {
 			case 8:
 				bytes = new byte[]{
@@ -68,10 +68,9 @@ namespace Electrolyte.Primitives {
 		static int Length(Int32 number) {
 			if(SByte.MinValue < number && number <= SByte.MaxValue)
 				return 8;
-			else if(Int16.MinValue < number && number <= Int16.MaxValue)
+			if(Int16.MinValue < number && number <= Int16.MaxValue)
 				return 16;
-			else
-				return 32;
+			return 32;
 		}
 	}
 }

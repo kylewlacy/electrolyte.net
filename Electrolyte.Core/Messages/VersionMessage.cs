@@ -1,7 +1,6 @@
 using System;
 using System.IO;
 using System.Net;
-using System.Linq;
 using Electrolyte.Helpers;
 using Electrolyte.Primitives;
 using Electrolyte.Extensions;
@@ -83,7 +82,7 @@ namespace Electrolyte.Messages {
 			UserAgent = VarString.Read(reader).Value;
 			BlockHeight = reader.ReadInt32();
 
-			Relay = (Version >= 70001) ? reader.ReadBoolean() : false; // BIP 0037
+			Relay = (Version >= 70001) && reader.ReadBoolean(); // BIP 0037
 		}
 
 		public override void WritePayload(BinaryWriter writer) {

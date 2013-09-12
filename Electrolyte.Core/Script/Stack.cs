@@ -22,8 +22,7 @@ namespace Electrolyte {
 				get {
 					if(i >= 0)
 						return Items[Items.Count - 1 - i];
-					else
-						return Items[-i];
+					return Items[-i];
 				}
 			}
 
@@ -50,7 +49,7 @@ namespace Electrolyte {
 			}
 
 			public T[] Pop(int count) {
-				List<T> data = new List<T>();
+				var data = new List<T>();
 				for(int i = 0; i < count; i++) { data.Add(Pop()); }
 				return data.ToArray();
 			}
@@ -64,12 +63,12 @@ namespace Electrolyte {
 			}
 		}
 
-		public class DataStack : Electrolyte.Script.Stack<byte[]> {
+		public class DataStack : Script.Stack<byte[]> {
 			public bool IsTrue {
 				get { return DataAsInteger() != 0; }
 			}
 
-			public DataStack() : base() { }
+			public DataStack() { }
 			public DataStack(byte[][] data) : base(data) { }
 			public DataStack(DataStack stack) : base(stack) { }
 
@@ -98,7 +97,7 @@ namespace Electrolyte {
 			}
 
 			public bool PopTruth() {
-				return (IsTrue ? PopBool() : false);
+				return (IsTrue && PopBool());
 			}
 		}
 	}

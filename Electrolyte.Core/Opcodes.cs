@@ -130,7 +130,7 @@ namespace Electrolyte {
 	}
 
 	public static class Opcodes {
-		static Dictionary<string, Op> _strings = new Dictionary<string, Op> {
+		static readonly Dictionary<string, Op> _strings = new Dictionary<string, Op> {
 			{"OP_FALSE", Op.False},
 			{"OP_TRUE", Op.True},
 			{"OP_1NEGATE", Op.Negate1},
@@ -210,7 +210,7 @@ namespace Electrolyte {
 			if(data.Substring(0, 2) == "0x")
 				data = data.Substring(2, data.Length - 2);
 
-			byte[] bytes = new byte[data.Length / 2];
+			var bytes = new byte[data.Length / 2];
 			for(int i = 0; i < bytes.Length; i++)
 				bytes[i] = Convert.ToByte(data.Substring(i*2, 2), 16);
 

@@ -22,11 +22,11 @@ namespace Electrolyte.Extensions {
 		}
 
 		public static Money Sum(this IEnumerable<Money> source) {
-			Money.CurrencyType currency = source.Count() >= 1 ? source.First().Currency : Money.DefaultCurrencyType;
+			Money.CurrencyType currency = source.Any() ? source.First().Currency : Money.DefaultCurrencyType;
 			Money sum = new Money(0, currency);
-			foreach(Money money in source) {
+			foreach(Money money in source)
 				sum += money;
-			}
+
 			return sum;
 		}
 	}

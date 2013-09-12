@@ -5,7 +5,7 @@ using Electrolyte.Helpers;
 
 namespace Electrolyte.Extensions {
 	public static class IPAddressExtensions {
-		static byte[] IPv6Wrapper = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xFF, 0xFF };
+		static readonly byte[] IPv6Wrapper = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xFF, 0xFF };
 		public static IPAddress WrapToIPv6(this IPAddress address) {
 			switch(address.AddressFamily) {
 			case System.Net.Sockets.AddressFamily.InterNetworkV6:
@@ -24,8 +24,7 @@ namespace Electrolyte.Extensions {
 			case System.Net.Sockets.AddressFamily.InterNetworkV6:
 				if(bytes.Take(IPv6Wrapper.Length).SequenceEqual(IPv6Wrapper))
 					return new IPAddress(ArrayHelpers.SubArray(bytes, IPv6Wrapper.Length));
-				else
-					return address;
+				return address;
 			case System.Net.Sockets.AddressFamily.InterNetwork:
 				return address;
 			default:

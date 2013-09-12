@@ -30,8 +30,8 @@ namespace Electrolyte.Messages {
 		}
 
 		public void Write(BinaryWriter writer) {
-			using(MemoryStream stream = new MemoryStream())
-				using(BinaryWriter payloadWriter = new BinaryWriter(stream)) {
+			using(var stream = new MemoryStream())
+				using(var payloadWriter = new BinaryWriter(stream)) {
 					WritePayload(payloadWriter);
 
 					MessageHeader header = new MessageHeader(ExpectedCommand, stream.ToArray());

@@ -26,18 +26,18 @@ namespace Electrolyte.Helpers {
 			Transaction baseTx = Transaction.Create(new List<Transaction.Output>(), new Dictionary<Address, Money>(), new Dictionary<Address, ECKey>());
 			MinBytesForTx = (long)(baseTx.ToByteArray().LongLength * (1 + PercentError));
 
-			Transaction.Input input = new Transaction.Input("23e90c875e2ed7a1ec01f5a80643879625b8aeb48b67db64c0f9edb8259240b6", 0, 0);
+			var input = new Transaction.Input("23e90c875e2ed7a1ec01f5a80643879625b8aeb48b67db64c0f9edb8259240b6", 0, 0);
 			input.ScriptSig = Script.FromString("3045022100f65c5e8c5d3b2386547a876db4ddb7bba1e57f9dbeaec9f3010516e453577fda02206f9df1a9262997263ac01be4342d0ade7057f5cceab4375fa1020ac7bfc5054b01 04ef96e3bccc8fff6b21d28e81f61c4a93cfe0f133214c9547c0d683a9fc12f529229c8d1ab20004c0f7f13961566b65492c6267fa452784c0724b4f542e4001f1");
-			using(MemoryStream stream = new MemoryStream()) {
-				using(BinaryWriter writer = new BinaryWriter(stream)) {
+			using(var stream = new MemoryStream()) {
+				using(var writer = new BinaryWriter(stream)) {
 					input.Write(writer);
 					ApproxBytesPerInput = (long)(stream.ToArray().LongLength * (1 + PercentError));
 				}
 			}
 
-			Transaction.Output output = new Transaction.Output(Script.FromString("OP_DUP OP_HASH160 4da1b9632e160406693b961ff321402b22ce5452 OP_EQUALVERIFY OP_CHECKSIG"), Money.Create(0.002m, "BTC"), baseTx, 0);
-			using(MemoryStream stream = new MemoryStream()) {
-				using(BinaryWriter writer = new BinaryWriter(stream)) {
+			var output = new Transaction.Output(Script.FromString("OP_DUP OP_HASH160 4da1b9632e160406693b961ff321402b22ce5452 OP_EQUALVERIFY OP_CHECKSIG"), Money.Create(0.002m, "BTC"), baseTx, 0);
+			using(var stream = new MemoryStream()) {
+				using(var writer = new BinaryWriter(stream)) {
 					output.Write(writer);
 					ApproxBytesPerOutput = (long)(stream.ToArray().LongLength * (1 + PercentError));
 				}
@@ -72,8 +72,8 @@ namespace Electrolyte.Helpers {
 		}
 
 		public static List<Transaction.Output> SelectInpoints(List<Transaction.Output> availableInpoints, Money amountToSend, Money fee, out Money change) {
-			List<Transaction.Output> selectedInpoints = new List<Transaction.Output>();
-			foreach(Transaction.Output output in availableInpoints) {
+			var selectedInpoints = new List<Transaction.Output>();
+			foreach(var output in availableInpoints) {
 				if(selectedInpoints.Select(o => o.Value).Sum() >= amountToSend + fee) break;
 				selectedInpoints.Add(output);
 			}

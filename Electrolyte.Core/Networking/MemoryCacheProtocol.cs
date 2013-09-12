@@ -1,13 +1,7 @@
 using System;
-using System.IO;
-using System.Text;
-using System.Linq;
-using System.Net;
-using System.Net.Sockets;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
 using Electrolyte.Messages;
 
 namespace Electrolyte.Networking {
@@ -28,10 +22,10 @@ namespace Electrolyte.Networking {
 
 		public static TimeSpan MaxExchangeRateAge = new TimeSpan(0, 5, 0);
 
-		Dictionary<string, Transaction> TransactionCache = new Dictionary<string, Transaction>();
+		readonly Dictionary<string, Transaction> TransactionCache = new Dictionary<string, Transaction>();
 		static readonly SemaphoreSlim txCacheLock = new SemaphoreSlim(1);
 
-		Dictionary<Money.CurrencyType, Dictionary<Money.CurrencyType, ExchangeRateInfo>> ExchangeRateCache = new Dictionary<Money.CurrencyType, Dictionary<Money.CurrencyType,ExchangeRateInfo>>();
+		readonly Dictionary<Money.CurrencyType, Dictionary<Money.CurrencyType, ExchangeRateInfo>> ExchangeRateCache = new Dictionary<Money.CurrencyType, Dictionary<Money.CurrencyType,ExchangeRateInfo>>();
 		static readonly SemaphoreSlim exchangeRateLock = new SemaphoreSlim(1);
 
 		public async override Task<Transaction> GetTransactionAsync(Transaction.Info info) {

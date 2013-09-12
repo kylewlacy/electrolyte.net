@@ -8,7 +8,7 @@ using Electrolyte.Primitives;
 using Electrolyte.Helpers;
 
 namespace Electrolyte.Messages {
-	public partial class Transaction : Message<Transaction> {
+	public partial class Transaction  {
 		public class Input {
 			public Transaction Transaction;
 			public UInt32 Index;
@@ -96,7 +96,7 @@ namespace Electrolyte.Messages {
 			}
 
 			public static Input Read(BinaryReader reader, Transaction transaction = null, UInt32 index = 0) {
-				Input input = new Input();
+				var input = new Input();
 				input.ReadPayload(reader);
 				input.Transaction = transaction;
 				return input;
@@ -107,7 +107,7 @@ namespace Electrolyte.Messages {
 			}
 
 			public static Input FromJson(JToken data, Transaction transaction = null, UInt32 index = 0) {
-				Input input = new Input();
+				var input = new Input();
 				input.ReadFromJson(data);
 				input.Transaction = transaction;
 				return input;
@@ -164,7 +164,7 @@ namespace Electrolyte.Messages {
 			}
 
 			public static Output Read(BinaryReader reader, Transaction transaction = null, UInt32 index = 0) {
-				Output output = new Output();
+				var output = new Output();
 				output.ReadPayload(reader);
 				output.Transaction = transaction;
 				output.Index = index;
@@ -176,7 +176,7 @@ namespace Electrolyte.Messages {
 			}
 
 			public static Output FromJson(JToken data, Transaction transaction = null, UInt32 index = 0) {
-				Output output = new Output();
+				var output = new Output();
 				output.ReadFromJson(data);
 				output.Transaction = transaction;
 				output.Index = index;

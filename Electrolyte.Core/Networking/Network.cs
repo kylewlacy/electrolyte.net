@@ -1,4 +1,3 @@
-using System;
 using System.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -61,8 +60,8 @@ namespace Electrolyte.Networking {
 		public static async Task<List<Transaction.Output>> GetUnspentOutputsAsync(List<Address> addresses, ulong startHeight = 0) {
 			if(addresses.Count <= 0) return new List<Transaction.Output>();
 
-			List<Transaction.Output> outputs = new List<Transaction.Output>();
-			foreach(Address address in addresses)
+			var outputs = new List<Transaction.Output>();
+			foreach(var address in addresses)
 				outputs.AddRange(await Network.GetUnspentOutputsAsync(address, startHeight));
 
 			return outputs;
@@ -70,16 +69,16 @@ namespace Electrolyte.Networking {
 
 
 
-		public static async Task<List<Transaction.Delta>> GetDeltasForAddressesAsync(List<Address> addresses, ulong startHeight = 0) {
-			Dictionary<Transaction, Money> deltas = new Dictionary<Transaction, Money>();
+		public static async Task<List<Transaction.Delta>> GetDeltasForAddressesAsync(ICollection<Address> addresses, ulong startHeight = 0) {
+			var deltas = new Dictionary<Transaction, Money>();
 
 			// TODO: Order this by block height to avoid two `foreach` loops
 			// Two loops exist because 'subtract' inputs may come before 'add' outputs
-			List<List<Transaction>> historyList = (await Task.WhenAll(addresses.Select(async (a) => await Network.GetAddressHistoryAsync(a, startHeight)).ToArray())).ToList();
+			List<List<Transaction>> historyList = (await Task.WhenAll(addresses.Select(async a => await Network.GetAddressHistoryAsync(a, startHeight)).ToArray())).ToList();
 			List<Transaction> history = historyList.SelectMany(h => h).ToList();
 
-			foreach(Transaction tx in history) {
-				foreach(Transaction.Output output in tx.Outputs) {
+			foreach(var tx in history) {
+				foreach(var output in tx.Outputs) {
 					if(addresses.Contains(output.Recipient)) {
 						if(!deltas.ContainsKey(tx)) { deltas.Add(tx, Money.Zero("BTC")); }
 						deltas[tx] += output.Value;
@@ -87,8 +86,8 @@ namespace Electrolyte.Networking {
 				}
 			}
 
-			foreach(Transaction tx in history) {
-				foreach(Transaction.Input input in tx.Inputs) {
+			foreach(var tx in history) {
+				foreach(var input in tx.Inputs) {
 					if(addresses.Contains(input.Sender)) {
 						Transaction prevTx = deltas.Keys.FirstOrDefault(t => input.PrevTransactionHash == t.Hash);
 						if(deltas.ContainsKey(prevTx)) {
@@ -110,9 +109,9 @@ namespace Electrolyte.Networking {
 			return await GetAddressBalanceAsync(new Address(address), startHeight);
 		}
 
-		public static async Task<Money> GetAddressBalancesAsync(List<Address> addresses, ulong startHeight = 0) {
+		public static async Task<Money> GetAddressBalancesAsync(ICollection<Address> addresses, ulong startHeight = 0) {
 			if(addresses.Count <= 0) return Money.Zero("BTC");
-			IEnumerable<Task<Money>> balances = addresses.Select(async (a) => await Network.GetAddressBalanceAsync(a, startHeight));
+			IEnumerable<Task<Money>> balances = addresses.Select(async a => await Network.GetAddressBalanceAsync(a, startHeight));
 			return (await Task.WhenAll(balances)).Sum();
 		}
 

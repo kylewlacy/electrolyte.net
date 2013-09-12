@@ -7,8 +7,7 @@ namespace Electrolyte.Helpers {
 		public static T[] ConcatArrays<T>(params T[][] arrays) {
 			var result = new T[arrays.Sum(arr => arr.Length)];
 			int offset = 0;
-			for(int i = 0; i < arrays.Length; i++) {
-				var arr = arrays[i];
+			foreach(var arr in arrays) {
 				Buffer.BlockCopy(arr, 0, result, offset, arr.Length);
 				offset += arr.Length;
 			}

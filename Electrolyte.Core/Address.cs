@@ -1,6 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using Electrolyte.Helpers;
 
 namespace Electrolyte {
@@ -47,7 +45,7 @@ namespace Electrolyte {
 		}
 
 		public override bool Equals(object obj) {
-			Address address = obj as Address;
+			var address = obj as Address;
 			return address != null && ID != null && address.ID != null && ID == address.ID;
 		}
 

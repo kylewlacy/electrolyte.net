@@ -77,10 +77,6 @@ namespace Electrolyte.Primitives {
 			_pub = pubParams.Q.GetEncoded();
 		}
 
-		/// <summary>
-		/// Construct an ECKey from an ASN.1 encoded private key. These are produced by OpenSSL and stored by the BitCoin
-		/// reference implementation in its wallet.
-		/// </summary>
 //		public static EcKey FromAsn1(byte[] asn1PrivKey) {
 //			return new EcKey(ExtractPrivateKeyFromAsn1(asn1PrivKey));
 //		}
@@ -92,10 +88,6 @@ namespace Electrolyte.Primitives {
 			return new ECKey(ArrayHelpers.SubArray(decoded, 1));
 		}
 
-		/// <summary>
-		/// Output this ECKey as an ASN.1 encoded private key, as understood by OpenSSL or used by the BitCoin reference
-		/// implementation in its wallet storage format.
-		/// </summary>
 //		public byte[] ToAsn1() {
 //			using(var baos = new MemoryStream(400)) {
 //				using(var encoder = new Asn1OutputStream(baos)) {
@@ -138,9 +130,6 @@ namespace Electrolyte.Primitives {
 			return _ecParams.G.Multiply(privKey).GetEncoded();
 		}
 
-		/// <summary>
-		/// Gets the hash160 form of the public key (as seen in addresses).
-		/// </summary>
 //		public byte[] PubKeyHash {
 //			get { return _pubKeyHash ?? (_pubKeyHash = Utils.Sha256Hash160(_pub)); }
 //		}
@@ -213,7 +202,7 @@ namespace Electrolyte.Primitives {
 		}
 
 		public override bool Equals(object obj) {
-			ECKey key = obj as ECKey;
+			var key = obj as ECKey;
 			return key != null && PrivateKeyBytes.Length > 0 && key.PrivateKeyBytes.Length > 0 && PrivateKeyBytes.SequenceEqual(key.PrivateKeyBytes);
 		}
 
@@ -245,13 +234,7 @@ namespace Electrolyte.Primitives {
 //			}
 //			return new BigInteger(1, key.GetOctets());
 //		}
-
-		/// <summary>
-		/// Exports the private key in the form used by the Satoshi client "dumpprivkey" and "importprivkey" commands. Use
-		/// the <see cref="DumpedPrivateKey.ToString"/> method to get the string.
-		/// </summary>
-		/// <param name="params">The network this key is intended for use on.</param>
-		/// <returns>Private key bytes as a <see cref="DumpedPrivateKey"/>.</returns>
+//
 //		public DumpedPrivateKey GetPrivateKeyEncoded(NetworkParameters @params) {
 //			return new DumpedPrivateKey(@params, GetPrivKeyBytes());
 //		}

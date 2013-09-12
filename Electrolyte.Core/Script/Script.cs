@@ -5,7 +5,6 @@ using System.Security.Cryptography;
 using Electrolyte.Messages;
 using Electrolyte.Primitives;
 using Electrolyte.Helpers;
-using System.Text;
 
 namespace Electrolyte {
 	public partial class Script {
@@ -20,7 +19,7 @@ namespace Electrolyte {
 			get { return _execution; }
 			set {
 				_execution = value;
-				byte[] items = new byte[_execution.Items.Count];
+				var items = new byte[_execution.Items.Count];
 				_execution.Items.ToArray().CopyTo(items, 0);
 				_start = new Stack<byte>(items.Reverse().ToArray());
 			}
@@ -45,7 +44,7 @@ namespace Electrolyte {
 
 		// TODO: Remove this in favor of `Script.Create`
 		public Script(params object[] script) {
-			List<byte> bytes = new List<byte>();
+			var bytes = new List<byte>();
 			foreach(object o in script.Reverse()) {
 				if(o is byte[])
 					bytes.AddRange(((byte[])o).Reverse());
@@ -332,7 +331,6 @@ namespace Electrolyte {
 					case Op.CheckSig:
 //						Main.Push(Transaction.SigIsValid(Main.Pop(), Main.Pop(), SubScript, InputIndex));
 						throw new NotImplementedException();
-						break;
 					case Op.CheckSigVerify:
 						throw new NotImplementedException();
 					case Op.CheckMultiSig:
@@ -397,8 +395,8 @@ namespace Electrolyte {
 		}
 
 		public override string ToString() {
-			Stack<byte> dataStack = new Stack<byte>(_start);
-			List<string> unpacked = new List<string>();
+			var dataStack = new Stack<byte>(_start);
+			var unpacked = new List<string>();
 
 			while(dataStack.Count > 0) {
 				byte next = dataStack.Pop();
@@ -427,8 +425,8 @@ namespace Electrolyte {
 		}
 
 		public static Script Create(params object[] script) {
-			List<byte> bytes = new List<byte>();
-			foreach(object o in script) {
+			var bytes = new List<byte>();
+			foreach(var o in script) {
 				if(o is byte[])
 					bytes.AddRange(Opcodes.Pack((byte[])o));
 				// TODO: Do either of these need to be flipped? (Write some tests)
