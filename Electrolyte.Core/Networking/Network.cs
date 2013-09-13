@@ -8,8 +8,18 @@ namespace Electrolyte.Networking {
 	public static class Network {
 		public static List<NetworkProtocol> Protocols = new List<NetworkProtocol>();
 
+		public static List<CacheProtocol> CacheProtocols {
+			get {
+				return Protocols.OfType<CacheProtocol>().ToList();
+			}
+		}
+
 		public static NetworkProtocol Protocol {
 			get { return Protocols[0]; }
+		}
+
+		public static CacheProtocol CacheProtocol {
+			get { return CacheProtocols[0]; }
 		}
 
 		static Network() {
@@ -129,6 +139,22 @@ namespace Electrolyte.Networking {
 
 		public static async Task<decimal> GetExchangeRateAsync(string c1, string c2) {
 			return await GetExchangeRateAsync(Money.CurrencyType.FindByCode(c1), Money.CurrencyType.FindByCode(c2));
+		}
+
+
+
+		public static async Task<Money> GetCachedBalanceAsync(Address address, ulong startHeight = 0) {
+			return await CacheProtocol.GetCachedBalanceAsync(address, startHeight);
+		}
+
+		public static async Task<Money> GetCachedBalanceAsync(string address, ulong startHeight = 0) {
+			return await GetCachedBalanceAsync(new Address(address), startHeight);
+		}
+
+		public static async Task<Money> GetCachedBalancesAsync(ICollection<Address> addresses, ulong startHeight = 0) {
+			if(addresses.Count <= 0) return Money.Zero("BTC");
+			IEnumerable<Task<Money>> balances = addresses.Select(async a => await Network.GetCachedBalanceAsync(a, startHeight));
+			return (await Task.WhenAll(balances)).Sum();
 		}
 	}
 }

@@ -6,12 +6,10 @@ namespace Electrolyte.Networking {
 	public abstract class CacheProtocol : NetworkProtocol {
 		public CacheProtocol NextCacheProtocol {
 			get {
-				List<CacheProtocol> cacheProtocols = Network.Protocols.OfType<CacheProtocol>().ToList();
-
-				int nextIndex = cacheProtocols.LastIndexOf(this) + 1;
-				if(nextIndex >= cacheProtocols.Count)
+				int nextIndex = Network.CacheProtocols.LastIndexOf(this) + 1;
+				if(nextIndex >= Network.CacheProtocols.Count)
 					return null;
-				CacheProtocol next = cacheProtocols[nextIndex];
+				CacheProtocol next = Network.CacheProtocols[nextIndex];
 				if(!next.IsConnected)
 					next.Connect();
 				return next;
