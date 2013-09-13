@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
-using System.Threading;
 using System.Threading.Tasks;
+using Electrolyte.Primitives;
 using Electrolyte.Messages;
 
 namespace Electrolyte.Networking {
@@ -23,10 +23,10 @@ namespace Electrolyte.Networking {
 		public static TimeSpan MaxExchangeRateAge = new TimeSpan(0, 5, 0);
 
 		readonly Dictionary<string, Transaction> TransactionCache = new Dictionary<string, Transaction>();
-		static readonly SemaphoreSlim txCacheLock = new SemaphoreSlim(1);
+		static readonly SemaphoreLite txCacheLock = new SemaphoreLite();
 
 		readonly Dictionary<Money.CurrencyType, Dictionary<Money.CurrencyType, ExchangeRateInfo>> ExchangeRateCache = new Dictionary<Money.CurrencyType, Dictionary<Money.CurrencyType,ExchangeRateInfo>>();
-		static readonly SemaphoreSlim exchangeRateLock = new SemaphoreSlim(1);
+		static readonly SemaphoreLite exchangeRateLock = new SemaphoreLite();
 
 		public async override Task<Transaction> GetTransactionAsync(Transaction.Info info) {
 			await txCacheLock.WaitAsync();

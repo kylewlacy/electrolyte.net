@@ -1,15 +1,15 @@
 using System;
 using System.Net;
-using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
+using Electrolyte.Primitives;
 
 namespace Electrolyte.Networking {
 	public class BlockchainProtocol : NetworkProtocol {
 		public Uri Address;
 
 		WebClient Client;
-		static readonly SemaphoreSlim clientLock = new SemaphoreSlim(1);
+		static readonly SemaphoreLite clientLock = new SemaphoreLite();
 
 		public BlockchainProtocol(string address) {
 			Client = new WebClient();

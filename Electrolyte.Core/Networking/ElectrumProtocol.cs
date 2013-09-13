@@ -4,9 +4,9 @@ using System.Text.RegularExpressions;
 using System.Linq;
 using System.Net.Sockets;
 using System.Collections.Generic;
-using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
+using Electrolyte.Primitives;
 using Electrolyte.Messages;
 using Electrolyte.Helpers;
 using Electrolyte.Extensions;
@@ -18,7 +18,7 @@ namespace Electrolyte.Networking {
 
 		protected TcpClient Client;
 		protected Stream ClientStream;
-		protected static readonly SemaphoreSlim ClientLock = new SemaphoreSlim(1);
+		protected static readonly SemaphoreLite ClientLock = new SemaphoreLite();
 
 		public ElectrumProtocol(string server, int port) {
 			Client = new TcpClient();

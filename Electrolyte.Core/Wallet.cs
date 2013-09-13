@@ -46,7 +46,7 @@ namespace Electrolyte {
 		public event EventHandler DidUnlock = delegate { };
 		public event EventHandler DidFailToUnlock = delegate { };
 		
-		static readonly SemaphoreSlim lockLock = new SemaphoreSlim(1);
+		static readonly SemaphoreLite lockLock = new SemaphoreLite();
 		public bool IsLocked { get; private set; }
 
 		public byte[] EncryptionKey = { };
