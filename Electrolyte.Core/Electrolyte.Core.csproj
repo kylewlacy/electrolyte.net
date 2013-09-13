@@ -63,6 +63,7 @@
     <Compile Include="Networking\SecureElectrumProtocol.cs" />
     <Compile Include="Networking\FileCacheProtocol.cs" />
     <Compile Include="Primitives\SemaphoreLite.cs" />
+    <Compile Include="Networking\CacheProtocol.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <ItemGroup>
