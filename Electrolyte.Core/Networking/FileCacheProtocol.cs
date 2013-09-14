@@ -1,7 +1,9 @@
 using System;
 using System.IO;
 using System.Threading.Tasks;
+using System.Security.Cryptography;
 using Electrolyte;
+using Electrolyte.Helpers;
 using Electrolyte.Messages;
 
 namespace Electrolyte.Networking {
@@ -28,6 +30,46 @@ namespace Electrolyte.Networking {
 				tx.WritePayload(new BinaryWriter(new FileStream(cache, FileMode.Create)));
 			}
 			return tx;
+		}
+
+		public override async Task<Money> GetAddressBalanceAsync(Address address, ulong startHeight = 0) {
+			string balanceCache = Path.Combine(DefaultCachePath, "balances");
+			if(!Directory.Exists(balanceCache))
+				Directory.CreateDirectory(balanceCache);
+			string cache = Path.Combine(balanceCache, String.Format("{0}.{1}", GetHashedAddress(address), "bal"));
+
+			Money balance = await base.GetAddressBalanceAsync(address, startHeight);
+			using(var writer = new StreamWriter(new FileStream(cache, FileMode.Create))) {
+				await writer.WriteLineAsync(balance.Cents.ToString());
+			}
+			return balance;
+		}
+
+		public override async Task<Money> GetCachedBalanceAsync(Address address, ulong startHeight = 0) {
+			string balanceCache = Path.Combine(DefaultCachePath, "balances");
+			if(!Directory.Exists(balanceCache))
+				Directory.CreateDirectory(balanceCache);
+			string cache = Path.Combine(balanceCache, String.Format("{0}.{1}", GetHashedAddress(address), "bal"));
+
+
+			if(File.Exists(cache)) {
+				using(var reader = new StreamReader(cache)) {
+					return new Money(Int64.Parse(await reader.ReadLineAsync()), "BTC");
+				}
+			}
+
+			return await base.GetCachedBalanceAsync(address);
+		}
+
+		static string GetHashedAddress(Address address) {
+			byte[] currentHash = Base58.DecodeWithChecksum(address.ID);
+			using(var sha256 = SHA256.Create()) {
+				for(int i = 0; i < 1024; i++) {
+					currentHash = sha256.ComputeHash(currentHash);
+				}
+			}
+
+			return Base58.Encode(currentHash);
 		}
 
 

@@ -28,17 +28,41 @@ namespace Electrolyte.Networking {
 		readonly Dictionary<Money.CurrencyType, Dictionary<Money.CurrencyType, ExchangeRateInfo>> ExchangeRateCache = new Dictionary<Money.CurrencyType, Dictionary<Money.CurrencyType,ExchangeRateInfo>>();
 		static readonly SemaphoreLite exchangeRateLock = new SemaphoreLite();
 
+		readonly Dictionary<Address, Money> BalanceCache = new Dictionary<Address, Money>();
+		static readonly SemaphoreLite balanceCacheLock = new SemaphoreLite();
+
 		public async override Task<Transaction> GetTransactionAsync(Transaction.Info info) {
 			await txCacheLock.WaitAsync();
 			try {
 				if(!TransactionCache.ContainsKey(info.Hash))
 					TransactionCache.Add(info.Hash, await base.GetTransactionAsync(info));
+				return TransactionCache[info.Hash];
 			}
 			finally {
 				txCacheLock.Release();
 			}
+		}
 
-			return TransactionCache[info.Hash];
+		public override async Task<Money> GetAddressBalanceAsync(Address address, ulong startHeight = 0) {
+			Money balance = await base.GetAddressBalanceAsync(address, startHeight);
+			if(!BalanceCache.ContainsKey(address))
+				BalanceCache.Add(address, balance);
+			else
+				BalanceCache[address] = balance;
+
+			return balance;
+		}
+
+		public override async Task<Money> GetCachedBalanceAsync(Address address, ulong startHeight = 0) {
+			await balanceCacheLock.WaitAsync();
+			try {
+				if(!BalanceCache.ContainsKey(address))
+					BalanceCache.Add(address, await base.GetCachedBalanceAsync(address, startHeight));
+				return BalanceCache[address];
+			}
+			finally {
+				balanceCacheLock.Release();
+			}
 		}
 
 		public override async Task<decimal> GetExchangeRateAsync(Money.CurrencyType c1, Money.CurrencyType c2) {
