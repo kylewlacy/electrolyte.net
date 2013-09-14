@@ -241,6 +241,10 @@ namespace Electrolyte {
 			return await Network.GetAddressBalancesAsync(Addresses.ToList(), startHeight);
 		}
 
+		public async Task<Money> GetCachedBalanceAsync(ulong startHeight = 0) {
+			return await Network.GetCachedBalancesAsync(Addresses.ToList(), startHeight);
+		}
+
 		public async Task<Money> GetSpendableBalanceAsync(ulong startHeight = 0) {
 			return await Network.GetAddressBalancesAsync(PrivateKeys.Keys.ToList(), startHeight);
 		}
