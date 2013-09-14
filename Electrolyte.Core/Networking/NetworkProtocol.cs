@@ -54,6 +54,7 @@ namespace Electrolyte.Networking {
 			List<Transaction> addressHistory = await GetAddressHistoryAsync(address, startHeight);
 			var unspentOutputs = new Dictionary<Tuple<string, uint>, Transaction.Output>();
 
+			// TODO: Merge `foreach` loops
 			foreach(var tx in addressHistory) {
 				foreach(var output in tx.Outputs) {
 					if(output.Recipient == address)

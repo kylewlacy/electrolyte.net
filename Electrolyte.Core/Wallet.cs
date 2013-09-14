@@ -3,7 +3,6 @@ using System.IO;
 using System.Text;
 using System.Linq;
 using System.Timers;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Security.Cryptography;
@@ -460,8 +459,8 @@ namespace Electrolyte {
 		}
 
 		string PrivateDataAsJson() {
-			var data = new Dictionary<string, object>();
-			data.Add("keys", new List<object>());
+			var data = new Dictionary<string, object> { { "keys", new List<object>() } };
+
 			foreach(KeyValuePair<Address, ECKey> privateKey in PrivateKeys) {
 				((List<object>)data["keys"]).Add(new Dictionary<string, object> {
 					{ "addr", privateKey.Key.ToString() },

@@ -58,7 +58,7 @@ namespace Electrolyte.Networking {
 				}
 			}
 
-			return await base.GetCachedBalanceAsync(address);
+			return await base.GetCachedBalanceAsync(address, startHeight);
 		}
 
 		static string GetHashedAddress(Address address) {

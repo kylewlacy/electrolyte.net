@@ -227,7 +227,7 @@ namespace Electrolyte.CLI {
 
 		public static bool Confirm(string message = "Are you sure?", string prompt = "[y/n]:") {
 			Console.Write("{0} {1} ", message, prompt);
-			switch(Console.ReadLine().ToLower()) {
+			switch((Console.ReadLine() ?? "").ToLower()) {
 			case "y":
 			case "yes":
 				return true;

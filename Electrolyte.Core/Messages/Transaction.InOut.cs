@@ -83,15 +83,8 @@ namespace Electrolyte.Messages {
 			}
 
 			protected void ReadFromJson(JToken data) {
-				Console.WriteLine(data["prev_out"]);
-				string hash = data["prev_out"]["hash"].Value<string>();
-				PrevTransactionHashBytes = new byte[hash.Length / 2];
-
-				for(int i = 0; i < PrevTransactionHashBytes.Length; i++) {
-					PrevTransactionHashBytes[i] = Convert.ToByte(hash.Substring(i * 2, 2), 16);
-				}
+				PrevTransactionHashBytes = BinaryHelpers.HexToByteArray(data["prev_out"]["hash"].Value<string>());
 				OutpointIndex = data["prev_out"]["n"].Value<uint>();
-
 				ScriptSig = Script.FromString(data["scriptSig"].Value<string>());
 			}
 

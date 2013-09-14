@@ -51,7 +51,7 @@ namespace Electrolyte.Networking {
 				}
 			}
 
-			string rpc = String.Format("{{\"id\": 1, \"method\": \"{0}\", \"params\": [{1}]}}", methodName, String.Join(", ", jsonArgs));
+			var rpc = String.Format("{{\"id\": 1, \"method\": \"{0}\", \"params\": [{1}]}}", methodName, String.Join(", ", jsonArgs));
 
 			await ClientLock.WaitAsync();
 			try {
@@ -68,25 +68,20 @@ namespace Electrolyte.Networking {
 		}
 
 		public async override Task<Transaction> GetTransactionAsync(Transaction.Info info) {
-			JToken json = JToken.Parse(await SendRPCAsync("blockchain.transaction.get", info.Hash, info.Height));
+			var json = JToken.Parse(await SendRPCAsync("blockchain.transaction.get", info.Hash, info.Height));
 
-			string txHex = json["result"].Value<string>();
-			byte[] rawTx = BinaryHelpers.HexToByteArray(txHex);
-
+			var rawTx = BinaryHelpers.HexToByteArray(json["result"].Value<string>());
 			var tx = new Transaction(info.Height);
 			tx.ReadPayload(new BinaryReader(new MemoryStream(rawTx)));
+
 			return tx;
 		}
 
 		public async override Task<List<Task<Transaction>>> GetAddressHistoryListAsync(Address address, ulong startHeight = 0) {
-			var transactionTasks = new List<Task<Transaction>>();
 			var json = JToken.Parse(await SendRPCAsync("blockchain.address.get_history", address.ID));
 			List<Transaction.Info> transactions = json["result"].Select(t => new Transaction.Info(t["tx_hash"].Value<string>(), t["height"].Value<ulong>())).ToList();
 
-			foreach(var tx in transactions.Where(i => i.Height >= startHeight))
-				transactionTasks.Add(Network.GetTransactionAsync(tx));
-
-			return transactionTasks;
+			return transactions.Where(i => i.Height >= startHeight).Select(Network.GetTransactionAsync).ToList();
 		}
 
 		public async override Task<Money> GetAddressBalanceAsync(Address address, ulong startHeight = 0) {
@@ -97,13 +92,13 @@ namespace Electrolyte.Networking {
 
 
 		public override async Task BroadcastTransactionAsync(Transaction tx) {
-			JToken json = JToken.Parse(await SendRPCAsync("blockchain.transaction.broadcast", tx.ToHex()));
-			string result = json["result"].Value<string>();
+			var json = JToken.Parse(await SendRPCAsync("blockchain.transaction.broadcast", tx.ToHex()));
+			var result = json["result"].Value<string>();
 
 			int? errorCode = null;
 			try {
 				// TODO: Handle Python string literals properly
-				JToken resultError = JToken.Parse(Regex.Replace(result, "u'(?<text>[^']*)'", "\"${text}\""));
+				var resultError = JToken.Parse(Regex.Replace(result, "u'(?<text>[^']*)'", "\"${text}\""));
 
 				errorCode = resultError["code"].Value<int>();
 				Console.WriteLine("There was an error: {0} ({1})\n{2}", errorCode, resultError["message"], result);

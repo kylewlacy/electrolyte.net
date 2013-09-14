@@ -250,17 +250,10 @@ namespace Electrolyte {
 						Main.Push(Math.Abs(Main.PopInt()));
 						break;
 					case Op.Not:
-						int toFlip = Main.PopInt();
-						if(toFlip == 0)
-							Main.Push(1);
-						else
-							Main.Push(0);
+						Main.Push(Main.PopInt() == 0 ? 1 : 0);
 						break;
 					case Op.NotEqual0:
-						if(Main.PopInt() == 0)
-							Main.Push(0);
-						else
-							Main.Push(1);
+						Main.Push(Main.PopInt() == 0 ? 0 : 1);
 						break;
 					case Op.Add:
 						Main.Push(Main.PopInt() + Main.PopInt());

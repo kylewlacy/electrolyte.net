@@ -9,7 +9,7 @@ namespace Electrolyte.Networking {
 		public override void Connect() {
 			base.Connect();
 
-			SslStream sslStream = new SslStream(Client.GetStream(), false, new RemoteCertificateValidationCallback(ValidateCertificate));
+			var sslStream = new SslStream(Client.GetStream(), false, new RemoteCertificateValidationCallback(ValidateCertificate));
 
 			sslStream.AuthenticateAsClient(Server);
 			ClientStream = sslStream;

@@ -143,13 +143,13 @@ namespace Electrolyte.Messages {
 		protected void ReadFromJson(JToken data) {
 			Version = data["ver"].Value<uint>();
 
-			ulong inputCount = data["vin_sz"].Value<ulong>();
+			var inputCount = data["vin_sz"].Value<ulong>();
 
 			JToken[] inputs = data["in"].ToArray();
 			for(ulong i = 0; i < inputCount; i++)
 				Inputs.Add(Input.FromJson(inputs[i], this, (UInt32)i));
 
-			ulong outputCount = data["vout_sz"].Value<ulong>();
+			var outputCount = data["vout_sz"].Value<ulong>();
 
 			JToken[] outputs = data["out"].ToArray();
 			for(ulong i = 0; i < outputCount; i++)
@@ -205,9 +205,7 @@ namespace Electrolyte.Messages {
 
 		public static Transaction Create(List<Output> inpoints, Dictionary<Address, Money> destinations, IDictionary<Address, ECKey> privateKeys) {
 			// TODO: Check for dust (< 0.543 * minimum fee; https://bitcointalk.org/index.php?topic=219504)
-			var tx = new Transaction();
-
-			tx.Version = CurrentVersion;
+			var tx = new Transaction { Version = CurrentVersion };
 
 			int outputIndex = 0;
 			foreach(KeyValuePair<Address, Money> destination in destinations) {

@@ -39,7 +39,7 @@ namespace Electrolyte.Messages {
 		}
 
 		new public static MessageHeader Read(BinaryReader reader) {
-			MessageHeader header = new MessageHeader();
+			var header = new MessageHeader();
 			header.ReadPayload(reader);
 			return header;
 		}

@@ -164,7 +164,7 @@ namespace Electrolyte {
 				if(_strings.Count < values.Length) {
 					foreach(Op op in values) {
 						if(!_strings.ContainsValue(op))
-							_strings.Add(String.Format("OP_{0}", String.Join("", op.ToString().ToCharArray().Select(c => char.ToUpper(c)))), op);
+							_strings.Add(String.Format("OP_{0}", String.Join("", op.ToString().ToCharArray().Select(char.ToUpper))), op);
 					}
 				}
 
