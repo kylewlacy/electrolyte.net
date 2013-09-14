@@ -5,7 +5,7 @@ using Electrolyte.Primitives;
 using Electrolyte.Messages;
 
 namespace Electrolyte.Networking {
-	public class MemoryCacheProtocol : NetworkProtocol {
+	public class MemoryCacheProtocol : CacheProtocol {
 		struct ExchangeRateInfo {
 			public decimal Rate;
 			public DateTime CreationTime;

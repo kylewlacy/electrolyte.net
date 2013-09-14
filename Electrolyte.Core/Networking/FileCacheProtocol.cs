@@ -5,7 +5,7 @@ using Electrolyte;
 using Electrolyte.Messages;
 
 namespace Electrolyte.Networking {
-	public class FileCacheProtocol : NetworkProtocol {
+	public class FileCacheProtocol : CacheProtocol {
 		public override void Connect() {
 			if(!Directory.Exists(DefaultCachePath))
 				Directory.CreateDirectory(DefaultCachePath);
