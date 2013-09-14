@@ -46,6 +46,8 @@ namespace Electrolyte.OSX {
 
 		public async Task UpdateBalanceAsync() {
 			balanceLabel.TextColor = NSColor.DisabledControlText;
+			balanceLabel.StringValue = (await wallet.GetCachedBalanceAsync()).ToString();
+
 			balanceLabel.StringValue = (await wallet.GetBalanceAsync()).ToString();
 			balanceLabel.TextColor = NSColor.ControlText;
 		}
