@@ -11,8 +11,16 @@ using Electrolyte.Helpers;
 
 namespace Electrolyte.Messages {
 	public partial class Transaction : Message<Transaction> {
+		public class DustException : ArgumentException {
+			public DustException() { }
+			public DustException(string message) : base(message) { }
+			public DustException(string message, Exception inner) : base(message, inner) { }
+		}
+
 		public static UInt32 CurrentVersion = 1;
 		public static Address.Network CurrentNetwork = Address.Network.Bitcoin;
+
+		public static Money DustValue = CoinPicker.MinimumFee * 0.543m;
 
 		public UInt32 Version;
 		public ulong? Height;
@@ -40,7 +48,7 @@ namespace Electrolyte.Messages {
 			get { return CoinPicker.FeeForTx(this) == Fee; }
 		}
 
-		public UInt32 LockTime; // TODO: Use a struct
+		public UInt32 LockTime;
 
 		public override string ExpectedCommand {
 			get { return "tx"; }
@@ -77,12 +85,6 @@ namespace Electrolyte.Messages {
 			copy.Inputs[inputIndex].ScriptSig = subScript;
 
 			var verify = new List<byte>();
-//			using(MemoryStream stream = new MemoryStream()) {
-//				using(BinaryWriter writer = new BinaryWriter(stream))
-//					copy.WritePayload(writer);
-//
-//				verify.AddRange(stream.ToArray());
-//			}
 			verify.AddRange(copy.ToByteArray());
 			verify.AddRange(BitConverter.GetBytes((UInt32)hashType));
 
@@ -203,8 +205,10 @@ namespace Electrolyte.Messages {
 			return tx;
 		}
 
-		public static Transaction Create(List<Output> inpoints, Dictionary<Address, Money> destinations, IDictionary<Address, ECKey> privateKeys) {
-			// TODO: Check for dust (< 0.543 * minimum fee; https://bitcointalk.org/index.php?topic=219504)
+		public static Transaction Create(List<Output> inpoints, Dictionary<Address, Money> destinations, IDictionary<Address, ECKey> privateKeys, bool allowDust = false) {
+			if(!allowDust && destinations.Select(d => d.Value).Sum() <= DustValue)
+				throw new DustException();
+
 			var tx = new Transaction { Version = CurrentVersion };
 
 			int outputIndex = 0;

@@ -22,8 +22,10 @@ namespace Electrolyte.Helpers {
 		public static Money FeePerByteIncrement = Money.Create(0.0001m, "BTC");
 		public static long ByteIncrement = 1000;
 
+		public static Money MinimumFee = FeePerByteIncrement;
+
 		static CoinPicker() {
-			Transaction baseTx = Transaction.Create(new List<Transaction.Output>(), new Dictionary<Address, Money>(), new Dictionary<Address, ECKey>());
+			Transaction baseTx = Transaction.Create(new List<Transaction.Output>(), new Dictionary<Address, Money>(), new Dictionary<Address, ECKey>(), allowDust: true);
 			MinBytesForTx = (long)(baseTx.ToByteArray().LongLength * (1 + PercentError));
 
 			var input = new Transaction.Input("23e90c875e2ed7a1ec01f5a80643879625b8aeb48b67db64c0f9edb8259240b6", 0, 0) {
