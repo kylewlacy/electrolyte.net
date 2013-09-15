@@ -1,10 +1,11 @@
 // WARNING
 //
 // This file has been generated automatically by Xamarin Studio to store outlets and
-// actions made in the Xcode designer. If it is removed, they will be lost.
+// actions made in the UI designer. If it is removed, they will be lost.
 // Manual changes to this file may not be handled correctly.
 //
 using MonoMac.Foundation;
+using System.CodeDom.Compiler;
 
 namespace Electrolyte.OSX
 {
@@ -13,9 +14,6 @@ namespace Electrolyte.OSX
 	{
 		[Outlet]
 		MonoMac.AppKit.NSTextField balanceLabel { get; set; }
-
-		[Outlet]
-		MonoMac.AppKit.NSButton cancelUnlockButton { get; set; }
 
 		[Outlet]
 		MonoMac.AppKit.NSButton lockUnlockToggleButton { get; set; }
@@ -30,16 +28,7 @@ namespace Electrolyte.OSX
 		MonoMac.AppKit.NSTableView transactionTable { get; set; }
 
 		[Outlet]
-		MonoMac.AppKit.NSButton unlockButton { get; set; }
-
-		[Outlet]
-		MonoMac.AppKit.NSWindow unlockSheet { get; set; }
-
-		[Outlet]
 		MonoMac.AppKit.NSTextField valueField { get; set; }
-
-		[Outlet]
-		MonoMac.AppKit.NSSecureTextField walletPassphraseField { get; set; }
 
 		[Action ("CloseUnlockSheet:")]
 		partial void CloseUnlockSheet (MonoMac.Foundation.NSObject sender);
@@ -55,9 +44,9 @@ namespace Electrolyte.OSX
 		
 		void ReleaseDesignerOutlets ()
 		{
-			if (sendButton != null) {
-				sendButton.Dispose ();
-				sendButton = null;
+			if (balanceLabel != null) {
+				balanceLabel.Dispose ();
+				balanceLabel = null;
 			}
 
 			if (lockUnlockToggleButton != null) {
@@ -65,34 +54,14 @@ namespace Electrolyte.OSX
 				lockUnlockToggleButton = null;
 			}
 
-			if (walletPassphraseField != null) {
-				walletPassphraseField.Dispose ();
-				walletPassphraseField = null;
-			}
-
-			if (unlockSheet != null) {
-				unlockSheet.Dispose ();
-				unlockSheet = null;
-			}
-
-			if (unlockButton != null) {
-				unlockButton.Dispose ();
-				unlockButton = null;
-			}
-
-			if (cancelUnlockButton != null) {
-				cancelUnlockButton.Dispose ();
-				cancelUnlockButton = null;
-			}
-
-			if (balanceLabel != null) {
-				balanceLabel.Dispose ();
-				balanceLabel = null;
-			}
-
 			if (recipientField != null) {
 				recipientField.Dispose ();
 				recipientField = null;
+			}
+
+			if (sendButton != null) {
+				sendButton.Dispose ();
+				sendButton = null;
 			}
 
 			if (transactionTable != null) {

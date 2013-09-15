@@ -2,7 +2,6 @@ using System;
 using System.Drawing;
 using System.Threading.Tasks;
 using System.Collections.Generic;
-using System.Linq;
 using MonoMac.Foundation;
 using MonoMac.AppKit;
 using Electrolyte.Messages;
@@ -16,6 +15,19 @@ namespace Electrolyte.OSX {
 
 		TransactionTableData transactionTableData;
 		Wallet wallet;
+
+		UnlockSheetController _unlockSheet;
+		UnlockSheetController unlockSheet {
+			get {
+				if(_unlockSheet == null) {
+					_unlockSheet = new UnlockSheetController();
+					_unlockSheet.OnUnlock += UnlockWallet;
+					_unlockSheet.OnClose += LockToggled;
+				}
+
+				return _unlockSheet;
+			}
+		}
 		
 		[Export("initWithCoder:")]
 		public MainWindowController(NSCoder coder) : base (coder) { Initialize(); }
@@ -54,7 +66,7 @@ namespace Electrolyte.OSX {
 
 		public async Task UpdateHistoryAsync() {
 			List<Transaction.Delta> deltas = (await wallet.GetTransactionDeltasAsync());
-			deltas.Sort((a,b) => { return a.Transaction.Height.Value.CompareTo(b.Transaction.Height.Value); });
+			deltas.Sort((a, b) => a.Transaction.Height.Value.CompareTo(b.Transaction.Height.Value));
 
 			transactionTableData.TransactionDeltas = deltas;
 			transactionTable.ReloadData();
@@ -90,26 +102,11 @@ namespace Electrolyte.OSX {
 		}
 
 		public void ShowUnlockSheet() {
-			if(unlockSheet == null)
-				NSBundle.LoadNib("UnlockSheet", this);
-
-			NSApplication.SharedApplication.BeginSheet(unlockSheet, Window);
+			unlockSheet.Show(Window);
 		}
 
-		partial void CloseUnlockSheet(NSObject sender) {
-			NSApplication.SharedApplication.EndSheet(unlockSheet);
-			unlockSheet.Close();
-			unlockSheet.Dispose();
-			unlockSheet = null;
-		}
-
-		async partial void UnlockWallet(NSObject sender) {
-			string passphrase = walletPassphraseField.StringValue;
-			NSButton button = sender as NSButton;
-
-			Task unlockWallet = wallet.UnlockAsync(passphrase);
-			CloseUnlockSheet(sender);
-			await unlockWallet;
+		public async void UnlockWallet(string passphrase) {
+			await wallet.UnlockAsync(passphrase);
 		}
 	}
 }

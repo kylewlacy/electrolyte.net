@@ -83,12 +83,13 @@
     <Compile Include="AppDelegate.designer.cs">
       <DependentUpon>AppDelegate.cs</DependentUpon>
     </Compile>
+    <Compile Include="TransactionTableData.cs" />
+    <Compile Include="TransactionTableCellView.cs" />
     <Compile Include="UnlockSheet.cs" />
+    <Compile Include="UnlockSheetController.cs" />
     <Compile Include="UnlockSheet.designer.cs">
       <DependentUpon>UnlockSheet.cs</DependentUpon>
     </Compile>
-    <Compile Include="TransactionTableData.cs" />
-    <Compile Include="TransactionTableCellView.cs" />
   </ItemGroup>
   <ItemGroup>
     <InterfaceDefinition Include="MainWindow.xib" />
