@@ -102,7 +102,7 @@ namespace Electrolyte.OSX {
 		}
 
 		public void ShowUnlockSheet() {
-			unlockSheet.Show(Window);
+			unlockSheet.ShowSheet(Window);
 		}
 
 		public async void UnlockWallet(string passphrase) {

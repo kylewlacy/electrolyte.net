@@ -21,17 +21,17 @@ namespace Electrolyte.OSX
 		[Outlet]
 		MonoMac.AppKit.NSSecureTextField walletPassphraseField { get; set; }
 
-		[Action ("Close:")]
-		partial void Close (MonoMac.Foundation.NSObject sender);
+		[Action ("Cancel:")]
+		partial void Cancel (MonoMac.Foundation.NSObject sender);
 
 		[Action ("Unlock:")]
 		partial void Unlock (MonoMac.Foundation.NSObject sender);
 		
 		void ReleaseDesignerOutlets ()
 		{
-			if (walletPassphraseField != null) {
-				walletPassphraseField.Dispose ();
-				walletPassphraseField = null;
+			if (cancelButton != null) {
+				cancelButton.Dispose ();
+				cancelButton = null;
 			}
 
 			if (unlockButton != null) {
@@ -39,9 +39,9 @@ namespace Electrolyte.OSX
 				unlockButton = null;
 			}
 
-			if (cancelButton != null) {
-				cancelButton.Dispose ();
-				cancelButton = null;
+			if (walletPassphraseField != null) {
+				walletPassphraseField.Dispose ();
+				walletPassphraseField = null;
 			}
 		}
 	}
