@@ -17,7 +17,6 @@
 using System;
 using System.IO;
 using System.Linq;
-using System.Security.Cryptography;
 using Org.BouncyCastle.Asn1;
 using Org.BouncyCastle.Asn1.Sec;
 using Org.BouncyCastle.Crypto.Generators;
@@ -25,6 +24,7 @@ using Org.BouncyCastle.Crypto.Parameters;
 using Org.BouncyCastle.Crypto.Signers;
 using Org.BouncyCastle.Math;
 using Org.BouncyCastle.Security;
+using Electrolyte.Cryptography;
 using Electrolyte.Helpers;
 
 namespace Electrolyte.Primitives {
@@ -147,7 +147,7 @@ namespace Electrolyte.Primitives {
 		/// the RIPEMD-160 hash of the public key and is not the public key itself (which is too large to be convenient).
 		/// </summary>
 		public Address ToAddress() {
-			byte[] hashedPubKey = RIPEMD160.Create().ComputeHash(SHA256.Create().ComputeHash(PubKey));
+			byte[] hashedPubKey = Digest.Hash<RIPEMD160, SHA256>(PubKey);
 			return new Address(Base58.EncodeWithChecksum(ArrayHelpers.ConcatArrays(new byte[] { 0x00 }, hashedPubKey)));
 		}
 

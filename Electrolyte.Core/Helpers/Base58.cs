@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
-using System.Security.Cryptography;
+using Electrolyte.Cryptography;
 
 namespace Electrolyte.Helpers {
 	// Implements https://en.bitcoin.it/wiki/Base58Check_encoding
@@ -85,12 +85,11 @@ namespace Electrolyte.Helpers {
 		}
 
 		private static byte[] GetChecksum(byte[] data) {
-			SHA256 sha256 = new SHA256Managed();
-			byte[] hash1 = sha256.ComputeHash(data);
-			byte[] hash2 = sha256.ComputeHash(hash1);
+//			SHA256 sha256 = new SHA256Managed();
+			byte[] hash = Digest.Hash<SHA256, SHA256>(data);
 
 			var result = new byte[ChecksumSizeInBytes];
-			Buffer.BlockCopy(hash2, 0, result, 0, result.Length);
+			Buffer.BlockCopy(hash, 0, result, 0, result.Length);
 
 			return result;
 		}

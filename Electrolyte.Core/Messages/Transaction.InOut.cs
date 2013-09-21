@@ -1,9 +1,9 @@
 using System;
 using System.IO;
 using System.Linq;
-using System.Security.Cryptography;
 using Newtonsoft.Json.Linq;
 using Electrolyte;
+using Electrolyte.Cryptography;
 using Electrolyte.Primitives;
 using Electrolyte.Helpers;
 
@@ -39,13 +39,9 @@ namespace Electrolyte.Messages {
 
 					byte[] pubKey = BinaryHelpers.HexToByteArray(pubKeyHex);
 
-					using(RIPEMD160 ripemd = RIPEMD160.Create()) {
-						using(SHA256 sha256 = SHA256.Create()) {
-							byte[] pubKeyHash = ripemd.ComputeHash(sha256.ComputeHash(pubKey));
-							byte[] addressBytes = ArrayHelpers.ConcatArrays(new byte[] { Address.BytePrefixForNetwork(CurrentNetwork) }, pubKeyHash);
-							return new Address(Base58.EncodeWithChecksum(addressBytes));
-						}
-					}
+					byte[] pubKeyHash = Digest.Hash<RIPEMD160, SHA256>(pubKey);
+					byte[] addressBytes = ArrayHelpers.ConcatArrays(new byte[] { Address.BytePrefixForNetwork(CurrentNetwork) }, pubKeyHash);
+					return new Address(Base58.EncodeWithChecksum(addressBytes));
 				}
 			}
 

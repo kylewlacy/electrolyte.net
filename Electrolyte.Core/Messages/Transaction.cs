@@ -2,9 +2,9 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Collections.Generic;
-using System.Security.Cryptography;
 using Newtonsoft.Json.Linq;
 using Electrolyte;
+using Electrolyte.Cryptography;
 using Electrolyte.Extensions;
 using Electrolyte.Primitives;
 using Electrolyte.Helpers;
@@ -56,9 +56,7 @@ namespace Electrolyte.Messages {
 
 		public string Hash {
 			get {
-				using(SHA256 sha256 = SHA256.Create()) {
-					return BinaryHelpers.ByteArrayToHex(sha256.ComputeHash(sha256.ComputeHash(ToByteArray())).Reverse().ToArray());
-				}
+				return BinaryHelpers.ByteArrayToHex(Digest.Hash<SHA256, SHA256>(ToByteArray()).Reverse().ToArray());
 			}
 		}
 
@@ -88,8 +86,7 @@ namespace Electrolyte.Messages {
 			verify.AddRange(copy.ToByteArray());
 			verify.AddRange(BitConverter.GetBytes((UInt32)hashType));
 
-			using(var sha256 = SHA256.Create())
-				return sha256.ComputeHash(sha256.ComputeHash(verify.ToArray()));
+			return Digest.Hash<SHA256, SHA256>(verify.ToArray());
 		}
 
 		public bool SigIsValid(byte[] pubKey, byte[] sigWithHashType, Script subScript, int inputIndex) {

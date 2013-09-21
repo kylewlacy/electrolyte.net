@@ -14,6 +14,7 @@ using Electrolyte.Primitives;
 using Electrolyte.Messages;
 using Electrolyte.Helpers;
 
+using SHA256 = Electrolyte.Cryptography.SHA256;
 using Timer = System.Timers.Timer;
 
 namespace Electrolyte {
@@ -551,10 +552,8 @@ namespace Electrolyte {
 			byte[] key = passphrase;
 
 			await Task.Run(() => {
-				using(SHA256 sha256 = SHA256.Create()) {
-					for(ulong i = 0; i < keyHashes; i++) {
-						key = sha256.ComputeHash(ArrayHelpers.ConcatArrays(key, passphrase, salt));
-					}
+				for(ulong i = 0; i < keyHashes; i++) {
+					key = SHA256.Hash(ArrayHelpers.ConcatArrays(key, passphrase, salt));
 				}
 			});
 

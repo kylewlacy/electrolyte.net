@@ -1,7 +1,7 @@
 using System;
 using System.Linq;
 using System.Collections.Generic;
-using System.Security.Cryptography;
+using Electrolyte.Cryptography;
 using Electrolyte.Messages;
 using Electrolyte.Primitives;
 using Electrolyte.Helpers;
@@ -303,20 +303,19 @@ namespace Electrolyte {
 						break;
 
 					case Op.RIPEMD160:
-						Main.Push(RIPEMD160.Create().ComputeHash(Main.Pop()));
+						Main.Push(RIPEMD160.Hash(Main.Pop()));
 						break;
 					case Op.SHA1:
-						Main.Push(SHA1.Create().ComputeHash(Main.Pop()));
+						Main.Push(SHA1.Hash(Main.Pop()));
 						break;
 					case Op.SHA256:
-						Main.Push(SHA256.Create().ComputeHash(Main.Pop()));
+						Main.Push(SHA256.Hash(Main.Pop()));
 						break;
 					case Op.Hash160:
-						Main.Push(RIPEMD160.Create().ComputeHash(SHA256.Create().ComputeHash(Main.Pop())));
+						Main.Push(Digest.Hash<RIPEMD160, SHA256>(Main.Pop()));
 						break;
 					case Op.Hash256:
-						SHA256 sha256 = SHA256.Create();
-						Main.Push(sha256.ComputeHash(sha256.ComputeHash(Main.Pop())));
+						Main.Push(Digest.Hash<SHA256, SHA256>(Main.Pop()));
 						break;
 					case Op.CodeSeparator:
 						lastSeparatorIndex = _start.Count - Execution.Count;

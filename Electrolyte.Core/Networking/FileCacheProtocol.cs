@@ -1,10 +1,10 @@
 using System;
 using System.IO;
 using System.Threading.Tasks;
-using System.Security.Cryptography;
 using Electrolyte;
 using Electrolyte.Helpers;
 using Electrolyte.Messages;
+using Electrolyte.Cryptography;
 
 namespace Electrolyte.Networking {
 	public class FileCacheProtocol : CacheProtocol {
@@ -63,10 +63,8 @@ namespace Electrolyte.Networking {
 
 		static string GetHashedAddress(Address address) {
 			byte[] currentHash = Base58.DecodeWithChecksum(address.ID);
-			using(var sha256 = SHA256.Create()) {
-				for(int i = 0; i < 1024; i++) {
-					currentHash = sha256.ComputeHash(currentHash);
-				}
+			for(int i = 0; i < 1024; i++) {
+				currentHash = SHA256.Hash(currentHash);
 			}
 
 			return Base58.Encode(currentHash);
