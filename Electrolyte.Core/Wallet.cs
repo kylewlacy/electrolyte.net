@@ -431,12 +431,12 @@ namespace Electrolyte {
 		}
 
 		public string DataAsJson() {
-			var data = new Dictionary<string, object> {
+			var data = new JObject {
 				{ "version", Version },
-				{ "watch_addresses", new List<object>() },
-				{ "public_addresses", new List<object>() },
+				{ "watch_addresses", new JArray() },
+				{ "public_addresses", new JArray() },
 				{ "key_hashes", KeyHashes },
-				{ "encrypted", new Dictionary<string, object> {
+				{ "encrypted", new JObject {
 						{ "iv", Base58.EncodeWithChecksum(IV) },
 						{ "salt", Base58.EncodeWithChecksum(Salt) },
 						{ "data", Base58.EncodeWithChecksum(EncryptedData) }
@@ -444,13 +444,13 @@ namespace Electrolyte {
 			};
 
 			foreach(Address address in WatchAddresses) {
-				((List<object>)data["watch_addresses"]).Add(new Dictionary<string,object> {
+				data["watch_addresses"].Value<JArray>().Add(new JObject {
 					{ "addr", address.ToString() }
 				});
 			}
 
 			foreach(Address address in PublicAddresses) {
-				((List<object>)data["public_addresses"]).Add(new Dictionary<string,object> {
+				data["public_addresses"].Value<JArray>().Add(new JObject {
 					{ "addr", address.ToString() }
 				});
 			}
@@ -459,10 +459,10 @@ namespace Electrolyte {
 		}
 
 		string PrivateDataAsJson() {
-			var data = new Dictionary<string, object> { { "keys", new List<object>() } };
+			var data = new JObject { { "keys", new JArray() } };
 
 			foreach(KeyValuePair<Address, ECKey> privateKey in PrivateKeys) {
-				((List<object>)data["keys"]).Add(new Dictionary<string, object> {
+				data["keys"].Value<JArray>().Add(new JObject {
 					{ "addr", privateKey.Key.ToString() },
 					{ "priv", privateKey.Value.ToWalletImportFormat() }
 				});
