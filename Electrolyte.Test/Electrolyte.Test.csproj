@@ -35,6 +35,9 @@
     <Reference Include="nunit.framework">
       <HintPath>..\..\..\Deps\NUnit\bin\framework\nunit.framework.dll</HintPath>
     </Reference>
+    <Reference Include="BouncyCastle.Crypto">
+      <HintPath>..\..\..\Deps\BouncyCastle\BouncyCastle.Crypto.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Primitives\VarStringTest.cs" />
@@ -55,6 +58,7 @@
     <Compile Include="Helpers\CoinPickerTest.cs" />
     <Compile Include="MoneyTest.cs" />
     <Compile Include="Helpers\BinaryHelpersTest.cs" />
+    <Compile Include="Cryptography\DigestTest.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -68,5 +72,6 @@
     <Folder Include="Primitives\" />
     <Folder Include="Messages\" />
     <Folder Include="Script\" />
+    <Folder Include="Cryptography\" />
   </ItemGroup>
 </Project>
