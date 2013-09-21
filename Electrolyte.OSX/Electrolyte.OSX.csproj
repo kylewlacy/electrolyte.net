@@ -90,6 +90,7 @@
     <Compile Include="UnlockSheet.designer.cs">
       <DependentUpon>UnlockSheet.cs</DependentUpon>
     </Compile>
+    <Compile Include="SheetController.cs" />
   </ItemGroup>
   <ItemGroup>
     <InterfaceDefinition Include="MainWindow.xib" />
