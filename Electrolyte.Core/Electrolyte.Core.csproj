@@ -65,6 +65,7 @@
     <Compile Include="Primitives\SemaphoreLite.cs" />
     <Compile Include="Networking\CacheProtocol.cs" />
     <Compile Include="Cryptography\Digest.cs" />
+    <Compile Include="Cryptography\Cipher.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <ItemGroup>
