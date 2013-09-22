@@ -5,16 +5,15 @@ using System.Linq;
 using System.Timers;
 using System.Threading.Tasks;
 using System.Collections.Generic;
-using System.Security.Cryptography;
 using Org.BouncyCastle.Security;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Electrolyte.Cryptography;
 using Electrolyte.Networking;
 using Electrolyte.Primitives;
 using Electrolyte.Messages;
 using Electrolyte.Helpers;
 
-using SHA256 = Electrolyte.Cryptography.SHA256;
 using Timer = System.Timers.Timer;
 
 namespace Electrolyte {
@@ -54,6 +53,12 @@ namespace Electrolyte {
 		public ulong KeyHashes = 1024;
 
 		public string FilePath;
+
+		AES _aes;
+		public AES AES {
+			get { return _aes ?? (_aes = new AES(CipherMode.CBC, CipherPadding.PKCS7)); }
+			set { _aes = value; }
+		}
 
 		Dictionary<Address, ECKey>_privateKeys;
 		public Dictionary<Address, ECKey> PrivateKeys {
@@ -400,20 +405,34 @@ namespace Electrolyte {
 		}
 
 		public async Task DecryptAsync(byte[] passphrase) {
-			Aes aes = Aes.Create();
-			aes.Mode = CipherMode.CBC;
-			aes.IV = IV;
-			aes.Key = await PassphraseToKeyAsync(passphrase, Salt);
+//			Aes aes = Aes.Create();
+//			aes.Mode = CipherMode.CBC;
+//			aes.IV = IV;
+//			aes.Key = await PassphraseToKeyAsync(passphrase, Salt);
+//
+//			try {
+//				using(var stream = new MemoryStream(EncryptedData)) {
+//					using(var cryptoStream = new CryptoStream(stream, aes.CreateDecryptor(), CryptoStreamMode.Read))
+//						using(var streamReader = new StreamReader(cryptoStream))
+//							await ReadPrivateAsync(streamReader);
+//				}
+//			}
+//			catch(CryptographicException) {
+//				throw new InvalidPassphraseException();
+//			}
 
+			byte[] decryptedData;
 			try {
-				using(var stream = new MemoryStream(EncryptedData)) {
-					using(var cryptoStream = new CryptoStream(stream, aes.CreateDecryptor(), CryptoStreamMode.Read))
-						using(var streamReader = new StreamReader(cryptoStream))
-							await ReadPrivateAsync(streamReader);
-				}
+				decryptedData = await AES.DecryptAsync(EncryptedData, await PassphraseToKeyAsync(passphrase, Salt), IV);
 			}
-			catch(CryptographicException) {
+			catch(AES.DecryptionException) {
 				throw new InvalidPassphraseException();
+			}
+
+			using(var stream = new MemoryStream(decryptedData)) {
+				using(var streamReader = new StreamReader(stream)) {
+					await ReadPrivateAsync(streamReader);
+				}
 			}
 		}
 
@@ -483,22 +502,16 @@ namespace Electrolyte {
 		public async Task EncryptAsync(byte[] passphrase) {
 			var random = new SecureRandom();
 
-			IV = new byte[16];
+			IV = new byte[256];
 			random.NextBytes(IV);
 
 			Salt = new byte[128];
 			random.NextBytes(Salt);
 
-			Aes aes = Aes.Create();
-			aes.Mode = CipherMode.CBC;
-			aes.IV = IV;
-			aes.Key = await PassphraseToKeyAsync(passphrase, Salt);
-
 			using(var stream = new MemoryStream()) {
-				using(var cryptoStream = new CryptoStream(stream, aes.CreateEncryptor(), CryptoStreamMode.Write))
-					using(var streamWriter = new StreamWriter(cryptoStream))
-						await WritePrivateAsync(streamWriter);
-				EncryptedData = stream.ToArray();
+				using(var streamWriter = new StreamWriter(stream))
+					await WritePrivateAsync(streamWriter);
+				EncryptedData = await AES.EncryptAsync(stream.ToArray(), await PassphraseToKeyAsync(passphrase, Salt), IV);
 			}
 		}
 
