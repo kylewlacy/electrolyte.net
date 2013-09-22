@@ -1,6 +1,6 @@
 using System;
-using System.Net.Security;
-using System.Security.Cryptography.X509Certificates;
+using Org.BouncyCastle.Crypto.Tls;
+using Electrolyte.Cryptography;
 
 namespace Electrolyte.Networking {
 	public class SecureElectrumProtocol : ElectrumProtocol {
@@ -9,13 +9,14 @@ namespace Electrolyte.Networking {
 		public override void Connect() {
 			base.Connect();
 
-			var sslStream = new SslStream(Client.GetStream(), false, new RemoteCertificateValidationCallback(ValidateCertificate));
+			var sslStream = new SslStream(Client.GetStream());
+			sslStream.CertificateIsValid += ValidateCertificate;
+			sslStream.Connect();
 
-			sslStream.AuthenticateAsClient(Server);
 			ClientStream = sslStream;
 		}
 
-		static bool ValidateCertificate(object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors policyErrors) {
+		static bool ValidateCertificate(Certificate certificate) {
 			// TODO: SET UP PROPER VALIDATION
 			// BAD BAD BAD BAD BAD
 			return true;
