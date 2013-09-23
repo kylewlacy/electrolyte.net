@@ -42,8 +42,8 @@ namespace Electrolyte.OSX {
 			sendButton.Enabled = false;
 
 			wallet = await Wallet.LoadAsync();
-			wallet.DidLock += LockToggled;
-			wallet.DidUnlock += LockToggled;
+			wallet.DidLock += (sender, e) => LockToggled();
+			wallet.DidUnlock += (sender, e) => LockToggled();
 
 			transactionTableData = new TransactionTableData();
 			transactionTable.DataSource = transactionTableData.DataSource;
@@ -94,7 +94,11 @@ namespace Electrolyte.OSX {
 				await wallet.LockAsync();
 		}
 
-		public void LockToggled(object sender = null, EventArgs e = null) {
+		public void LockToggled() {
+			InvokeOnMainThread(() => LockToggled(null, new EventArgs()));
+		}
+
+		public void LockToggled(object sender, EventArgs e) {
 			sendButton.Enabled = !wallet.IsLocked;
 
 			lockUnlockToggleButton.Enabled = true;
