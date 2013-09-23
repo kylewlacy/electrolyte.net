@@ -67,6 +67,7 @@
     <Compile Include="Cryptography\Digest.cs" />
     <Compile Include="Cryptography\Cipher.cs" />
     <Compile Include="Cryptography\SslStream.cs" />
+    <Compile Include="Helpers\Timer.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <ItemGroup>
