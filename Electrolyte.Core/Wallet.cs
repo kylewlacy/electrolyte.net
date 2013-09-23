@@ -2,7 +2,6 @@ using System;
 using System.IO;
 using System.Text;
 using System.Linq;
-using System.Timers;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using Org.BouncyCastle.Security;
@@ -13,8 +12,6 @@ using Electrolyte.Networking;
 using Electrolyte.Primitives;
 using Electrolyte.Messages;
 using Electrolyte.Helpers;
-
-using Timer = System.Timers.Timer;
 
 namespace Electrolyte {
 	public class Wallet {
@@ -272,7 +269,7 @@ namespace Electrolyte {
 			EncryptionKey = new byte[] { };
 		}
 
-		public async void LockAsync(object sender, ElapsedEventArgs e) {
+		public async void LockAsync(object sender, EventArgs e) {
 			await LockAsync();
 		}
 
@@ -302,7 +299,7 @@ namespace Electrolyte {
 			await LockAsync(Encoding.UTF8.GetBytes(passphrase));
 		}
 
-		public async Task UnlockAsync(byte[] passphrase, double timeout) {
+		public async Task UnlockAsync(byte[] passphrase, TimeSpan timeout) {
 			await lockLock.WaitAsync();
 			try {
 				if(!IsLocked)
@@ -319,8 +316,7 @@ namespace Electrolyte {
 					Array.Clear(passphrase, 0, passphrase.Length);
 
 					LockTimer = new Timer(timeout);
-					LockTimer.Elapsed += new ElapsedEventHandler(LockAsync);
-					LockTimer.AutoReset = false;
+					LockTimer.Elapsed += new EventHandler(LockAsync);
 					LockTimer.Start();
 
 					IsLocked = false;
@@ -337,10 +333,10 @@ namespace Electrolyte {
 		}
 
 		public async Task UnlockAsync(byte[] passphrase) {
-			await UnlockAsync(passphrase, 1000 * 60 * 15);
+			await UnlockAsync(passphrase, TimeSpan.FromMinutes(15));
 		}
 
-		public async Task UnlockAsync(string passphrase, double timeout) {
+		public async Task UnlockAsync(string passphrase, TimeSpan timeout) {
 			await UnlockAsync(Encoding.UTF8.GetBytes(passphrase), timeout);
 		}
 

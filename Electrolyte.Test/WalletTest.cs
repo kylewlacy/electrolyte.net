@@ -196,7 +196,7 @@ namespace Electrolyte.Test {
 			wallet.LockAsync().Wait();
 			Assert.IsTrue(wallet.IsLocked);
 
-			wallet.UnlockAsync("1234", 500).Wait();
+			wallet.UnlockAsync("1234", TimeSpan.FromMilliseconds(500)).Wait();
 			Assert.IsFalse(wallet.IsLocked);
 
 			Thread.Sleep(1000);
