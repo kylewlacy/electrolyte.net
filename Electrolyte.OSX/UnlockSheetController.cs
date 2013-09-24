@@ -4,6 +4,14 @@ using MonoMac.Foundation;
 using MonoMac.AppKit;
 
 namespace Electrolyte.OSX {
+	public class UnlockSheetEventArgs : EventArgs {
+		public bool WasCancelled;
+
+		public UnlockSheetEventArgs(bool wasCancelled = false) : base() {
+			WasCancelled = wasCancelled;
+		}
+	}
+
 	public partial class UnlockSheetController : SheetController {
 		[Export("initWithCoder:")]
 		public UnlockSheetController(NSCoder coder) : base(coder) { Initialize(); }
@@ -28,7 +36,7 @@ namespace Electrolyte.OSX {
 		}
 
 		partial void Cancel(NSObject sender) {
-			CloseSheet();
+			CloseSheet(sender, new UnlockSheetEventArgs(wasCancelled: true));
 		}
 	}
 }

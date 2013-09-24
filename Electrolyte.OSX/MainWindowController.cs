@@ -22,7 +22,10 @@ namespace Electrolyte.OSX {
 				if(_unlockSheet == null) {
 					_unlockSheet = new UnlockSheetController();
 					_unlockSheet.OnUnlock += UnlockWallet;
-					_unlockSheet.OnClose += LockToggled;
+					_unlockSheet.OnClose += (sender, e) => {
+						if((e as UnlockSheetEventArgs ?? new UnlockSheetEventArgs()).WasCancelled)
+							LockToggled();
+					};
 				}
 
 				return _unlockSheet;
