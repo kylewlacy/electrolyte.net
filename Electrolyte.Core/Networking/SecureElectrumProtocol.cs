@@ -1,6 +1,6 @@
 using System;
 using Org.BouncyCastle.Crypto.Tls;
-using Electrolyte.Cryptography;
+using Electrolyte.Primitives.Networking;
 
 namespace Electrolyte.Networking {
 	public class SecureElectrumProtocol : ElectrumProtocol {

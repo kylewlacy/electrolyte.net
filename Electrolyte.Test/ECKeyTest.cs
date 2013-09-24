@@ -2,7 +2,7 @@ using System;
 using Electrolyte.Primitives;
 using NUnit.Framework;
 
-namespace Electrolyte.Test.Primitives {
+namespace Electrolyte.Test {
 	[TestFixture]
 	public class ECKeyTest {
 		Tuple<string, byte[], string>[] Keys = new Tuple<string, byte[], string>[] {

@@ -2,7 +2,7 @@ using System;
 using Electrolyte.Primitives;
 using NUnit.Framework;
 
-namespace Electrolyte.Test.Primitives {
+namespace Electrolyte.Test {
 	[TestFixture]
 	public class SignedIntTest {
 		Tuple<byte[], int>[] Ints = new Tuple<byte[], int>[] {

@@ -2,7 +2,7 @@ using System;
 using System.IO;
 using Org.BouncyCastle.Crypto.Tls;
 
-namespace Electrolyte.Cryptography {
+namespace Electrolyte.Primitives.Networking {
 	public class SslStream : Stream {
 		public class InvalidCertificateException : TlsException {
 			public InvalidCertificateException() : base() { }

@@ -1,7 +1,7 @@
 using System;
 using System.IO;
 
-namespace Electrolyte.Primitives {
+namespace Electrolyte {
 	public class VarInt {
 		public UInt64 Value;
 

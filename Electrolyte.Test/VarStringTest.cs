@@ -5,7 +5,7 @@ using NUnit.Framework;
 using Electrolyte.Primitives;
 using Electrolyte.Helpers;
 
-namespace Electrolyte.Test.Primitives {
+namespace Electrolyte.Test {
 	[TestFixture]
 	public class VarStringTest {
 		// From http://slipsum.com/

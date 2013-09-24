@@ -3,7 +3,7 @@ using System.IO;
 using NUnit.Framework;
 using Electrolyte.Primitives;
 
-namespace Electrolyte.Test.Primitives {
+namespace Electrolyte.Test {
 	[TestFixture]
 	public class VarIntTest {
 		Tuple<byte[], ulong>[] Numbers = new Tuple<byte[], ulong>[] {

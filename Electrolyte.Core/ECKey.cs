@@ -24,10 +24,10 @@ using Org.BouncyCastle.Crypto.Parameters;
 using Org.BouncyCastle.Crypto.Signers;
 using Org.BouncyCastle.Math;
 using Org.BouncyCastle.Security;
-using Electrolyte.Cryptography;
+using Electrolyte.Primitives.Cryptography;
 using Electrolyte.Helpers;
 
-namespace Electrolyte.Primitives {
+namespace Electrolyte {
 	/// <summary>
 	/// Represents an elliptic curve keypair that we own and can use for signing transactions. Currently,
 	/// Bouncy Castle is used. In future this may become an interface with multiple implementations using different crypto

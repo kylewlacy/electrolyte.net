@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using MonoMac.Foundation;
 using MonoMac.AppKit;
+using Electrolyte.Helpers;
 using Electrolyte.Messages;
 using Electrolyte.Networking;
 

@@ -37,7 +37,7 @@ using System;
 using System.Globalization;
 using System.Text;
 
-namespace Electrolyte.Networking.Primitives {
+namespace Electrolyte.Primitives.Networking {
 
 	/// <remarks>
 	///   Encapsulates an IPv6 Address.

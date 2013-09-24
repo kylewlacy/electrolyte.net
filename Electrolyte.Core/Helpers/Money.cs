@@ -2,7 +2,7 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 
-namespace Electrolyte {
+namespace Electrolyte.Helpers {
 	// Based on https://github.com/RubyMoney/money
 	public class Money {
 		public class OperationException : InvalidOperationException {

@@ -30,9 +30,8 @@
 using System;
 using System.Globalization;
 using System.Net.Sockets;
-using System.Runtime.InteropServices;
 
-namespace Electrolyte.Networking.Primitives {
+namespace Electrolyte.Primitives.Networking {
 
 	/// <remarks>
 	///   Encapsulates an IP Address.

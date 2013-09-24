@@ -2,7 +2,7 @@ using System;
 using System.IO;
 using System.Text;
 
-namespace Electrolyte.Primitives {
+namespace Electrolyte {
 	public class VarString {
 		public string Value;
 

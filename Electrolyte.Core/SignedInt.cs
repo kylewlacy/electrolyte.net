@@ -1,6 +1,6 @@
 using System;
 
-namespace Electrolyte.Primitives {
+namespace Electrolyte {
 	public class SignedInt {
 		public Int32 Value;
 

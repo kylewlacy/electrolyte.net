@@ -3,6 +3,7 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Electrolyte.Messages;
+using Electrolyte.Helpers;
 
 namespace Electrolyte.Networking {
 	public abstract class NetworkProtocol {

@@ -1,5 +1,5 @@
 using System;
-using Electrolyte;
+using Electrolyte.Helpers;
 
 namespace Electrolyte.Messages {
 	public partial class Transaction {

@@ -1,6 +1,7 @@
 using System;
 using MonoMac.Foundation;
 using MonoMac.AppKit;
+using Electrolyte.Helpers;
 using Electrolyte.Messages;
 
 namespace Electrolyte.OSX {

@@ -1,7 +1,8 @@
 using System;
 using NUnit.Framework;
+using Electrolyte.Helpers;
 
-namespace Electrolyte.Test {
+namespace Electrolyte.Test.Helpers {
 	[TestFixture]
 	public class MoneyTest {
 		[Test]

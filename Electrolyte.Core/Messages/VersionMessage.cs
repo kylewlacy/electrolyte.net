@@ -3,7 +3,7 @@ using System.IO;
 using Electrolyte.Helpers;
 using Electrolyte.Primitives;
 using Electrolyte.Extensions;
-using Electrolyte.Networking.Primitives;
+using Electrolyte.Primitives.Networking;
 
 namespace Electrolyte.Messages {
 	public class VersionMessage : Message<VersionMessage> {

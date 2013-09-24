@@ -40,8 +40,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Primitives\VarStringTest.cs" />
-    <Compile Include="Primitives\VarIntTest.cs" />
     <Compile Include="Messages\MessageHeaderTest.cs" />
     <Compile Include="Messages\VersionMessageTest.cs" />
     <Compile Include="AddressTest.cs" />
@@ -49,16 +47,18 @@
     <Compile Include="Helpers\Base58Test.cs" />
     <Compile Include="Helpers\UnixTimeTest.cs" />
     <Compile Include="Script\StackTest.cs" />
-    <Compile Include="Primitives\SignedIntTest.cs" />
     <Compile Include="Script\ScriptExecutionTest.cs" />
     <Compile Include="OpcodesTest.cs" />
     <Compile Include="Script\ScriptInterpretationTest.cs" />
-    <Compile Include="Primitives\ECKeyTest.cs" />
     <Compile Include="WalletTest.cs" />
     <Compile Include="Helpers\CoinPickerTest.cs" />
-    <Compile Include="MoneyTest.cs" />
     <Compile Include="Helpers\BinaryHelpersTest.cs" />
-    <Compile Include="Cryptography\DigestTest.cs" />
+    <Compile Include="ECKeyTest.cs" />
+    <Compile Include="SignedIntTest.cs" />
+    <Compile Include="VarIntTest.cs" />
+    <Compile Include="VarStringTest.cs" />
+    <Compile Include="Primitives\Cryptography\DigestTest.cs" />
+    <Compile Include="Helpers\MoneyTest.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -72,6 +72,5 @@
     <Folder Include="Primitives\" />
     <Folder Include="Messages\" />
     <Folder Include="Script\" />
-    <Folder Include="Cryptography\" />
   </ItemGroup>
 </Project>

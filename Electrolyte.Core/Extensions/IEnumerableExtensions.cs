@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Electrolyte.Helpers;
 
 namespace Electrolyte.Extensions {
 	public static class IEnumerableExtensions {

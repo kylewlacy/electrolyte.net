@@ -3,7 +3,7 @@ using System.IO;
 using System.Linq;
 using Newtonsoft.Json.Linq;
 using Electrolyte;
-using Electrolyte.Cryptography;
+using Electrolyte.Primitives.Cryptography;
 using Electrolyte.Primitives;
 using Electrolyte.Helpers;
 

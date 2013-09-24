@@ -1,7 +1,7 @@
 using System;
 using System.Linq;
 using System.Collections.Generic;
-using Electrolyte.Cryptography;
+using Electrolyte.Primitives.Cryptography;
 using Electrolyte.Messages;
 using Electrolyte.Primitives;
 using Electrolyte.Helpers;

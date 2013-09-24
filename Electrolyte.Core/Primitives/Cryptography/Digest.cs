@@ -1,7 +1,7 @@
 using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Crypto.Digests;
 
-namespace Electrolyte.Cryptography {
+namespace Electrolyte.Primitives.Cryptography {
 	public abstract class Digest {
 		protected Digest() { }
 

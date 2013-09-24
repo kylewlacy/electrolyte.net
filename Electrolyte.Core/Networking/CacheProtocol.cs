@@ -1,6 +1,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using Electrolyte.Helpers;
 
 namespace Electrolyte.Networking {
 	public abstract class CacheProtocol : NetworkProtocol {

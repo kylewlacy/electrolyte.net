@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Electrolyte.Extensions;
 using Electrolyte.Messages;
+using Electrolyte.Helpers;
 
 namespace Electrolyte.Networking {
 	public static class Network {

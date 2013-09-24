@@ -4,7 +4,7 @@ using System.Linq;
 using System.Collections.Generic;
 using Newtonsoft.Json.Linq;
 using Electrolyte;
-using Electrolyte.Cryptography;
+using Electrolyte.Primitives.Cryptography;
 using Electrolyte.Extensions;
 using Electrolyte.Primitives;
 using Electrolyte.Helpers;
