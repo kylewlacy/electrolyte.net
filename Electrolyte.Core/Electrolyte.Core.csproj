@@ -68,6 +68,9 @@
     <Compile Include="Cryptography\Cipher.cs" />
     <Compile Include="Cryptography\SslStream.cs" />
     <Compile Include="Helpers\Timer.cs" />
+    <Compile Include="Networking\Primitives\IPAddress.cs" />
+    <Compile Include="Networking\Primitives\IPv6Address.cs" />
+    <Compile Include="Networking\Primitives\AddressFamily.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <ItemGroup>
@@ -79,6 +82,7 @@
     <Folder Include="Script\" />
     <Folder Include="Networking\" />
     <Folder Include="Cryptography\" />
+    <Folder Include="Networking\Primitives\" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System">
