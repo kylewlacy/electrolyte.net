@@ -4,57 +4,55 @@ using System.Threading.Tasks;
 using Electrolyte;
 using Electrolyte.Helpers;
 using Electrolyte.Messages;
+using Electrolyte.Portable.IO;
 using Electrolyte.Portable.Cryptography;
+using FileInfo = Electrolyte.Portable.IO.FileInfo;
+using FileStream = Electrolyte.Portable.IO.FileStream;
+using FileMode = Electrolyte.Portable.IO.FileMode;
 
 namespace Electrolyte.Networking {
 	public class FileCacheProtocol : CacheProtocol {
 		public override void Connect() {
-			if(!Directory.Exists(DefaultCachePath))
-				Directory.CreateDirectory(DefaultCachePath);
 		}
 
 		public override async Task<Transaction> GetTransactionAsync(Transaction.Info info) {
-			string txCache = Path.Combine(DefaultCachePath, "transactions");
-			if(!Directory.Exists(txCache))
-				Directory.CreateDirectory(txCache);
-			string cache = Path.Combine(txCache, String.Format("{0}.{1}", info.Hash, "tx"));
+			StorageInfo txCache = DefaultCachePath.Append("transactions");
+			FileInfo cache = FileInfo.Create(txCache, String.Format("{0}.{1}", info.Hash, "tx"));
 
 			Transaction tx;
-			if(File.Exists(cache)) {
+			if(cache.Exists) {
 				tx = new Transaction();
-				tx.ReadPayload(new BinaryReader(new FileStream(cache, FileMode.Open)));
+				tx.ReadPayload(new BinaryReader(FileStream.Create(cache, FileMode.Open)));
 				tx.Height = info.Height;
 			}
 			else {
 				tx = await base.GetTransactionAsync(info);
-				tx.WritePayload(new BinaryWriter(new FileStream(cache, FileMode.Create)));
+				tx.WritePayload(new BinaryWriter(FileStream.Create(cache, FileMode.Create)));
 			}
 			return tx;
 		}
 
 		public override async Task<Money> GetAddressBalanceAsync(Address address, ulong startHeight = 0) {
-			string balanceCache = Path.Combine(DefaultCachePath, "balances");
-			if(!Directory.Exists(balanceCache))
-				Directory.CreateDirectory(balanceCache);
-			string cache = Path.Combine(balanceCache, String.Format("{0}.{1}", GetHashedAddress(address), "bal"));
+			StorageInfo balanceCache = DefaultCachePath.Append("balances");
+			FileInfo cache = FileInfo.Create(balanceCache, String.Format("{0}.{1}", GetHashedAddress(address), "bal"));
 
 			Money balance = await base.GetAddressBalanceAsync(address, startHeight);
-			using(var writer = new StreamWriter(new FileStream(cache, FileMode.Create))) {
+			using(var writer = new StreamWriter(FileStream.Create(cache, FileMode.Create))) {
 				await writer.WriteLineAsync(balance.Cents.ToString());
 			}
 			return balance;
 		}
 
 		public override async Task<Money> GetCachedBalanceAsync(Address address, ulong startHeight = 0) {
-			string balanceCache = Path.Combine(DefaultCachePath, "balances");
-			if(!Directory.Exists(balanceCache))
-				Directory.CreateDirectory(balanceCache);
-			string cache = Path.Combine(balanceCache, String.Format("{0}.{1}", GetHashedAddress(address), "bal"));
+			StorageInfo balanceCache = DefaultCachePath.Append("balances");
+			FileInfo cache = FileInfo.Create(balanceCache, String.Format("{0}.{1}", GetHashedAddress(address), "bal"));
 
 
-			if(File.Exists(cache)) {
-				using(var reader = new StreamReader(cache)) {
-					return new Money(Int64.Parse(await reader.ReadLineAsync()), "BTC");
+			if(cache.Exists) {
+				using(var stream = FileStream.Create(cache, FileMode.Open)) {
+					using(var reader = new StreamReader(stream)) {
+						return new Money(Int64.Parse(await reader.ReadLineAsync()), "BTC");
+					}
 				}
 			}
 
@@ -72,8 +70,8 @@ namespace Electrolyte.Networking {
 
 
 
-		public static string DefaultCachePath {
-			get { return Path.Combine(Wallet.DefaultStoragePath, "cache"); }
+		public static StorageInfo DefaultCachePath {
+			get { return StorageInfo.DefaultStoragePath.Append("cache"); }
 		}
 	}
 }

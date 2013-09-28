@@ -13,14 +13,7 @@ namespace Electrolyte.CLI {
 		public static Wallet Wallet;
 
 		public static int Main(string[] args) {
-			string walletLocation = Wallet.DefaultWalletPath;
-			if(File.Exists(walletLocation)) {
-				Wallet = Wallet.LoadAsync(walletLocation).Result;
-			}
-			else {
-				Console.Write("Enter a passphrase for your wallet: ");
-				Wallet = Wallet.CreateAsync(ReadSecureLine(), walletLocation).Result;
-			}
+			Wallet = Wallet.LoadAsync().Result;
 
 			while(true) {
 				Console.Write("{0} > ", Wallet.IsLocked ? "locked  " : "unlocked");

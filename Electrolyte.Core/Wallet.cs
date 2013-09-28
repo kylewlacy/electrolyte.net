@@ -8,10 +8,14 @@ using Org.BouncyCastle.Security;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Electrolyte.Portable.Cryptography;
+using Electrolyte.Portable.IO;
 using Electrolyte.Networking;
 using Electrolyte.Portable;
 using Electrolyte.Messages;
 using Electrolyte.Helpers;
+using FileInfo = Electrolyte.Portable.IO.FileInfo;
+using FileStream = Electrolyte.Portable.IO.FileStream;
+using FileMode = Electrolyte.Portable.IO.FileMode;
 
 namespace Electrolyte {
 	public class Wallet {
@@ -49,7 +53,7 @@ namespace Electrolyte {
 		public byte[] EncryptedData, IV, Salt;
 		public ulong KeyHashes = 1024;
 
-		public string FilePath;
+		public FileInfo File;
 
 		AES _aes;
 		public AES AES {
@@ -93,15 +97,15 @@ namespace Electrolyte {
 			}
 		}
 
-		protected Wallet(string path = null, Dictionary<Address, ECKey> keys = null, HashSet<Address> publicAddresses = null, HashSet<Address> watchAddresses = null) {
+		protected Wallet(FileInfo file = null, Dictionary<Address, ECKey> keys = null, HashSet<Address> publicAddresses = null, HashSet<Address> watchAddresses = null) {
 			PrivateKeys = keys ?? new Dictionary<Address, ECKey>();
 			WatchAddresses = watchAddresses ?? new HashSet<Address>();
 			PublicAddresses = publicAddresses ?? new HashSet<Address>();
-			FilePath = path;
+			File = file;
 		}
 
-		public static async Task<Wallet> CreateAsync(byte[] passphrase, string path = null, Dictionary<Address, ECKey> keys = null, HashSet<Address> publicAddresses = null, HashSet<Address> watchAddresses = null) {
-			var wallet = new Wallet(path, keys, publicAddresses, watchAddresses);
+		public static async Task<Wallet> CreateAsync(byte[] passphrase, FileInfo file = null, Dictionary<Address, ECKey> keys = null, HashSet<Address> publicAddresses = null, HashSet<Address> watchAddresses = null) {
+			var wallet = new Wallet(file, keys, publicAddresses, watchAddresses);
 			await wallet.LockAsync(passphrase);
 			await wallet.UnlockAsync(passphrase);
 
@@ -350,10 +354,10 @@ namespace Electrolyte {
 			return await Wallet.LoadAsync(DefaultWalletPath);
 		}
 
-		public async static Task<Wallet> LoadAsync(string path) {
-			using(var stream = new FileStream(path, FileMode.Open, FileAccess.Read)) {
+		public async static Task<Wallet> LoadAsync(FileInfo fileInfo) {
+			using(var stream = FileStream.Create(fileInfo, FileMode.Open)) {
 				using(var reader = new StreamReader(stream)) {
-					var wallet = new Wallet(path);
+					var wallet = new Wallet(fileInfo);
 					await wallet.ReadAsync(reader);
 
 					return wallet;
@@ -526,28 +530,18 @@ namespace Electrolyte {
 		}
 
 		public async Task SaveAsync() {
-			await SaveAsync(FilePath);
+			await SaveAsync(File);
 		}
 
-		public async Task SaveAsync(string path) {
+		public async Task SaveAsync(FileInfo file) {
 			if(IsLocked) { throw new LockedException(); }
 
-			if(path != null) {
-				string directory = Path.GetDirectoryName(path);
-				if(!Directory.Exists(directory)) { Directory.CreateDirectory(directory); }
-
-				string backup = String.Join(".", path, "bak");
-				string temp = String.Join(".", path, "new");
-
-				if(File.Exists(temp)) { File.Delete(temp); }
-				if(File.Exists(backup)) { File.Delete(backup); }
-				if(File.Exists(path)) { File.Move(path, backup); }
-				
+			if(file != null) {
 				if(!IsLocked)
 					await EncryptAsync(EncryptionKey);
 
 				// TODO: Set proper file permissions
-				using(var stream = new FileStream(path, FileMode.CreateNew, FileAccess.ReadWrite)) {
+				using(var stream = AtomicFileStream.Create(file)) {
 					using(var writer = new StreamWriter(stream)) {
 						await WriteAsync(writer);
 					}
@@ -575,22 +569,8 @@ namespace Electrolyte {
 
 
 
-		public static string DefaultStoragePath {
-			get {
-				switch((int)Environment.OSVersion.Platform) {
-				case 4:   // PlatformID.Unix
-				case 128:
-					return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".electrolyte");
-				case 6:   // PlatformID.MacOSX (TODO: Create a more ambiguous version; OS X returns PlatformID.Unix)
-					return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Library", "Application Support", "Electrolyte");
-				default:
-					return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Electrolyte");
-				}
-			}
-		}
-
-		public static string DefaultWalletPath {
-			get { return Path.Combine(DefaultStoragePath, "wallet.json"); }
+		public static FileInfo DefaultWalletPath {
+			get { return FileInfo.Create(StorageInfo.DefaultStoragePath, "wallet.json"); }
 		}
 	}
 }
