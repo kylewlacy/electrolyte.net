@@ -577,7 +577,7 @@ namespace Electrolyte {
 
 
 		public static FileInfo DefaultWalletPath {
-			get { return FileInfo.Create(StorageInfo.DefaultStoragePath, "wallet.json"); }
+			get { return FileInfo.Create(PathInfo.DefaultStoragePath, "wallet.json"); }
 		}
 	}
 }

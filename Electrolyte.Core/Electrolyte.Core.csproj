@@ -70,7 +70,6 @@
     <Compile Include="Portable\Numerics\BigInteger.cs" />
     <Compile Include="Portable\IO\FileInfo.cs" />
     <Compile Include="Portable\IO\FileStream.cs" />
-    <Compile Include="Portable\IO\StorageInfo.cs" />
     <Compile Include="Portable\IO\FileMode.cs" />
     <Compile Include="Portable\Net\IPAddress.cs" />
     <Compile Include="Portable\Net\AddressFamily.cs" />
@@ -78,6 +77,7 @@
     <Compile Include="Portable\Net\SslStream.cs" />
     <Compile Include="Portable\Net\TcpStream.cs" />
     <Compile Include="Portable\Net\HttpClient.cs" />
+    <Compile Include="Portable\IO\PathInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <ItemGroup>

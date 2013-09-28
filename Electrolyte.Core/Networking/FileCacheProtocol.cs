@@ -16,7 +16,7 @@ namespace Electrolyte.Networking {
 		}
 
 		public override async Task<Transaction> GetTransactionAsync(Transaction.Info info) {
-			StorageInfo txCache = DefaultCachePath.Append("transactions");
+			PathInfo txCache = DefaultCachePath.SubPath("transactions");
 			FileInfo cache = FileInfo.Create(txCache, String.Format("{0}.{1}", info.Hash, "tx"));
 
 			Transaction tx;
@@ -33,7 +33,7 @@ namespace Electrolyte.Networking {
 		}
 
 		public override async Task<Money> GetAddressBalanceAsync(Address address, ulong startHeight = 0) {
-			StorageInfo balanceCache = DefaultCachePath.Append("balances");
+			PathInfo balanceCache = DefaultCachePath.SubPath("balances");
 			FileInfo cache = FileInfo.Create(balanceCache, String.Format("{0}.{1}", GetHashedAddress(address), "bal"));
 
 			Money balance = await base.GetAddressBalanceAsync(address, startHeight);
@@ -44,7 +44,7 @@ namespace Electrolyte.Networking {
 		}
 
 		public override async Task<Money> GetCachedBalanceAsync(Address address, ulong startHeight = 0) {
-			StorageInfo balanceCache = DefaultCachePath.Append("balances");
+			PathInfo balanceCache = DefaultCachePath.SubPath("balances");
 			FileInfo cache = FileInfo.Create(balanceCache, String.Format("{0}.{1}", GetHashedAddress(address), "bal"));
 
 
@@ -70,8 +70,8 @@ namespace Electrolyte.Networking {
 
 
 
-		public static StorageInfo DefaultCachePath {
-			get { return StorageInfo.DefaultStoragePath.Append("cache"); }
+		public static PathInfo DefaultCachePath {
+			get { return PathInfo.DefaultStoragePath.SubPath("cache"); }
 		}
 	}
 }
