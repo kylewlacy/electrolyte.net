@@ -98,22 +98,6 @@ namespace Electrolyte.Portable.Networking {
 			set { stream.WriteTimeout = value; }
 		}
 
-		public override IAsyncResult BeginRead(byte[] buffer, int offset, int count, AsyncCallback callback, object state) {
-			return stream.BeginRead(buffer, offset, count, callback, state);
-		}
-
-		public override int EndRead(IAsyncResult asyncResult) {
-			return stream.EndRead(asyncResult);
-		}
-
-		public override IAsyncResult BeginWrite(byte[] buffer, int offset, int count, AsyncCallback callback, object state) {
-			return stream.BeginWrite(buffer, offset, count, callback, state);
-		}
-
-		public override void EndWrite(IAsyncResult asyncResult) {
-			stream.EndWrite(asyncResult);
-		}
-
 		public override int Read(byte[] buffer, int offset, int count) {
 			return stream.Read(buffer, offset, count);
 		}
