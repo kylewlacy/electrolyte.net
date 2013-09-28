@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Numerics;
+using Electrolyte.Portable.Numerics;
 using Electrolyte.Portable.Cryptography;
 
 namespace Electrolyte.Helpers {
