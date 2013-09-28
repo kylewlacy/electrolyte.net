@@ -4,8 +4,8 @@ using Tiko;
 
 namespace Electrolyte.Portable.IO {
 	public abstract class FileStream : Stream {
-		public virtual FileInfo File { get; private set; }
-		public virtual FileMode Mode { get; private set; }
+		public virtual FileInfo File { get; protected set; }
+		public virtual FileMode Mode { get; protected set; }
 
 		protected abstract void Initialize(FileInfo info, FileMode mode);
 

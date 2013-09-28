@@ -5,14 +5,14 @@ namespace Electrolyte.Portable {
 	public abstract class Timer {
 		public event EventHandler Elapsed = delegate { };
 
-		public virtual DateTime StartTime { get; private set; }
-		public virtual TimeSpan Interval { get; private set; }
+		public virtual DateTime StartTime { get; protected set; }
+		public virtual TimeSpan Interval { get; protected set; }
 
 		public virtual DateTime EndTime {
 			get { return StartTime + Interval; }
 		}
 
-		public virtual bool IsRunning { get; private set; }
+		public virtual bool IsRunning { get; protected set; }
 
 		
 
