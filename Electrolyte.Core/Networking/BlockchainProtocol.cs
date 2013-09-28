@@ -1,24 +1,23 @@
 using System;
-using System.Net;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
-using Electrolyte.Portable;
 using Electrolyte.Helpers;
+using Electrolyte.Portable;
+using Electrolyte.Portable.Networking;
 
 namespace Electrolyte.Networking {
 	public class BlockchainProtocol : NetworkProtocol {
 		public Uri Address;
 
-		WebClient Client;
+		HttpClient Client;
 		static readonly SemaphoreLite clientLock = new SemaphoreLite();
 
 		public BlockchainProtocol(string address) {
-			Client = new WebClient();
 			Address = new Uri(address);
 		}
 
 		public override void Connect() {
-			Client = new WebClient();
+			Client = HttpClient.Create();
 			base.Connect();
 		}
 
@@ -28,10 +27,9 @@ namespace Electrolyte.Networking {
 		}
 
 		async Task<string> GetContentAsync(string path) {
-			// TODO: Use `Client.DownloadStringTaskAsync` (once it becomes available?)
 			await clientLock.WaitAsync();
 			try {
-				return await Task.Run(() => Client.DownloadString(new Uri(Address, path)));
+				return await Client.GetAsync(new Uri(Address, path));
 			}
 			finally {
 				clientLock.Release();

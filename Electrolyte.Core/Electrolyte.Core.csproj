@@ -73,6 +73,7 @@
     <Compile Include="Portable\Cryptography\Digest.cs" />
     <Compile Include="Portable\Networking\TcpStream.cs" />
     <Compile Include="Portable\Numerics\BigInteger.cs" />
+    <Compile Include="Portable\Networking\HttpClient.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <ItemGroup>
