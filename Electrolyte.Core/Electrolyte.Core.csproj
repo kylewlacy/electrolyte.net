@@ -57,32 +57,32 @@
     <Compile Include="Messages\Transaction.Structs.cs" />
     <Compile Include="Networking\SecureElectrumProtocol.cs" />
     <Compile Include="Networking\FileCacheProtocol.cs" />
-    <Compile Include="Primitives\SemaphoreLite.cs" />
     <Compile Include="Networking\CacheProtocol.cs" />
     <Compile Include="VarString.cs" />
     <Compile Include="VarInt.cs" />
     <Compile Include="SignedInt.cs" />
     <Compile Include="ECKey.cs" />
     <Compile Include="Helpers\Money.cs" />
-    <Compile Include="Primitives\Timer.cs" />
-    <Compile Include="Primitives\Networking\IPAddress.cs" />
-    <Compile Include="Primitives\Networking\AddressFamily.cs" />
-    <Compile Include="Primitives\Networking\IPv6Address.cs" />
-    <Compile Include="Primitives\Networking\SslStream.cs" />
-    <Compile Include="Primitives\Cryptography\Cipher.cs" />
-    <Compile Include="Primitives\Cryptography\Digest.cs" />
+    <Compile Include="Portable\SemaphoreLite.cs" />
+    <Compile Include="Portable\Timer.cs" />
+    <Compile Include="Portable\Networking\IPAddress.cs" />
+    <Compile Include="Portable\Networking\AddressFamily.cs" />
+    <Compile Include="Portable\Networking\IPv6Address.cs" />
+    <Compile Include="Portable\Networking\SslStream.cs" />
+    <Compile Include="Portable\Cryptography\Cipher.cs" />
+    <Compile Include="Portable\Cryptography\Digest.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <ItemGroup>
     <Folder Include="Extensions\" />
     <Folder Include="Helpers\" />
-    <Folder Include="Primitives\" />
     <Folder Include="Messages\" />
     <Folder Include="Properties\" />
     <Folder Include="Script\" />
     <Folder Include="Networking\" />
     <Folder Include="Networking\Primitives\" />
-    <Folder Include="Primitives\Networking\" />
+    <Folder Include="Portable\" />
+    <Folder Include="Portable\Networking\" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System">

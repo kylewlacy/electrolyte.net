@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using Electrolyte.Helpers;
 using Electrolyte.Messages;
 using Electrolyte.Networking;
-using Electrolyte.Primitives;
+using Electrolyte.Portable;
 
 namespace Electrolyte.CLI {
 	class MainClass {

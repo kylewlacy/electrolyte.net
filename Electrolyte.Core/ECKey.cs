@@ -24,7 +24,7 @@ using Org.BouncyCastle.Crypto.Parameters;
 using Org.BouncyCastle.Crypto.Signers;
 using Org.BouncyCastle.Math;
 using Org.BouncyCastle.Security;
-using Electrolyte.Primitives.Cryptography;
+using Electrolyte.Portable.Cryptography;
 using Electrolyte.Helpers;
 
 namespace Electrolyte {

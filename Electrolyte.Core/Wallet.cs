@@ -7,9 +7,9 @@ using System.Collections.Generic;
 using Org.BouncyCastle.Security;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using Electrolyte.Primitives.Cryptography;
+using Electrolyte.Portable.Cryptography;
 using Electrolyte.Networking;
-using Electrolyte.Primitives;
+using Electrolyte.Portable;
 using Electrolyte.Messages;
 using Electrolyte.Helpers;
 

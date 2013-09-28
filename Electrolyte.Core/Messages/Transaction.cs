@@ -4,9 +4,9 @@ using System.Linq;
 using System.Collections.Generic;
 using Newtonsoft.Json.Linq;
 using Electrolyte;
-using Electrolyte.Primitives.Cryptography;
+using Electrolyte.Portable.Cryptography;
 using Electrolyte.Extensions;
-using Electrolyte.Primitives;
+using Electrolyte.Portable;
 using Electrolyte.Helpers;
 
 namespace Electrolyte.Messages {

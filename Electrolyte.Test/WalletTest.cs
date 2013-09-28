@@ -5,7 +5,7 @@ using System.Linq;
 using System.Threading;
 using System.Security.Cryptography;
 using System.Runtime.InteropServices;
-using Electrolyte.Primitives;
+using Electrolyte.Portable;
 using NUnit.Framework;
 
 namespace Electrolyte.Test {

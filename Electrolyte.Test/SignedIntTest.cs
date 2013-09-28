@@ -1,5 +1,5 @@
 using System;
-using Electrolyte.Primitives;
+using Electrolyte.Portable;
 using NUnit.Framework;
 
 namespace Electrolyte.Test {

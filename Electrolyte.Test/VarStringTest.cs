@@ -2,7 +2,7 @@ using System;
 using System.IO;
 using System.Text;
 using NUnit.Framework;
-using Electrolyte.Primitives;
+using Electrolyte.Portable;
 using Electrolyte.Helpers;
 
 namespace Electrolyte.Test {

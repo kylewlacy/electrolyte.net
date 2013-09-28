@@ -2,7 +2,7 @@ using System;
 using System.Threading;
 using InternalTimer = System.Threading.Timer;
 
-namespace Electrolyte.Primitives {
+namespace Electrolyte.Portable {
 	public class Timer {
 		public event EventHandler Elapsed = delegate { };
 

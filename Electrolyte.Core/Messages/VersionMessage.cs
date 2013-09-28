@@ -1,9 +1,9 @@
 using System;
 using System.IO;
 using Electrolyte.Helpers;
-using Electrolyte.Primitives;
+using Electrolyte.Portable;
 using Electrolyte.Extensions;
-using Electrolyte.Primitives.Networking;
+using Electrolyte.Portable.Networking;
 
 namespace Electrolyte.Messages {
 	public class VersionMessage : Message<VersionMessage> {

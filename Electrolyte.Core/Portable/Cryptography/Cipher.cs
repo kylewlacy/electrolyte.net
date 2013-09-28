@@ -6,7 +6,7 @@ using Org.BouncyCastle.Crypto.Parameters;
 using Org.BouncyCastle.Crypto.Paddings;
 using Org.BouncyCastle.Crypto.Modes;
 
-namespace Electrolyte.Primitives.Cryptography {
+namespace Electrolyte.Portable.Cryptography {
 	public enum CipherMode {
 		CBC
 	};

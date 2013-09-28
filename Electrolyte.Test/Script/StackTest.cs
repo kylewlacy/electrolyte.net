@@ -2,7 +2,7 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using NUnit.Framework;
-using Electrolyte.Primitives;
+using Electrolyte.Portable;
 using Stack = Electrolyte.Script.Stack<byte>;
 using DataStack = Electrolyte.Script.DataStack;
 

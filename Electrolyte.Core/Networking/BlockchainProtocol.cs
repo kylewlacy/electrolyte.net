@@ -2,7 +2,7 @@ using System;
 using System.Net;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
-using Electrolyte.Primitives;
+using Electrolyte.Portable;
 using Electrolyte.Helpers;
 
 namespace Electrolyte.Networking {

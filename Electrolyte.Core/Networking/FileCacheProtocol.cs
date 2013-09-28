@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Electrolyte;
 using Electrolyte.Helpers;
 using Electrolyte.Messages;
-using Electrolyte.Primitives.Cryptography;
+using Electrolyte.Portable.Cryptography;
 
 namespace Electrolyte.Networking {
 	public class FileCacheProtocol : CacheProtocol {

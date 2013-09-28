@@ -31,7 +31,7 @@
 //
 
 
-namespace Electrolyte.Primitives.Networking {
+namespace Electrolyte.Portable.Networking {
 	public enum AddressFamily {
 		Unknown = -1,
 		Unspecified = 0,

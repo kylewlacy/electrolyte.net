@@ -2,7 +2,7 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Text;
-using Electrolyte.Primitives.Cryptography;
+using Electrolyte.Portable.Cryptography;
 
 namespace Electrolyte.Messages {
 	public class InvalidHeaderException : Exception { }

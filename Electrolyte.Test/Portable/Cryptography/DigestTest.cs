@@ -1,8 +1,8 @@
 using System;
 using NUnit.Framework;
-using Electrolyte.Primitives.Cryptography;
+using Electrolyte.Portable.Cryptography;
 
-namespace Electrolyte.Test.Primitives.Cryptography {
+namespace Electrolyte.Test.Portable.Cryptography {
 	[TestFixture]
 	public class DigestTest {
 		[Test]

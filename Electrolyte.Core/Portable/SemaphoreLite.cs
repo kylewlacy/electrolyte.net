@@ -2,7 +2,7 @@ using System;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 
-namespace Electrolyte.Primitives {
+namespace Electrolyte.Portable {
 	// http://blogs.msdn.com/b/pfxteam/archive/2012/02/12/10266983.aspx
 	public class SemaphoreLite {
 		public int CurrentCount { get; private set; }

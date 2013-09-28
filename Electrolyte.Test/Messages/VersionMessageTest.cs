@@ -2,7 +2,7 @@ using System;
 using System.IO;
 using NUnit.Framework;
 using Electrolyte.Messages;
-using Electrolyte.Primitives.Networking;
+using Electrolyte.Portable.Networking;
 
 namespace Electrolyte.Test.Messages {
 	[TestFixture]

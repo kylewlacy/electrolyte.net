@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
-using Electrolyte.Primitives.Cryptography;
+using Electrolyte.Portable.Cryptography;
 
 namespace Electrolyte.Helpers {
 	// Implements https://en.bitcoin.it/wiki/Base58Check_encoding

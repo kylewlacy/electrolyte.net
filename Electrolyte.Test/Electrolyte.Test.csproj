@@ -57,8 +57,8 @@
     <Compile Include="SignedIntTest.cs" />
     <Compile Include="VarIntTest.cs" />
     <Compile Include="VarStringTest.cs" />
-    <Compile Include="Primitives\Cryptography\DigestTest.cs" />
     <Compile Include="Helpers\MoneyTest.cs" />
+    <Compile Include="Portable\Cryptography\DigestTest.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -69,8 +69,8 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Helpers\" />
-    <Folder Include="Primitives\" />
     <Folder Include="Messages\" />
     <Folder Include="Script\" />
+    <Folder Include="Portable\" />
   </ItemGroup>
 </Project>

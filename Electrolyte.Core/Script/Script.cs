@@ -1,9 +1,9 @@
 using System;
 using System.Linq;
 using System.Collections.Generic;
-using Electrolyte.Primitives.Cryptography;
+using Electrolyte.Portable.Cryptography;
 using Electrolyte.Messages;
-using Electrolyte.Primitives;
+using Electrolyte.Portable;
 using Electrolyte.Helpers;
 
 namespace Electrolyte {

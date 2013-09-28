@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Electrolyte.Primitives;
+using Electrolyte.Portable;
 using Electrolyte.Messages;
 using Electrolyte.Helpers;
 

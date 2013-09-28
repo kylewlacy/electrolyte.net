@@ -3,8 +3,8 @@ using System.IO;
 using System.Linq;
 using Newtonsoft.Json.Linq;
 using Electrolyte;
-using Electrolyte.Primitives.Cryptography;
-using Electrolyte.Primitives;
+using Electrolyte.Portable.Cryptography;
+using Electrolyte.Portable;
 using Electrolyte.Helpers;
 
 namespace Electrolyte.Messages {

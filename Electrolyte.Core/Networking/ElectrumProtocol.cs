@@ -6,7 +6,7 @@ using System.Net.Sockets;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
-using Electrolyte.Primitives;
+using Electrolyte.Portable;
 using Electrolyte.Messages;
 using Electrolyte.Helpers;
 using Electrolyte.Extensions;

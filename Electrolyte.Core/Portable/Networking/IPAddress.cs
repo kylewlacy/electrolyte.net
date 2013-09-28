@@ -31,7 +31,7 @@ using System;
 using System.Globalization;
 using System.Net.Sockets;
 
-namespace Electrolyte.Primitives.Networking {
+namespace Electrolyte.Portable.Networking {
 
 	/// <remarks>
 	///   Encapsulates an IP Address.
