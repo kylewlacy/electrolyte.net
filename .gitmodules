@@ -1,0 +1,12 @@
+[submodule "Dependencies/BouncyCastle"]
+	path = Dependencies/BouncyCastle
+	url = https://github.com/kylewlacy/bouncycastle-pcl.git
+	ignore = dirty
+[submodule "Dependencies/Newtonsoft.Json"]
+	path = Dependencies/Newtonsoft.Json
+	url = https://github.com/JamesNK/Newtonsoft.Json.git
+	ignore = dirty
+[submodule "Dependencies/TikoContainer"]
+	path = Dependencies/TikoContainer
+	url = https://github.com/kylewlacy/TikoContainer.git
+	ignore = dirty

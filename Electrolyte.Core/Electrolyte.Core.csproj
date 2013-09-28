@@ -94,13 +94,17 @@
     <Folder Include="Portable\Numerics\" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="BouncyCastle.Crypto">
-      <HintPath>..\..\..\Deps\BouncyCastle\BouncyCastle.Crypto.dll</HintPath>
-    </Reference>
-    <Reference Include="Newtonsoft.Json">
-      <HintPath>..\..\..\Deps\Json.NET\Bin\Portable40\Newtonsoft.Json.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Dependencies\BouncyCastle\PortableBouncyCastle\PortableBouncyCastle\PortableBouncyCastle.csproj">
+      <Project>{494FFB56-5925-4307-BF83-3D256673B6F2}</Project>
+      <Name>PortableBouncyCastle</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Dependencies\Newtonsoft.Json\Src\Newtonsoft.Json\Newtonsoft.Json.Portable.csproj">
+      <Project>{959F7F85-C98B-4876-971A-9036224578E4}</Project>
+      <Name>Newtonsoft.Json.Portable</Name>
+    </ProjectReference>
   </ItemGroup>
 </Project>
