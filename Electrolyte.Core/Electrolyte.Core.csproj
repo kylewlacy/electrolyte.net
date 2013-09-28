@@ -71,7 +71,6 @@
     <Compile Include="Portable\IO\FileInfo.cs" />
     <Compile Include="Portable\IO\FileStream.cs" />
     <Compile Include="Portable\IO\StorageInfo.cs" />
-    <Compile Include="Portable\IO\AtomicFileStream.cs" />
     <Compile Include="Portable\IO\FileMode.cs" />
     <Compile Include="Portable\Net\IPAddress.cs" />
     <Compile Include="Portable\Net\AddressFamily.cs" />

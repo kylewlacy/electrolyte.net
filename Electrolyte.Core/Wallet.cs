@@ -537,11 +537,18 @@ namespace Electrolyte {
 			if(IsLocked) { throw new LockedException(); }
 
 			if(file != null) {
+				FileInfo backup = file.AddExtension("bak");
+				FileInfo temp = file.AddExtension("new");
+
+				temp.Delete();
+				backup.Delete();
+				file.MoveTo(backup);
+
 				if(!IsLocked)
 					await EncryptAsync(EncryptionKey);
 
 				// TODO: Set proper file permissions
-				using(var stream = AtomicFileStream.Create(file)) {
+				using(var stream = FileStream.Create(file, FileMode.CreateNew)) {
 					using(var writer = new StreamWriter(stream)) {
 						await WriteAsync(writer);
 					}

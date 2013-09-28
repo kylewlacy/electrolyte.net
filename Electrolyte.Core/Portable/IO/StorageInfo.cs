@@ -3,10 +3,15 @@ using Tiko;
 
 namespace Electrolyte.Portable.IO {
 	public abstract class StorageInfo {
+		public virtual string[] PathHierarchy { get; protected set; }
+		public abstract string Path { get; }
+		public abstract bool Exists { get; }
+
 		protected abstract void InitializeDefaultStorage();
 		protected abstract void Initialize(StorageInfo location, StorageInfo sublocation);
 		protected abstract void Initialize(StorageInfo location, params string[] sublocation);
 
+		public abstract void Create();
 		public abstract StorageInfo Clone();
 
 		public StorageInfo Append(StorageInfo location) {
