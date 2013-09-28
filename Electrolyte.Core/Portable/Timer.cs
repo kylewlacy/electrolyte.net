@@ -1,51 +1,42 @@
 using System;
-using System.Threading;
-using InternalTimer = System.Threading.Timer;
 
 namespace Electrolyte.Portable {
-	public class Timer {
+	public abstract class Timer {
 		public event EventHandler Elapsed = delegate { };
 
-		public DateTime StartTime { get; private set; }
-		public TimeSpan Interval { get; private set; }
+		public virtual DateTime StartTime { get; private set; }
+		public virtual TimeSpan Interval { get; private set; }
 
-		public DateTime EndTime {
+		public virtual DateTime EndTime {
 			get { return StartTime + Interval; }
 		}
 
-		public bool IsRunning { get; private set; }
-
-		protected InternalTimer InternalTimer;
+		public virtual bool IsRunning { get; private set; }
 
 		
 
-		public Timer() {
-			InternalTimer = new InternalTimer(new TimerCallback(InternalCallback), null, Timeout.Infinite, Timeout.Infinite);
-		}
+		protected abstract void Initialize();
+		protected abstract void Initialize(TimeSpan interval);
 
-		public Timer(TimeSpan interval) : this() {
-			Interval = interval;
-		}
-
-		public void Stop() {
-			IsRunning = false;
-			InternalTimer.Change(Timeout.Infinite, Timeout.Infinite);
-		}
-
-		public void Start() {
-			IsRunning = true;
-			StartTime = DateTime.Now;
-			InternalTimer.Change(Interval, TimeSpan.FromMilliseconds(Timeout.Infinite));
-		}
-
-		public void Start(TimeSpan interval) {
+		public abstract void Start();
+		public virtual void Start(TimeSpan interval) {
 			Interval = interval;
 			Start();
 		}
 
+		public abstract void Stop();
+
 		protected virtual void InternalCallback(object state) {
 			IsRunning = false;
 			Elapsed(this, new EventArgs());
+		}
+
+		public static Timer Create() {
+			throw new NotImplementedException();
+		}
+
+		public static Timer Create(TimeSpan interval) {
+			throw new NotImplementedException();
 		}
 	}
 }

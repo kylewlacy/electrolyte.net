@@ -35,7 +35,7 @@ namespace Electrolyte {
 
 		public static string Version = "0.0.1";
 
-		internal Timer LockTimer = new Timer();
+		internal Timer LockTimer = Timer.Create();
 
 		// http://stackoverflow.com/a/340618
 		public event EventHandler DidLock = delegate { };
@@ -315,7 +315,7 @@ namespace Electrolyte {
 					Array.Copy(passphrase, EncryptionKey, passphrase.Length); // TODO: Is this safe?
 					Array.Clear(passphrase, 0, passphrase.Length);
 
-					LockTimer = new Timer(timeout);
+					LockTimer = Timer.Create(timeout);
 					LockTimer.Elapsed += new EventHandler(LockAsync);
 					LockTimer.Start();
 
