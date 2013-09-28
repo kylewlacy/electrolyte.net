@@ -34,7 +34,6 @@ namespace Electrolyte.Portable.Networking {
 	/// <remarks>
 	///   Encapsulates an IP Address.
 	/// </remarks>
-	[Serializable]
 	public class IPAddress {
 		// Don't change the name of this field without also
 		// changing socket-io.c in the runtime
@@ -200,7 +199,7 @@ namespace Electrolyte.Portable.Networking {
 						return null;
 					//workaround for smcs, as it generate code that can't access string.GetEnumerator ()
 					foreach(char c in lastNet.ToCharArray ())
-						if(!Uri.IsHexDigit(c))
+						if("0123456789ABCDEFabcdef".IndexOf(c) > -1)
 							return null;
 				}
 				ip = ip.Substring(0, pos);
@@ -222,9 +221,9 @@ namespace Electrolyte.Portable.Networking {
 					if((3 <= subnet.Length && subnet.Length <= 4) &&
 					    (subnet[0] == '0') && (subnet[1] == 'x' || subnet[1] == 'X')) {
 						if(subnet.Length == 3)
-							val = (byte)Uri.FromHex(subnet[2]);
+							val = (byte)Convert.ToByte(subnet[2].ToString(), 16);
 						else
-							val = (byte)((Uri.FromHex(subnet[2]) << 4) | Uri.FromHex(subnet[3]));
+							val = (byte)((Convert.ToByte(subnet[2].ToString(), 16) << 4) | Convert.ToByte(subnet[3].ToString(), 16));
 					}
 					else if(subnet.Length == 0)
 							return null;

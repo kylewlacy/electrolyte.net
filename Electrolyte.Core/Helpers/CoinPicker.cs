@@ -26,7 +26,7 @@ namespace Electrolyte.Helpers {
 
 		static CoinPicker() {
 			Transaction baseTx = Transaction.Create(new List<Transaction.Output>(), new Dictionary<Address, Money>(), new Dictionary<Address, ECKey>(), allowDust: true);
-			MinBytesForTx = (long)(baseTx.ToByteArray().LongLength * (1 + PercentError));
+			MinBytesForTx = (long)(baseTx.ToByteArray().LongCount() * (1 + PercentError));
 
 			var input = new Transaction.Input("23e90c875e2ed7a1ec01f5a80643879625b8aeb48b67db64c0f9edb8259240b6", 0, 0) {
 				ScriptSig = Script.FromString("3045022100f65c5e8c5d3b2386547a876db4ddb7bba1e57f9dbeaec9f3010516e453577fda02206f9df1a9262997263ac01be4342d0ade7057f5cceab4375fa1020ac7bfc5054b01 04ef96e3bccc8fff6b21d28e81f61c4a93cfe0f133214c9547c0d683a9fc12f529229c8d1ab20004c0f7f13961566b65492c6267fa452784c0724b4f542e4001f1")
@@ -35,7 +35,7 @@ namespace Electrolyte.Helpers {
 			using(var stream = new MemoryStream()) {
 				using(var writer = new BinaryWriter(stream)) {
 					input.Write(writer);
-					ApproxBytesPerInput = (long)(stream.ToArray().LongLength * (1 + PercentError));
+					ApproxBytesPerInput = (long)(stream.ToArray().LongCount() * (1 + PercentError));
 				}
 			}
 
@@ -43,7 +43,7 @@ namespace Electrolyte.Helpers {
 			using(var stream = new MemoryStream()) {
 				using(var writer = new BinaryWriter(stream)) {
 					output.Write(writer);
-					ApproxBytesPerOutput = (long)(stream.ToArray().LongLength * (1 + PercentError));
+					ApproxBytesPerOutput = (long)(stream.ToArray().LongCount() * (1 + PercentError));
 				}
 			}
 		}

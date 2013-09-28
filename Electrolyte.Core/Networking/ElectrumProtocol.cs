@@ -1,7 +1,8 @@
 using System;
 using System.IO;
-using System.Text.RegularExpressions;
 using System.Linq;
+using System.Diagnostics;
+using System.Text.RegularExpressions;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
@@ -101,13 +102,13 @@ namespace Electrolyte.Networking {
 				var resultError = JToken.Parse(Regex.Replace(result, "u'(?<text>[^']*)'", "\"${text}\""));
 
 				errorCode = resultError["code"].Value<int>();
-				Console.WriteLine("There was an error: {0} ({1})\n{2}", errorCode, resultError["message"], result);
+				Debug.WriteLine(String.Format("There was an error: {0} ({1})\n{2}", errorCode, resultError["message"], result));
 			}
 			catch { }
 
 			switch(errorCode) {
 			case -22:
-				Console.WriteLine("Transaction not accepted by Electrum server");
+				Debug.WriteLine("Transaction not accepted by Electrum server");
 				await NextProtocol.BroadcastTransactionAsync(tx);
 				break;
 			default:

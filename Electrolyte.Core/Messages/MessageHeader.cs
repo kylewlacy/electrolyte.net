@@ -58,7 +58,7 @@ namespace Electrolyte.Messages {
 		public override void WritePayload(BinaryWriter writer) {
 			writer.Write(MagicBytes);
 
-			byte[] command = Encoding.ASCII.GetBytes(Command);
+			byte[] command = Encoding.UTF8.GetBytes(Command);
 			Array.Resize(ref command, 12);
 			writer.Write(command);
 

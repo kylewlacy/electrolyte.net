@@ -1526,7 +1526,7 @@ namespace Electrolyte.Portable.Numerics {
 				return false;
 			}
 
-			var info = Thread.CurrentThread.CurrentCulture.NumberFormat;
+			var info = CultureInfo.CurrentCulture.NumberFormat;
 			
 			string negative = info.NegativeSign;
 			string positive = info.PositiveSign;

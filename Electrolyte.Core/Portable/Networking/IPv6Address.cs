@@ -43,7 +43,6 @@ namespace Electrolyte.Portable.Networking {
 	///   Encapsulates an IPv6 Address.
 	///   See RFC 2373 for more info on IPv6 addresses.
 	/// </remarks>
-	[Serializable]
 	internal class IPv6Address {
 		private ushort [] address;
 		private int prefixLength;

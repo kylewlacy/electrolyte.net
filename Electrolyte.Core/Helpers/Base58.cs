@@ -66,7 +66,7 @@ namespace Electrolyte.Helpers {
 
 			// Encode BigInteger to byte[]
 			// Leading zero bytes get encoded as leading `1` characters
-			int leadingZeroCount = s.TakeWhile(c => c == '1').Count();
+			int leadingZeroCount = s.ToCharArray().TakeWhile(c => c == '1').Count();
 			var leadingZeros = Enumerable.Repeat((byte)0, leadingZeroCount);
 			var bytesWithoutLeadingZeros =
 				intData.ToByteArray()
