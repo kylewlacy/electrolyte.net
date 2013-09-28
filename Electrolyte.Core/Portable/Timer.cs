@@ -1,4 +1,5 @@
 using System;
+using Tiko;
 
 namespace Electrolyte.Portable {
 	public abstract class Timer {
@@ -32,11 +33,15 @@ namespace Electrolyte.Portable {
 		}
 
 		public static Timer Create() {
-			throw new NotImplementedException();
+			var timer = TikoContainer.Resolve<Timer>();
+			timer.Initialize();
+			return timer;
 		}
 
 		public static Timer Create(TimeSpan interval) {
-			throw new NotImplementedException();
+			var timer = TikoContainer.Resolve<Timer>();
+			timer.Initialize(interval);
+			return timer;
 		}
 	}
 }

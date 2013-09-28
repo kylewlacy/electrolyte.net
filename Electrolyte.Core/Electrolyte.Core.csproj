@@ -105,5 +105,9 @@
       <Project>{959F7F85-C98B-4876-971A-9036224578E4}</Project>
       <Name>Newtonsoft.Json.Portable</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Dependencies\TikoContainer\Tiko\Tiko.csproj">
+      <Project>{E4F6D527-F8C3-4B38-9D55-F93B47B7E12D}</Project>
+      <Name>Tiko</Name>
+    </ProjectReference>
   </ItemGroup>
 </Project>

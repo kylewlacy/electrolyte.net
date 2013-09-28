@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using Tiko;
 
 namespace Electrolyte.Portable.Net {
 	public abstract class HttpClient {
@@ -8,8 +9,12 @@ namespace Electrolyte.Portable.Net {
 		public abstract Task<string> GetAsync(Uri uri);
 		public abstract Task<string> PostAsync(Uri uri, string content);
 
+		protected abstract void Initialize();
+
 		public static HttpClient Create() {
-			throw new NotImplementedException();
+			var httpClient = TikoContainer.Resolve<HttpClient>();
+			httpClient.Initialize();
+			return httpClient;
 		}
 	}
 }

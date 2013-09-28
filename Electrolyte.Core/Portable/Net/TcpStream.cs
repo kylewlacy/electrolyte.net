@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using Tiko;
 
 namespace Electrolyte.Portable.Net {
 	public abstract class TcpStream : Stream {
@@ -18,7 +19,9 @@ namespace Electrolyte.Portable.Net {
 		}
 
 		public static TcpStream Create(string server = null, int port = 80) {
-			throw new NotImplementedException();
+			var tcpStream = TikoContainer.Resolve<TcpStream>();
+			tcpStream.Initialize();
+			return tcpStream;
 		}
 	}
 }

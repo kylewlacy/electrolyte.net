@@ -1,4 +1,5 @@
 using System;
+using Tiko;
 
 namespace Electrolyte.Portable.IO {
 	public abstract class AtomicFileStream : FileStream {
@@ -8,7 +9,9 @@ namespace Electrolyte.Portable.IO {
 		protected abstract void Initialize(FileInfo info);
 
 		public static AtomicFileStream Create(FileInfo info) {
-			throw new NotImplementedException();
+			var atomicFileStream = TikoContainer.Resolve<AtomicFileStream>();
+			atomicFileStream.Initialize(info);
+			return atomicFileStream;
 		}
 	}
 }

@@ -1,4 +1,5 @@
 using System;
+using Tiko;
 
 namespace Electrolyte.Portable.IO {
 	public abstract class FileInfo {
@@ -9,11 +10,13 @@ namespace Electrolyte.Portable.IO {
 		protected abstract void Initialize(StorageInfo location, string fileName);
 
 		public virtual FileInfo Clone() {
-			return Create((StorageInfo)Location.Clone(), FileName);
+			return Create(Location.Clone(), FileName);
 		}
 
 		public static FileInfo Create(StorageInfo location, string fileName) {
-			throw new NotImplementedException();
+			var fileInfo = TikoContainer.Resolve<FileInfo>();
+			fileInfo.Initialize(location, fileName);
+			return fileInfo;
 		}
 	}
 }
