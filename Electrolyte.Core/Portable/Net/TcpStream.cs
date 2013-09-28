@@ -1,7 +1,7 @@
 using System;
 using System.IO;
 
-namespace Electrolyte.Portable.Networking {
+namespace Electrolyte.Portable.Net {
 	public abstract class TcpStream : Stream {
 		public abstract string Server { get; set; }
 		public abstract int Port { get; set; }

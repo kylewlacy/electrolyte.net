@@ -1,7 +1,7 @@
 using System;
 using System.IO;
 using Org.BouncyCastle.Crypto.Tls;
-using Electrolyte.Portable.Networking;
+using Electrolyte.Portable.Net;
 
 namespace Electrolyte.Networking {
 	public class SecureElectrumProtocol : ElectrumProtocol {

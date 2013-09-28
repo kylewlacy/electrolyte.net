@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using Electrolyte.Portable;
-using Electrolyte.Portable.Networking;
+using Electrolyte.Portable.Net;
 using Electrolyte.Messages;
 using Electrolyte.Helpers;
 using Electrolyte.Extensions;

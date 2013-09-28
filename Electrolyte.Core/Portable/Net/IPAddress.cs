@@ -30,7 +30,7 @@
 using System;
 using System.Globalization;
 
-namespace Electrolyte.Portable.Networking {
+namespace Electrolyte.Portable.Net {
 	/// <remarks>
 	///   Encapsulates an IP Address.
 	/// </remarks>

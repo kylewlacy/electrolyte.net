@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using Electrolyte.Helpers;
 using Electrolyte.Portable;
-using Electrolyte.Portable.Networking;
+using Electrolyte.Portable.Net;
 
 namespace Electrolyte.Networking {
 	public class BlockchainProtocol : NetworkProtocol {

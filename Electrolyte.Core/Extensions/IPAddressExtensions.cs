@@ -1,7 +1,7 @@
 using System;
 using System.Linq;
 using Electrolyte.Helpers;
-using Electrolyte.Portable.Networking;
+using Electrolyte.Portable.Net;
 
 namespace Electrolyte.Extensions {
 	public static class IPAddressExtensions {

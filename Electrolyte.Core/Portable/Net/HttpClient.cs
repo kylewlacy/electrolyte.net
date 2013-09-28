@@ -1,7 +1,7 @@
 using System;
 using System.Threading.Tasks;
 
-namespace Electrolyte.Portable.Networking {
+namespace Electrolyte.Portable.Net {
 	public abstract class HttpClient {
 		public abstract void Connect();
 		public abstract void Disconnect();

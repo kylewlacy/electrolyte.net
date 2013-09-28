@@ -65,20 +65,20 @@
     <Compile Include="Helpers\Money.cs" />
     <Compile Include="Portable\SemaphoreLite.cs" />
     <Compile Include="Portable\Timer.cs" />
-    <Compile Include="Portable\Networking\IPAddress.cs" />
-    <Compile Include="Portable\Networking\AddressFamily.cs" />
-    <Compile Include="Portable\Networking\IPv6Address.cs" />
-    <Compile Include="Portable\Networking\SslStream.cs" />
     <Compile Include="Portable\Cryptography\Cipher.cs" />
     <Compile Include="Portable\Cryptography\Digest.cs" />
-    <Compile Include="Portable\Networking\TcpStream.cs" />
     <Compile Include="Portable\Numerics\BigInteger.cs" />
-    <Compile Include="Portable\Networking\HttpClient.cs" />
     <Compile Include="Portable\IO\FileInfo.cs" />
     <Compile Include="Portable\IO\FileStream.cs" />
     <Compile Include="Portable\IO\StorageInfo.cs" />
     <Compile Include="Portable\IO\AtomicFileStream.cs" />
     <Compile Include="Portable\IO\FileMode.cs" />
+    <Compile Include="Portable\Net\IPAddress.cs" />
+    <Compile Include="Portable\Net\AddressFamily.cs" />
+    <Compile Include="Portable\Net\IPv6Address.cs" />
+    <Compile Include="Portable\Net\SslStream.cs" />
+    <Compile Include="Portable\Net\TcpStream.cs" />
+    <Compile Include="Portable\Net\HttpClient.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <ItemGroup>
@@ -88,10 +88,9 @@
     <Folder Include="Properties\" />
     <Folder Include="Script\" />
     <Folder Include="Networking\" />
-    <Folder Include="Networking\Primitives\" />
     <Folder Include="Portable\" />
-    <Folder Include="Portable\Networking\" />
     <Folder Include="Portable\Numerics\" />
+    <Folder Include="Portable\Net\" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
