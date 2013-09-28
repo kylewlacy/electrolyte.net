@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using Electrolyte.Portable;
+using Electrolyte.Portable.Networking;
 using Electrolyte.Messages;
 using Electrolyte.Helpers;
 using Electrolyte.Extensions;
@@ -16,12 +17,14 @@ namespace Electrolyte.Networking {
 		public string Server;
 		public int Port;
 
-		protected TcpClient Client;
-		protected Stream ClientStream;
+		protected TcpStream Client;
+		protected virtual Stream ClientStream {
+			get { return Client; }
+		}
+
 		protected static readonly SemaphoreLite ClientLock = new SemaphoreLite();
 
 		public ElectrumProtocol(string server, int port) {
-			Client = new TcpClient();
 			Server = server;
 			Port = port;
 		}
@@ -29,15 +32,13 @@ namespace Electrolyte.Networking {
 
 		public override void Connect() {
 			base.Connect();
-			Client.Connect(Server, Port);
-			ClientStream = Client.GetStream();
+			Client = TcpStream.Create(Server, Port);
+			Client.Connect();
 		}
 
 		public override void Disconnect() {
 			base.Disconnect();
-			ClientStream.Close();
-			Client.Close();
-			ClientStream = null;
+			ClientStream.Dispose();
 		}
 
 		async Task<string> SendRPCAsync(string methodName, params object[] args) {

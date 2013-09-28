@@ -71,6 +71,7 @@
     <Compile Include="Portable\Networking\SslStream.cs" />
     <Compile Include="Portable\Cryptography\Cipher.cs" />
     <Compile Include="Portable\Cryptography\Digest.cs" />
+    <Compile Include="Portable\Networking\TcpStream.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <ItemGroup>
