@@ -1,7 +1,6 @@
 *.userprefs
 *.usertasks
 *.suo
-AssemblyInfo.cs
 
 *.pidb
 *.resources
