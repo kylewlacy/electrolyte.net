@@ -8,6 +8,7 @@ namespace Electrolyte.Portable.IO {
 		public abstract bool Exists { get; }
 
 		protected abstract void InitializeDefaultStorage();
+		protected abstract void Initialize(PathInfo location);
 		protected abstract void Initialize(PathInfo location, PathInfo sublocation);
 		protected abstract void Initialize(PathInfo location, params string[] sublocation);
 
@@ -33,14 +34,20 @@ namespace Electrolyte.Portable.IO {
 			}
 		}
 
+		public static PathInfo Create(PathInfo location) {
+			var storageInfo = TikoContainer.Resolve<PathInfo>().Clone();
+			storageInfo.Initialize(location);
+			return storageInfo;
+		}
+
 		public static PathInfo Create(PathInfo location, PathInfo sublocation) {
-			var storageInfo = TikoContainer.Resolve<PathInfo>();
+			var storageInfo = TikoContainer.Resolve<PathInfo>().Clone();
 			storageInfo.Initialize(location, sublocation);
 			return storageInfo;
 		}
 
 		public static PathInfo Create(PathInfo location, params string[] sublocation) {
-			var storageInfo = TikoContainer.Resolve<PathInfo>();
+			var storageInfo = TikoContainer.Resolve<PathInfo>().Clone();
 			storageInfo.Initialize(location, sublocation);
 			return storageInfo;
 		}
