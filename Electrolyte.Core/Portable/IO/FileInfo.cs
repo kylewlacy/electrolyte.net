@@ -14,16 +14,20 @@ namespace Electrolyte.Portable.IO {
 		public abstract void MoveTo(FileInfo destination);
 		public abstract void Delete();
 
-		public virtual FileInfo AddExtension(string extension) {
-			return Create(Location.Clone(), String.Format("{0}.{1}", FileName, extension));
-		}
-			
-		public virtual FileInfo Clone() {
-			return Create(Location.Clone(), FileName);
+		public virtual FileInfo WithExtension(string extension) {
+			var newFileInfo = Clone();
+			newFileInfo.AddExtension(extension);
+			return newFileInfo;
 		}
 
+		public virtual void AddExtension(string extension) {
+			FileName = String.Format("{0}.{1}", FileName, extension);
+		}
+			
+		public abstract FileInfo Clone();
+
 		public static FileInfo Create(PathInfo location, string fileName) {
-			var fileInfo = TikoContainer.Resolve<FileInfo>();
+			var fileInfo = TikoContainer.Resolve<FileInfo>().Clone();
 			fileInfo.Initialize(location, fileName);
 			return fileInfo;
 		}

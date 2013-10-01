@@ -537,8 +537,8 @@ namespace Electrolyte {
 			if(IsLocked) { throw new LockedException(); }
 
 			if(file != null) {
-				FileInfo backup = file.AddExtension("bak");
-				FileInfo temp = file.AddExtension("new");
+				FileInfo backup = file.WithExtension("bak");
+				FileInfo temp = file.WithExtension("new");
 
 				temp.Delete();
 				backup.Delete();
