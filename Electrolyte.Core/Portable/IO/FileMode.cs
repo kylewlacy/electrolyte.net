@@ -6,7 +6,8 @@ namespace Electrolyte.Portable.IO {
 		Create       = 2,
 		Open         = 3,
 		OpenOrCreate = 4,
-		Truncate     = 5
+		Truncate     = 5,
+		Append       = 6
 	}
 }
 
