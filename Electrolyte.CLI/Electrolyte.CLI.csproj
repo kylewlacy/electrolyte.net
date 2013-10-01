@@ -34,21 +34,20 @@
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
-    <ProjectReference Include="..\Electrolyte.Core\Electrolyte.Core.csproj">
-      <Project>{CF6CF5BB-DC12-4950-B13F-6370AE4488E7}</Project>
-      <Name>Electrolyte.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Dependencies\BouncyCastle\PortableBouncyCastle\PortableBouncyCastle\PortableBouncyCastle.csproj">
-      <Project>{494FFB56-5925-4307-BF83-3D256673B6F2}</Project>
-      <Name>PortableBouncyCastle</Name>
-    </ProjectReference>
+    <Folder Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Numerics" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Properties\" />
+    <ProjectReference Include="..\Electrolyte.Core\Electrolyte.Core.csproj">
+      <Project>{CF6CF5BB-DC12-4950-B13F-6370AE4488E7}</Project>
+      <Name>Electrolyte.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Electrolyte.Standard\Electrolyte.Standard.csproj">
+      <Project>{4D9F81CB-24EB-4419-BE3A-D44A1F06F709}</Project>
+      <Name>Electrolyte.Standard</Name>
+    </ProjectReference>
   </ItemGroup>
 </Project>

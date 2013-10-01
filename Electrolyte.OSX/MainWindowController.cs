@@ -7,6 +7,7 @@ using MonoMac.AppKit;
 using Electrolyte.Helpers;
 using Electrolyte.Messages;
 using Electrolyte.Networking;
+using Electrolyte.Standard.IO;
 
 namespace Electrolyte.OSX {
 	public partial class MainWindowController : NSWindowController {
@@ -45,7 +46,9 @@ namespace Electrolyte.OSX {
 
 			sendButton.Enabled = false;
 
-			wallet = await Wallet.LoadAsync();
+			FileInfo walletInfo = (FileInfo)Wallet.DefaultWalletPath;
+			wallet = await Wallet.LoadAsync(walletInfo);
+
 			wallet.DidLock += (sender, e) => LockToggled();
 			wallet.DidUnlock += (sender, e) => LockToggled();
 

@@ -5,14 +5,15 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>10.0.0</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{7421B600-7A0A-48D5-844C-423DA6C881F6}</ProjectGuid>
+    <ProjectGuid>{4D9F81CB-24EB-4419-BE3A-D44A1F06F709}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>Electrolyte.Test</RootNamespace>
-    <AssemblyName>Electrolyte.Test</AssemblyName>
+    <RootNamespace>Electrolyte.Standard</RootNamespace>
+    <AssemblyName>Electrolyte.Standard</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug</OutputPath>
     <DefineConstants>DEBUG;</DefineConstants>
@@ -21,6 +22,7 @@
     <ConsolePause>false</ConsolePause>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>full</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release</OutputPath>
     <ErrorReport>prompt</ErrorReport>
@@ -28,47 +30,26 @@
     <ConsolePause>false</ConsolePause>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="nunit.framework">
-      <HintPath>..\..\..\Deps\NUnit\bin\framework\nunit.framework.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
-    <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Messages\MessageHeaderTest.cs" />
-    <Compile Include="Messages\VersionMessageTest.cs" />
-    <Compile Include="AddressTest.cs" />
-    <Compile Include="Messages\TransactionTest.cs" />
-    <Compile Include="Helpers\Base58Test.cs" />
-    <Compile Include="Helpers\UnixTimeTest.cs" />
-    <Compile Include="Script\StackTest.cs" />
-    <Compile Include="Script\ScriptExecutionTest.cs" />
-    <Compile Include="OpcodesTest.cs" />
-    <Compile Include="Script\ScriptInterpretationTest.cs" />
-    <Compile Include="WalletTest.cs" />
-    <Compile Include="Helpers\CoinPickerTest.cs" />
-    <Compile Include="Helpers\BinaryHelpersTest.cs" />
-    <Compile Include="ECKeyTest.cs" />
-    <Compile Include="SignedIntTest.cs" />
-    <Compile Include="VarIntTest.cs" />
-    <Compile Include="VarStringTest.cs" />
-    <Compile Include="Helpers\MoneyTest.cs" />
-    <Compile Include="Portable\Cryptography\DigestTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="IO\FileStream.cs" />
+    <Compile Include="IO\FileInfo.cs" />
+    <Compile Include="IO\PathInfo.cs" />
+    <Compile Include="Net\HttpClient.cs" />
+    <Compile Include="Net\TcpStream.cs" />
+    <Compile Include="Timer.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <Folder Include="IO\" />
+    <Folder Include="Net\" />
+  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Electrolyte.Core\Electrolyte.Core.csproj">
       <Project>{CF6CF5BB-DC12-4950-B13F-6370AE4488E7}</Project>
       <Name>Electrolyte.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Dependencies\BouncyCastle\PortableBouncyCastle\PortableBouncyCastle\PortableBouncyCastle.csproj">
-      <Project>{494FFB56-5925-4307-BF83-3D256673B6F2}</Project>
-      <Name>PortableBouncyCastle</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Electrolyte.Standard\Electrolyte.Standard.csproj">
-      <Project>{4D9F81CB-24EB-4419-BE3A-D44A1F06F709}</Project>
-      <Name>Electrolyte.Standard</Name>
     </ProjectReference>
     <ProjectReference Include="..\Dependencies\TikoContainer\Tiko\Tiko.csproj">
       <Project>{E4F6D527-F8C3-4B38-9D55-F93B47B7E12D}</Project>
@@ -78,11 +59,9 @@
       <Project>{69744BDF-4DA9-4154-90D1-A24F133E05F5}</Project>
       <Name>PortableBouncyCastle.Standard</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Helpers\" />
-    <Folder Include="Messages\" />
-    <Folder Include="Script\" />
-    <Folder Include="Portable\" />
+    <ProjectReference Include="..\Dependencies\BouncyCastle\PortableBouncyCastle\PortableBouncyCastle\PortableBouncyCastle.csproj">
+      <Project>{494FFB56-5925-4307-BF83-3D256673B6F2}</Project>
+      <Name>PortableBouncyCastle</Name>
+    </ProjectReference>
   </ItemGroup>
 </Project>

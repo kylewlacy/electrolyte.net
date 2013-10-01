@@ -17,6 +17,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PortableBouncyCastle", "Dep
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Newtonsoft.Json.Portable", "Dependencies\Newtonsoft.Json\Src\Newtonsoft.Json\Newtonsoft.Json.Portable.csproj", "{959F7F85-C98B-4876-971A-9036224578E4}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PortableBouncyCastle.Standard", "Dependencies\BouncyCastle\PortableBouncyCastle\PortableBouncyCastle.Standard\PortableBouncyCastle.Standard.csproj", "{69744BDF-4DA9-4154-90D1-A24F133E05F5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Electrolyte.Standard", "Electrolyte.Standard\Electrolyte.Standard.csproj", "{4D9F81CB-24EB-4419-BE3A-D44A1F06F709}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -30,6 +34,18 @@ Global
 		{494FFB56-5925-4307-BF83-3D256673B6F2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{494FFB56-5925-4307-BF83-3D256673B6F2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{494FFB56-5925-4307-BF83-3D256673B6F2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4D9F81CB-24EB-4419-BE3A-D44A1F06F709}.AppStore|Any CPU.ActiveCfg = Release|Any CPU
+		{4D9F81CB-24EB-4419-BE3A-D44A1F06F709}.AppStore|Any CPU.Build.0 = Release|Any CPU
+		{4D9F81CB-24EB-4419-BE3A-D44A1F06F709}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4D9F81CB-24EB-4419-BE3A-D44A1F06F709}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4D9F81CB-24EB-4419-BE3A-D44A1F06F709}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4D9F81CB-24EB-4419-BE3A-D44A1F06F709}.Release|Any CPU.Build.0 = Release|Any CPU
+		{69744BDF-4DA9-4154-90D1-A24F133E05F5}.AppStore|Any CPU.ActiveCfg = Release|Any CPU
+		{69744BDF-4DA9-4154-90D1-A24F133E05F5}.AppStore|Any CPU.Build.0 = Release|Any CPU
+		{69744BDF-4DA9-4154-90D1-A24F133E05F5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{69744BDF-4DA9-4154-90D1-A24F133E05F5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{69744BDF-4DA9-4154-90D1-A24F133E05F5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{69744BDF-4DA9-4154-90D1-A24F133E05F5}.Release|Any CPU.Build.0 = Release|Any CPU
 		{7421B600-7A0A-48D5-844C-423DA6C881F6}.AppStore|Any CPU.ActiveCfg = Debug|Any CPU
 		{7421B600-7A0A-48D5-844C-423DA6C881F6}.AppStore|Any CPU.Build.0 = Debug|Any CPU
 		{7421B600-7A0A-48D5-844C-423DA6C881F6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -71,6 +87,7 @@ Global
 		{E4F6D527-F8C3-4B38-9D55-F93B47B7E12D} = {2AC0D770-2634-4A90-BB06-170A7416A355}
 		{494FFB56-5925-4307-BF83-3D256673B6F2} = {2AC0D770-2634-4A90-BB06-170A7416A355}
 		{959F7F85-C98B-4876-971A-9036224578E4} = {2AC0D770-2634-4A90-BB06-170A7416A355}
+		{69744BDF-4DA9-4154-90D1-A24F133E05F5} = {2AC0D770-2634-4A90-BB06-170A7416A355}
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
 		StartupItem = Electrolyte.OSX\Electrolyte.OSX.csproj
