@@ -19,7 +19,7 @@ namespace Electrolyte.OSX {
 		public UnlockSheetController() : base("UnlockSheet") { Initialize(); }
 
 		public delegate void UnlockEvent(string passphrase);
-		public event UnlockEvent OnUnlock = delegate { };
+		public event UnlockEvent WillUnlock = delegate { };
 
 		void Initialize() { }
 
@@ -31,7 +31,7 @@ namespace Electrolyte.OSX {
 		}
 
 		partial void Unlock(NSObject sender) {
-			OnUnlock(walletPassphraseField.StringValue);
+			WillUnlock(walletPassphraseField.StringValue);
 			CloseSheet();
 		}
 

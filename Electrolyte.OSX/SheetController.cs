@@ -10,12 +10,12 @@ namespace Electrolyte.OSX {
 		public SheetController(IntPtr handle) : base(handle) { }
 		public SheetController(string windowNibName) : base(windowNibName) { }
 
-		public event EventHandler OnOpen = delegate { };
-		public event EventHandler OnClose = delegate { };
+		public event EventHandler DidOpen = delegate { };
+		public event EventHandler DidClose = delegate { };
 
 		public virtual void ShowSheet(NSWindow dockToWindow) {
 			NSApplication.SharedApplication.BeginSheet(Window, dockToWindow);
-			OnOpen(this, new EventArgs());
+			DidOpen(this, new EventArgs());
 		}
 
 		protected void CloseSheet(NSObject sender, EventArgs e) {
@@ -23,7 +23,7 @@ namespace Electrolyte.OSX {
 			Window.Close();
 			Window.Dispose();
 
-			OnClose(this, e);
+			DidClose(this, e);
 		}
 
 		public virtual void CloseSheet(NSObject sender = null) {
