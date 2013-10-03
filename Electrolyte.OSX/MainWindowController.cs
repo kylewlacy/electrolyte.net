@@ -33,6 +33,17 @@ namespace Electrolyte.OSX {
 				return _unlockSheet;
 			}
 		}
+
+		ConfirmTransactionSheetController _confirmTransaction;
+		ConfirmTransactionSheetController confirmTransaction {
+			get {
+				if(_confirmTransaction == null) {
+					_confirmTransaction = new ConfirmTransactionSheetController();
+				}
+
+				return _confirmTransaction;
+			}
+		}
 		
 		[Export("initWithCoder:")]
 		public MainWindowController(NSCoder coder) : base (coder) { Initialize(); }
@@ -88,9 +99,17 @@ namespace Electrolyte.OSX {
 			sendButton.Enabled = false;
 
 			Transaction tx = await wallet.CreateTransactionAsync(destinations);
-			await Network.BroadcastTransactionAsync(tx);
 
-			sendButton.Enabled = true;
+			confirmTransaction.ShowSheetWithTransaction(Window, tx);
+
+			confirmTransaction.DidSend += delegate {
+				recipientField.StringValue = "";
+				valueField.StringValue = "";
+			};
+
+			confirmTransaction.DidClose += delegate {
+				sendButton.Enabled = true;
+			};
 		}
 
 		async partial void ToggleLockUnlock(NSObject sender) {
