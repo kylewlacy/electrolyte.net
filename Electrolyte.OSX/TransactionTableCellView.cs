@@ -70,6 +70,7 @@ namespace Electrolyte.OSX {
 		void Initialize() { }
 
 		public override void DrawRect(System.Drawing.RectangleF dirtyRect) {
+			// TODO: Why doesn't the background fill compiled under 64-bit Mono?
 			BackgroundColor.SetFill();
 			NSBezierPath.FillRect(dirtyRect);
 		}
