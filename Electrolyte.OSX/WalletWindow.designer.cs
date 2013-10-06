@@ -9,8 +9,8 @@ using System.CodeDom.Compiler;
 
 namespace Electrolyte.OSX
 {
-	[Register ("MainWindowController")]
-	partial class MainWindowController
+	[Register ("WalletWindowController")]
+	partial class WalletWindowController
 	{
 		[Outlet]
 		MonoMac.AppKit.NSTextField balanceLabel { get; set; }
@@ -76,8 +76,8 @@ namespace Electrolyte.OSX
 		}
 	}
 
-	[Register ("MainWindow")]
-	partial class MainWindow
+	[Register ("WalletWindow")]
+	partial class WalletWindow
 	{
 		[Outlet]
 		MonoMac.AppKit.NSTextField balanceLabel { get; set; }

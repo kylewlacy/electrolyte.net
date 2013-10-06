@@ -10,9 +10,9 @@ using Electrolyte.Networking;
 using Electrolyte.Standard.IO;
 
 namespace Electrolyte.OSX {
-	public partial class MainWindowController : NSWindowController {
-		public new MainWindow Window {
-			get { return (MainWindow)base.Window; }
+	public partial class WalletWindowController : NSWindowController {
+		public new WalletWindow Window {
+			get { return (WalletWindow)base.Window; }
 		}
 
 		TransactionTableData transactionTableData;
@@ -46,9 +46,9 @@ namespace Electrolyte.OSX {
 		}
 		
 		[Export("initWithCoder:")]
-		public MainWindowController(NSCoder coder) : base (coder) { Initialize(); }
-		public MainWindowController(IntPtr handle) : base (handle) { Initialize(); }
-		public MainWindowController() : base ("MainWindow") { Initialize(); }
+		public WalletWindowController(NSCoder coder) : base (coder) { Initialize(); }
+		public WalletWindowController(IntPtr handle) : base (handle) { Initialize(); }
+		public WalletWindowController() : base ("WalletWindow") { Initialize(); }
 
 		void Initialize() { }
 
@@ -57,8 +57,7 @@ namespace Electrolyte.OSX {
 
 			sendButton.Enabled = false;
 
-			FileInfo walletInfo = (FileInfo)Wallet.DefaultWalletPath;
-			wallet = await Wallet.LoadAsync(walletInfo);
+			wallet = await Wallet.LoadAsync();
 
 			wallet.DidLock += (sender, e) => LockToggled();
 			wallet.DidUnlock += (sender, e) => LockToggled();

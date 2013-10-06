@@ -5,10 +5,10 @@ using MonoMac.Foundation;
 using MonoMac.AppKit;
 
 namespace Electrolyte.OSX {
-	public partial class MainWindow : NSWindow {
+	public partial class WalletWindow : NSWindow {
 		[Export ("initWithCoder:")]
-		public MainWindow(NSCoder coder) : base(coder) { Initialize(); }
-		public MainWindow(IntPtr handle) : base(handle) { Initialize(); }
+		public WalletWindow(NSCoder coder) : base(coder) { Initialize(); }
+		public WalletWindow(IntPtr handle) : base(handle) { Initialize(); }
 
 		void Initialize() { }
 	}

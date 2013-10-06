@@ -6,11 +6,11 @@ using MonoMac.ObjCRuntime;
 
 namespace Electrolyte.OSX {
 	public partial class AppDelegate : NSApplicationDelegate {
-		MainWindowController mainWindowController;
+		WalletWindowController walletWindowController;
 
 		public override void FinishedLaunching(NSObject notification) {
-			mainWindowController = new MainWindowController();
-			mainWindowController.Window.MakeKeyAndOrderFront(this);
+			walletWindowController = new WalletWindowController();
+			walletWindowController.Window.MakeKeyAndOrderFront(this);
 		}
 
 		public override bool ApplicationShouldTerminateAfterLastWindowClosed(NSApplication sender) {
