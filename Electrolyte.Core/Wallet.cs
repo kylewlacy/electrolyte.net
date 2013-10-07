@@ -104,6 +104,10 @@ namespace Electrolyte {
 			File = file;
 		}
 
+		public static async Task<Wallet> CreateAsync(string passphrase, FileInfo file = null, Dictionary<Address, ECKey> keys = null, HashSet<Address> publicAddresses = null, HashSet<Address> watchAddresses = null) {
+			return await CreateAsync(Encoding.UTF8.GetBytes(passphrase), file, keys, publicAddresses, watchAddresses);
+		}
+
 		public static async Task<Wallet> CreateAsync(byte[] passphrase, FileInfo file = null, Dictionary<Address, ECKey> keys = null, HashSet<Address> publicAddresses = null, HashSet<Address> watchAddresses = null) {
 			var wallet = new Wallet(file, keys, publicAddresses, watchAddresses);
 			await wallet.LockAsync(passphrase);
