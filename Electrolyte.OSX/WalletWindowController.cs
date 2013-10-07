@@ -52,7 +52,7 @@ namespace Electrolyte.OSX {
 
 		void Initialize() { }
 
-		public override async void AwakeFromNib() {
+		public override async void WindowDidLoad() {
 			Window.ContentMinSize = new SizeF(530, 240);
 
 			sendButton.Enabled = false;
