@@ -11,7 +11,6 @@ namespace Electrolyte.OSX {
 		public UnlockSheet(IntPtr handle) : base (handle) { Initialize(); }
 
 		void Initialize() { }
-
 	}
 }
 

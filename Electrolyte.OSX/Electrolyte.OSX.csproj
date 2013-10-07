@@ -96,12 +96,20 @@
     <Compile Include="WalletWindow.designer.cs">
       <DependentUpon>WalletWindow.cs</DependentUpon>
     </Compile>
+    <Compile Include="WalletCreationSheet.cs" />
+    <Compile Include="WalletCreationSheetController.cs" />
+    <Compile Include="WalletCreationSheet.designer.cs">
+      <DependentUpon>WalletCreationSheet.cs</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <InterfaceDefinition Include="MainMenu.xib" />
     <InterfaceDefinition Include="UnlockSheet.xib" />
     <InterfaceDefinition Include="ConfirmTransactionSheet.xib" />
-    <InterfaceDefinition Include="WalletWindow.xib" />
+    <InterfaceDefinition Include="WalletWindow.xib">
+      <DependentUpon>WalletCreationSheet.xib</DependentUpon>
+    </InterfaceDefinition>
+    <InterfaceDefinition Include="WalletCreationSheet.xib" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Info.plist" />
