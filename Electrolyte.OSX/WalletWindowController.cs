@@ -7,6 +7,7 @@ using MonoMac.AppKit;
 using Electrolyte.Helpers;
 using Electrolyte.Messages;
 using Electrolyte.Networking;
+using Electrolyte.Portable;
 using Electrolyte.Standard.IO;
 
 namespace Electrolyte.OSX {
@@ -57,7 +58,14 @@ namespace Electrolyte.OSX {
 
 			sendButton.Enabled = false;
 
-			wallet = await Wallet.LoadAsync();
+			var walletFile = (FileInfo)Wallet.DefaultWalletPath;
+			if(walletFile.Exists)
+				wallet = await Wallet.LoadAsync();
+			else
+				wallet = await CreateWallet(walletFile);
+
+			if(wallet == null)
+				NSApplication.SharedApplication.Terminate(this);
 
 			wallet.DidLock += (sender, e) => LockToggled();
 			wallet.DidUnlock += (sender, e) => LockToggled();
@@ -68,6 +76,8 @@ namespace Electrolyte.OSX {
 
 			Task balance = UpdateBalanceAsync();
 			Task history = UpdateHistoryAsync();
+
+			LockToggled();
 
 			await balance;
 			await history;
@@ -136,6 +146,22 @@ namespace Electrolyte.OSX {
 
 		public async void UnlockWallet(string passphrase) {
 			await wallet.UnlockAsync(passphrase);
+		}
+
+		public async Task<Wallet> CreateWallet(FileInfo walletFile) {
+			Wallet newWallet = null;
+			var creationSheet = new WalletCreationSheetController(walletFile);
+			var creationLock = new SemaphoreLite();
+
+			await creationLock.WaitAsync();
+
+			creationSheet.ShowSheet(Window);
+			creationSheet.DidCreate += (sender, e) => newWallet = e.Wallet;
+			creationSheet.DidClose += (sender, e) => creationLock.Release();
+
+			await creationLock.WaitAsync();
+			creationLock.Release();
+			return newWallet;
 		}
 	}
 }
