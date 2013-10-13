@@ -45,6 +45,17 @@ namespace Electrolyte.OSX {
 				return _confirmTransaction;
 			}
 		}
+
+		AddressWindowController _addressWindow;
+		AddressWindowController AddressWindow {
+			get {
+				if(_addressWindow == null) {
+					_addressWindow = new AddressWindowController(wallet);
+				}
+
+				return _addressWindow;
+			}
+		}
 		
 		[Export("initWithCoder:")]
 		public WalletWindowController(NSCoder coder) : base (coder) { Initialize(); }
@@ -127,6 +138,10 @@ namespace Electrolyte.OSX {
 				ShowUnlockSheet();
 			else
 				await wallet.LockAsync();
+		}
+
+		partial void ShowAddressWindow(NSObject sender) {
+			AddressWindow.ShowWindow(this);
 		}
 
 		public void LockToggled() {

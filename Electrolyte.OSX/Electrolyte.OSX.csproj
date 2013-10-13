@@ -101,6 +101,12 @@
     <Compile Include="WalletCreationSheet.designer.cs">
       <DependentUpon>WalletCreationSheet.cs</DependentUpon>
     </Compile>
+    <Compile Include="AddressWindow.cs" />
+    <Compile Include="AddressWindowController.cs" />
+    <Compile Include="AddressWindow.designer.cs">
+      <DependentUpon>AddressWindow.cs</DependentUpon>
+    </Compile>
+    <Compile Include="AddressTableData.cs" />
   </ItemGroup>
   <ItemGroup>
     <InterfaceDefinition Include="MainMenu.xib" />
@@ -110,6 +116,7 @@
       <DependentUpon>WalletCreationSheet.xib</DependentUpon>
     </InterfaceDefinition>
     <InterfaceDefinition Include="WalletCreationSheet.xib" />
+    <InterfaceDefinition Include="AddressWindow.xib" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Info.plist" />

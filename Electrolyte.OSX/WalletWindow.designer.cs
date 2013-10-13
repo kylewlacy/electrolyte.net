@@ -36,6 +36,9 @@ namespace Electrolyte.OSX
 		[Action ("SendTransaction:")]
 		partial void SendTransaction (MonoMac.Foundation.NSObject sender);
 
+		[Action ("ShowAddressWindow:")]
+		partial void ShowAddressWindow (MonoMac.Foundation.NSObject sender);
+
 		[Action ("ToggleLockUnlock:")]
 		partial void ToggleLockUnlock (MonoMac.Foundation.NSObject sender);
 
