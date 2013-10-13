@@ -73,22 +73,22 @@ namespace Electrolyte {
 			}
 		}
 
-		public HashSet<Address> WatchAddresses;
-		public HashSet<Address> PublicAddresses;
+		public List<Address> WatchAddresses;
+		public List<Address> PublicAddresses;
 
-		public HashSet<Address> PrivateAddresses {
+		public List<Address> PrivateAddresses {
 			get {
 				if(IsLocked) { throw new LockedException(); }
-				return new HashSet<Address>(Addresses.Except(PublicAddresses));
+				return Addresses.Except(PublicAddresses).ToList();
 			}
 		}
 
-		public HashSet<Address> Addresses {
+		public List<Address> Addresses {
 			get {
 				if(IsLocked)
 					return PublicAddresses;
 
-				var addresses = new HashSet<Address>(PrivateKeys.Keys);
+				var addresses = PrivateKeys.Keys.ToList();
 				foreach(Address address in PublicAddresses) {
 					if(!addresses.Contains(address))
 						addresses.Add(address);
@@ -97,18 +97,18 @@ namespace Electrolyte {
 			}
 		}
 
-		protected Wallet(FileInfo file = null, Dictionary<Address, ECKey> keys = null, HashSet<Address> publicAddresses = null, HashSet<Address> watchAddresses = null) {
+		protected Wallet(FileInfo file = null, Dictionary<Address, ECKey> keys = null, List<Address> publicAddresses = null, List<Address> watchAddresses = null) {
 			PrivateKeys = keys ?? new Dictionary<Address, ECKey>();
-			WatchAddresses = watchAddresses ?? new HashSet<Address>();
-			PublicAddresses = publicAddresses ?? new HashSet<Address>();
+			WatchAddresses = watchAddresses ?? new List<Address>();
+			PublicAddresses = publicAddresses ?? new List<Address>();
 			File = file;
 		}
 
-		public static async Task<Wallet> CreateAsync(string passphrase, FileInfo file = null, Dictionary<Address, ECKey> keys = null, HashSet<Address> publicAddresses = null, HashSet<Address> watchAddresses = null) {
+		public static async Task<Wallet> CreateAsync(string passphrase, FileInfo file = null, Dictionary<Address, ECKey> keys = null, List<Address> publicAddresses = null, List<Address> watchAddresses = null) {
 			return await CreateAsync(Encoding.UTF8.GetBytes(passphrase), file, keys, publicAddresses, watchAddresses);
 		}
 
-		public static async Task<Wallet> CreateAsync(byte[] passphrase, FileInfo file = null, Dictionary<Address, ECKey> keys = null, HashSet<Address> publicAddresses = null, HashSet<Address> watchAddresses = null) {
+		public static async Task<Wallet> CreateAsync(byte[] passphrase, FileInfo file = null, Dictionary<Address, ECKey> keys = null, List<Address> publicAddresses = null, List<Address> watchAddresses = null) {
 			var wallet = new Wallet(file, keys, publicAddresses, watchAddresses);
 			await wallet.LockAsync(passphrase);
 			await wallet.UnlockAsync(passphrase);
