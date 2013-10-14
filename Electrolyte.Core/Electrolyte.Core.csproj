@@ -79,6 +79,7 @@
     <Compile Include="Portable\Net\HttpClient.cs" />
     <Compile Include="Portable\IO\PathInfo.cs" />
     <Compile Include="AddressDetails.cs" />
+    <Compile Include="Extensions\DictionaryExtensions.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <ItemGroup>
