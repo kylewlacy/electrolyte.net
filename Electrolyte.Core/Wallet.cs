@@ -7,15 +7,17 @@ using System.Collections.Generic;
 using Org.BouncyCastle.Security;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using Electrolyte.Portable.Cryptography;
-using Electrolyte.Portable.IO;
 using Electrolyte.Networking;
-using Electrolyte.Portable;
+using Electrolyte.Extensions;
 using Electrolyte.Messages;
 using Electrolyte.Helpers;
+using Electrolyte.Portable;
+using Electrolyte.Portable.Cryptography;
+using Electrolyte.Portable.IO;
 using FileInfo = Electrolyte.Portable.IO.FileInfo;
 using FileStream = Electrolyte.Portable.IO.FileStream;
 using FileMode = Electrolyte.Portable.IO.FileMode;
+using System.Collections;
 
 namespace Electrolyte {
 	public class Wallet {
@@ -61,25 +63,59 @@ namespace Electrolyte {
 			set { _aes = value; }
 		}
 
-		Dictionary<Address, ECKey>_privateKeys;
 		public Dictionary<Address, ECKey> PrivateKeys {
 			get {
-				if(IsLocked) { throw new LockedException(); }
-				return _privateKeys;
-			}
-			set {
-				if(IsLocked) { throw new LockedException(); }
-				_privateKeys = value;
+				return PrivateKeyDetails.ToDictionary(p => p.Key.Address, p => p.Value);
 			}
 		}
 
-		public List<Address> WatchAddresses;
-		public List<Address> PublicAddresses;
+		Dictionary<AddressDetails, ECKey>_privateKeyDetails { get; set; }
+		public Dictionary<AddressDetails, ECKey> PrivateKeyDetails {
+			get {
+				if(IsLocked) { throw new LockedException(); }
+				return _privateKeyDetails;
+			}
+			set {
+				if(IsLocked) { throw new LockedException(); }
+				_privateKeyDetails = value;
+			}
+		}
+
+		public List<AddressDetails> WatchAddressDetails { get; set; }
+		public List<Address> WatchAddresses {
+			get { return WatchAddressDetails.Select(a => a.Address).ToList(); }
+		}
+
+		public List<AddressDetails> PublicAddressDetails { get; set; }
+		public List<Address> PublicAddresses {
+			get { return PublicAddressDetails.Select(a => a.Address).ToList(); }
+		}
+
+		public List<AddressDetails> PrivateAddressDetails {
+			get {
+				if(IsLocked) { throw new LockedException(); }
+				return AddressDetails.Where(a => !PublicAddressDetails.Select(p => p.Address).Contains(a.Address)).ToList();
+			}
+		}
 
 		public List<Address> PrivateAddresses {
 			get {
 				if(IsLocked) { throw new LockedException(); }
 				return Addresses.Except(PublicAddresses).ToList();
+			}
+		}
+
+		public List<AddressDetails> AddressDetails {
+			get {
+				if(IsLocked)
+					return PublicAddressDetails;
+				var addresses = PrivateKeyDetails.Keys.ToList();
+				foreach(var addressDetails in PublicAddressDetails) {
+					if(!addresses.Any(a => a.Address == addressDetails.Address))
+						addresses.Add(addressDetails);
+				}
+
+				return addresses;
 			}
 		}
 
@@ -89,7 +125,7 @@ namespace Electrolyte {
 					return PublicAddresses;
 
 				var addresses = PrivateKeys.Keys.ToList();
-				foreach(Address address in PublicAddresses) {
+				foreach(var address in PublicAddresses) {
 					if(!addresses.Contains(address))
 						addresses.Add(address);
 				}
@@ -97,18 +133,18 @@ namespace Electrolyte {
 			}
 		}
 
-		protected Wallet(FileInfo file = null, Dictionary<Address, ECKey> keys = null, List<Address> publicAddresses = null, List<Address> watchAddresses = null) {
-			PrivateKeys = keys ?? new Dictionary<Address, ECKey>();
-			WatchAddresses = watchAddresses ?? new List<Address>();
-			PublicAddresses = publicAddresses ?? new List<Address>();
+		protected Wallet(FileInfo file = null, Dictionary<AddressDetails, ECKey> keys = null, List<AddressDetails> publicAddresses = null, List<AddressDetails> watchAddresses = null) {
+			PrivateKeyDetails = keys ?? new Dictionary<AddressDetails, ECKey>();
+			WatchAddressDetails = watchAddresses ?? new List<AddressDetails>();
+			PublicAddressDetails = publicAddresses ?? new List<AddressDetails>();
 			File = file;
 		}
 
-		public static async Task<Wallet> CreateAsync(string passphrase, FileInfo file = null, Dictionary<Address, ECKey> keys = null, List<Address> publicAddresses = null, List<Address> watchAddresses = null) {
+		public static async Task<Wallet> CreateAsync(string passphrase, FileInfo file = null, Dictionary<AddressDetails, ECKey> keys = null, List<AddressDetails> publicAddresses = null, List<AddressDetails> watchAddresses = null) {
 			return await CreateAsync(Encoding.UTF8.GetBytes(passphrase), file, keys, publicAddresses, watchAddresses);
 		}
 
-		public static async Task<Wallet> CreateAsync(byte[] passphrase, FileInfo file = null, Dictionary<Address, ECKey> keys = null, List<Address> publicAddresses = null, List<Address> watchAddresses = null) {
+		public static async Task<Wallet> CreateAsync(byte[] passphrase, FileInfo file = null, Dictionary<AddressDetails, ECKey> keys = null, List<AddressDetails> publicAddresses = null, List<AddressDetails> watchAddresses = null) {
 			var wallet = new Wallet(file, keys, publicAddresses, watchAddresses);
 			await wallet.LockAsync(passphrase);
 			await wallet.UnlockAsync(passphrase);
@@ -118,40 +154,48 @@ namespace Electrolyte {
 
 
 
-		public async Task<Address> GenerateAddressAsync() {
+		public async Task<AddressDetails> GenerateAddressAsync(string label = null, bool isPublic = true) {
 			var key = new ECKey();
-			await ImportKeyAsync(key);
-			return key.ToAddress();
+			await ImportKeyAsync(key, label, isPublic);
+			return new AddressDetails(key.ToAddress(), label);
 		}
 
-		public async Task ImportKeyAsync(string key, bool isPublic = true) {
-			await ImportKeyAsync(ECKey.FromWalletImportFormat(key), isPublic);
+		public async Task ImportKeyAsync(string key, string label = null, bool isPublic = true) {
+			await ImportKeyAsync(ECKey.FromWalletImportFormat(key), label, isPublic);
 		}
 
-		public async Task ImportKeyAsync(ECKey key, bool isPublic = true) {
+		public async Task ImportKeyAsync(ECKey key, string label, bool isPublic = true) {
 			if(IsLocked) throw new LockedException();
 			if(isPublic) await ImportReadOnlyAddressAsync(key.ToAddress());
-			PrivateKeys.Add(key.ToAddress(), key);
+			PrivateKeyDetails.Add(new AddressDetails(key.ToAddress(), label), key);
 			await SaveAsync();
 		}
 
-		public async Task ImportReadOnlyAddressAsync(string address) {
-			await ImportReadOnlyAddressAsync(new Address(address));
+		public async Task ImportReadOnlyAddressAsync(string address, string label = null) {
+			await ImportReadOnlyAddressAsync(new Address(address), label);
 		}
 
-		public async Task ImportReadOnlyAddressAsync(Address address) {
+		public async Task ImportReadOnlyAddressAsync(Address address, string label = null) {
+			await ImportReadOnlyAddressAsync(new AddressDetails(address, label));
+		}
+
+		public async Task ImportReadOnlyAddressAsync(AddressDetails addressDetails) {
 			if(IsLocked) throw new LockedException();
-			PublicAddresses.Add(address);
+			PublicAddressDetails.Add(addressDetails);
 			await SaveAsync();
 		}
 
-		public async Task ImportWatchAddressAsync(string address) {
-			await ImportWatchAddressAsync(new Address(address));
+		public async Task ImportWatchAddressAsync(string address, string label = null) {
+			await ImportWatchAddressAsync(new Address(address), label);
 		}
 
-		public async Task ImportWatchAddressAsync(Address address) {
+		public async Task ImportWatchAddressAsync(Address address, string label = null) {
+			await ImportWatchAddressAsync(new AddressDetails(address, label));
+		}
+
+		public async Task ImportWatchAddressAsync(AddressDetails addressDetails) {
 			if(IsLocked) throw new LockedException();
-			WatchAddresses.Add(address);
+			WatchAddressDetails.Add(addressDetails);
 			await SaveAsync();
 		}
 
@@ -164,7 +208,7 @@ namespace Electrolyte {
 		public async Task ShowAddressAsync(Address address) {
 			if(IsLocked) throw new LockedException();
 			if(PrivateKeys.ContainsKey(address) && !PublicAddresses.Contains(address)) {
-				PublicAddresses.Add(address);
+				PublicAddressDetails.Add(PrivateKeyDetails.First(k => k.Key.Address == address).Key);
 				await SaveAsync();
 			}
 			else {
@@ -178,9 +222,10 @@ namespace Electrolyte {
 		}
 
 		public async Task HideAddressAsync(Address address) {
-			if(IsLocked) throw new LockedException();
+			if(IsLocked)
+				throw new LockedException();
 			if(PrivateKeys.ContainsKey(address) && PublicAddresses.Contains(address)) {
-				PublicAddresses.Remove(address);
+				PublicAddressDetails.Remove(PublicAddressDetails.First(k => k.Address == address));
 				await SaveAsync();
 			}
 			else {
@@ -191,13 +236,41 @@ namespace Electrolyte {
 
 
 
+		public async Task SetLabelAsync(string address, string label, bool isPublic = true) {
+			await SetLabelAsync(new Address(address), label, isPublic);
+		}
+
+		public async Task SetLabelAsync(Address address, string label, bool isPublic = true) {
+			if(IsLocked)
+				throw new LockedException();
+
+			bool wasUpdated = false;
+			if(!isPublic || !IsLocked) {
+				if(PrivateAddresses.Contains(address)) {
+					PrivateKeyDetails.First(k => k.Key.Address == address).Key.Label = label;
+					wasUpdated = true;
+				}
+			}
+
+			if(PublicAddresses.Contains(address)) {
+				PublicAddressDetails.First(a => a.Address == address).Label = label;
+				wasUpdated = true;
+			}
+
+			if(!wasUpdated)
+				throw new OperationException(String.Format("Could not find address '{0}' in your wallet", address));
+			await SaveAsync();
+		}
+
+
+
 		public async Task<Transaction> CreateTransactionAsync(Dictionary<Address, Money> destinations, Address changeAddress = null) {
 			Money change;
 			List<Transaction.Output> inpoints = CoinPicker.SelectInpoints(await GetSpendableOutputsAsync(), destinations, out change);
 			var destinationsWithChange = new Dictionary<Address, Money>(destinations);
 
 			if(change > new Money(0, "BTC")) {
-				changeAddress = changeAddress ?? await GenerateAddressAsync();
+				changeAddress = changeAddress ?? (await GenerateAddressAsync("Change")).Address;
 				destinationsWithChange.Add(changeAddress, change);
 			}
 
@@ -219,9 +292,9 @@ namespace Electrolyte {
 
 			if(Addresses.Contains(address)) {
 				if(PrivateKeys.ContainsKey(address))
-					PrivateKeys.Remove(address);
+					PrivateKeyDetails.Remove(PrivateKeyDetails.First(k => k.Key.Address == address).Key);
 				if(PublicAddresses.Contains(address))
-					PublicAddresses.Remove(address);
+					PublicAddressDetails.Remove(PublicAddressDetails.First(a => a.Address == address));
 
 				await SaveAsync();
 			}
@@ -238,7 +311,7 @@ namespace Electrolyte {
 			if(IsLocked) throw new LockedException();
 
 			if(WatchAddresses.Contains(address))
-				WatchAddresses.Remove(address);
+				WatchAddressDetails.Remove(WatchAddressDetails.First(a => a.Address == address));
 			else
 				throw new OperationException(String.Format("You aren't watching the address '{0}'", address));
 
@@ -292,7 +365,7 @@ namespace Electrolyte {
 				Array.Clear(EncryptionKey, 0, EncryptionKey.Length);
 				EncryptionKey = new byte[] { };
 
-				PrivateKeys = new Dictionary<Address, ECKey>(); // TODO: Is the garbage collector fast and reliable enough to make this secure?
+				PrivateKeyDetails = new Dictionary<AddressDetails, ECKey>(); // TODO: Is the garbage collector fast and reliable enough to make this secure?
 				LockTimer.Stop();
 
 				IsLocked = true;
@@ -324,7 +397,7 @@ namespace Electrolyte {
 					Array.Clear(passphrase, 0, passphrase.Length);
 
 					LockTimer = Timer.Create(timeout);
-					LockTimer.Elapsed += new EventHandler(LockAsync);
+					LockTimer.Elapsed += LockAsync;
 					LockTimer.Start();
 
 					IsLocked = false;
@@ -381,12 +454,12 @@ namespace Electrolyte {
 
 			if(data["watch_addresses"] != null) {
 				foreach(JToken key in data["watch_addresses"])
-					WatchAddresses.Add(new Address(key["addr"].Value<string>()));
+					WatchAddressDetails.Add(new AddressDetails(key["addr"].Value<string>(), key["label"] != null ? key["label"].Value<string>() : null));
 			}
 
 			if(data["public_addresses"] != null) {
 				foreach(JToken key in data["public_addresses"])
-					PublicAddresses.Add(new Address(key["addr"].Value<string>()));
+					PublicAddressDetails.Add(new AddressDetails(key["addr"].Value<string>(), key["label"] != null ? key["label"].Value<string>() : null));
 			}
 
 			EncryptedData = Base58.DecodeWithChecksum(data["encrypted"]["data"].Value<string>());
@@ -395,7 +468,7 @@ namespace Electrolyte {
 		void LoadPrivateDataFromJson(string json) {
 			JObject data = JObject.Parse(json);
 			foreach(JToken key in data["keys"]) {
-				_privateKeys.Add(new Address(key["addr"].Value<string>()), ECKey.FromWalletImportFormat(key["priv"].Value<string>()));
+				_privateKeyDetails.Add(new AddressDetails(key["addr"].Value<string>(), key["label"] != null ? key["label"].Value<string>() : null), ECKey.FromWalletImportFormat(key["priv"].Value<string>()));
 			}
 		}
 
@@ -467,16 +540,18 @@ namespace Electrolyte {
 				} }
 			};
 
-			foreach(Address address in WatchAddresses) {
-				data["watch_addresses"].Value<JArray>().Add(new JObject {
-					{ "addr", address.ToString() }
-				});
+			foreach(var address in WatchAddressDetails) {
+				var addressJson = new JObject { { "addr", address.Address.ToString() } };
+				if(!String.IsNullOrWhiteSpace(address.Label))
+					addressJson.Add("label", address.Label);
+				data["watch_addresses"].Value<JArray>().Add(addressJson);
 			}
 
-			foreach(Address address in PublicAddresses) {
-				data["public_addresses"].Value<JArray>().Add(new JObject {
-					{ "addr", address.ToString() }
-				});
+			foreach(var address in PublicAddressDetails) {
+				var addressJson = new JObject { { "addr", address.Address.ToString() } };
+				if(!String.IsNullOrWhiteSpace(address.Label))
+					addressJson.Add("label", address.Label);
+				data["public_addresses"].Value<JArray>().Add(addressJson);
 			}
 
 			return JsonConvert.SerializeObject(data);
@@ -485,11 +560,15 @@ namespace Electrolyte {
 		string PrivateDataAsJson() {
 			var data = new JObject { { "keys", new JArray() } };
 
-			foreach(KeyValuePair<Address, ECKey> privateKey in PrivateKeys) {
-				data["keys"].Value<JArray>().Add(new JObject {
-					{ "addr", privateKey.Key.ToString() },
-					{ "priv", privateKey.Value.ToWalletImportFormat() }
-				});
+			foreach(var privateKeyDetails in PrivateKeyDetails) {
+				var privateKeyJson = new JObject {
+					{ "addr", privateKeyDetails.Key.Address.ToString() },
+					{ "priv", privateKeyDetails.Value.ToWalletImportFormat() }
+				};
+				if(!String.IsNullOrEmpty(privateKeyDetails.Key.Label))
+					privateKeyJson.Add("label", privateKeyDetails.Key.Label);
+
+				data["keys"].Value<JArray>().Add(privateKeyJson);
 			}
 
 			return JsonConvert.SerializeObject(data);

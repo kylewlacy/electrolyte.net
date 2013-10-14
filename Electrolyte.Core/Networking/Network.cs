@@ -68,8 +68,8 @@ namespace Electrolyte.Networking {
 			return await GetUnspentOutputsAsync(new Address(address), startHeight);
 		}
 
-		public static async Task<List<Transaction.Output>> GetUnspentOutputsAsync(List<Address> addresses, ulong startHeight = 0) {
-			if(addresses.Count <= 0) return new List<Transaction.Output>();
+		public static async Task<List<Transaction.Output>> GetUnspentOutputsAsync(IEnumerable<Address> addresses, ulong startHeight = 0) {
+			if(addresses.LongCount() <= 0) return new List<Transaction.Output>();
 
 			var outputs = new List<Transaction.Output>();
 			foreach(var address in addresses)
@@ -80,7 +80,7 @@ namespace Electrolyte.Networking {
 
 
 
-		public static async Task<List<Transaction.Delta>> GetDeltasForAddressesAsync(ICollection<Address> addresses, ulong startHeight = 0) {
+		public static async Task<List<Transaction.Delta>> GetDeltasForAddressesAsync(IEnumerable<Address> addresses, ulong startHeight = 0) {
 			var deltas = new Dictionary<Transaction, Money>();
 
 			// TODO: Order this by block height to avoid two `foreach` loops
@@ -120,8 +120,8 @@ namespace Electrolyte.Networking {
 			return await GetAddressBalanceAsync(new Address(address), startHeight);
 		}
 
-		public static async Task<Money> GetAddressBalancesAsync(ICollection<Address> addresses, ulong startHeight = 0) {
-			if(addresses.Count <= 0) return Money.Zero("BTC");
+		public static async Task<Money> GetAddressBalancesAsync(IEnumerable<Address> addresses, ulong startHeight = 0) {
+			if(addresses.LongCount() <= 0) return Money.Zero("BTC");
 			IEnumerable<Task<Money>> balances = addresses.Select(async a => await Network.GetAddressBalanceAsync(a, startHeight));
 			return (await Task.WhenAll(balances)).Sum();
 		}
@@ -152,8 +152,8 @@ namespace Electrolyte.Networking {
 			return await GetCachedBalanceAsync(new Address(address), startHeight);
 		}
 
-		public static async Task<Money> GetCachedBalancesAsync(ICollection<Address> addresses, ulong startHeight = 0) {
-			if(addresses.Count <= 0) return Money.Zero("BTC");
+		public static async Task<Money> GetCachedBalancesAsync(IEnumerable<Address> addresses, ulong startHeight = 0) {
+			if(addresses.LongCount() <= 0) return Money.Zero("BTC");
 			IEnumerable<Task<Money>> balances = addresses.Select(async a => await Network.GetCachedBalanceAsync(a, startHeight));
 			return (await Task.WhenAll(balances)).Sum();
 		}
