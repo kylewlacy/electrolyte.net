@@ -6,14 +6,19 @@ using System.Collections.Generic;
 using Electrolyte.Helpers;
 using Electrolyte.Messages;
 using Electrolyte.Networking;
-using Electrolyte.Portable;
+using FileInfo = Electrolyte.Standard.IO.FileInfo;
 
 namespace Electrolyte.CLI {
 	class MainClass {
+		static MainClass() {
+			Org.BouncyCastle.Standard.Crypto.Prng.ThreadedSeedGenerator tsg;
+		}
+
 		public static Wallet Wallet;
 
 		public static int Main(string[] args) {
-			Wallet = Wallet.LoadAsync().Result;
+			FileInfo file = (FileInfo)Wallet.DefaultWalletPath;
+			Wallet = Wallet.LoadAsync(file).Result;
 
 			while(true) {
 				Console.Write("{0} > ", Wallet.IsLocked ? "locked  " : "unlocked");
@@ -81,29 +86,29 @@ namespace Electrolyte.CLI {
 					break;
 
 				case "listaddresses":
-					foreach(Address address in Wallet.Addresses)
-						Console.WriteLine(address);
+					foreach(var addressDetails in Wallet.AddressDetails)
+						Console.WriteLine(addressDetails);
 					break;
 				case "listprivateaddresses":
 				case "listprivaddresses":
 				case "listhiddenaddresses":
-					foreach(Address address in Wallet.PrivateAddresses)
+					foreach(var address in Wallet.PrivateAddresses)
 						Console.WriteLine(address);
 					break;
 				case "listpublicaddresses":
 				case "listpubaddresses":
-					foreach(Address address in Wallet.PublicAddresses)
-						Console.WriteLine(address);
+					foreach(var addressDetails in Wallet.PublicAddressDetails)
+						Console.WriteLine(addressDetails);
 					break;
 				case "listusableaddresses":
 				case "listspendableaddresses":
 				case "listknownkeyaddresses":
-					foreach(Address address in Wallet.PrivateKeys.Keys)
-						Console.WriteLine(address);
+					foreach(var addressDetails in Wallet.PrivateKeyDetails.Keys)
+						Console.WriteLine(addressDetails);
 					break;
 				case "listwatchaddresses":
-					foreach(Address address in Wallet.WatchAddresses)
-						Console.WriteLine(address);
+					foreach(var addressDetails in Wallet.WatchAddressDetails)
+						Console.WriteLine(addressDetails);
 					break;
 
 				case "dumpprivkey":
@@ -111,6 +116,9 @@ namespace Electrolyte.CLI {
 						Console.WriteLine(Wallet.PrivateKeys[new Address(commands[1])].ToWalletImportFormat());
 					else
 						Console.WriteLine("Sorry, you don't have the key to that address in your wallet!");
+					break;
+				case "setlabel":
+					await Wallet.SetLabelAsync(commands[1], commands[2]);
 					break;
 
 				case "publicizeaddress":

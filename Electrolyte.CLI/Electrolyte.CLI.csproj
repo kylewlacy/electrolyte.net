@@ -49,5 +49,13 @@
       <Project>{4D9F81CB-24EB-4419-BE3A-D44A1F06F709}</Project>
       <Name>Electrolyte.Standard</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Dependencies\BouncyCastle\PortableBouncyCastle\PortableBouncyCastle.Standard\PortableBouncyCastle.Standard.csproj">
+      <Project>{69744BDF-4DA9-4154-90D1-A24F133E05F5}</Project>
+      <Name>PortableBouncyCastle.Standard</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Dependencies\BouncyCastle\PortableBouncyCastle\PortableBouncyCastle\PortableBouncyCastle.csproj">
+      <Project>{494FFB56-5925-4307-BF83-3D256673B6F2}</Project>
+      <Name>PortableBouncyCastle</Name>
+    </ProjectReference>
   </ItemGroup>
 </Project>

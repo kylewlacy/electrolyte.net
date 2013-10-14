@@ -202,7 +202,7 @@ namespace Electrolyte.Messages {
 			return tx;
 		}
 
-		public static Transaction Create(List<Output> inpoints, Dictionary<Address, Money> destinations, IDictionary<Address, ECKey> privateKeys, bool allowDust = false) {
+		public static Transaction Create(List<Output> inpoints, IReadOnlyDictionary<Address, Money> destinations, IReadOnlyDictionary<Address, ECKey> privateKeys, bool allowDust = false) {
 			if(!allowDust && destinations.Select(d => d.Value).Sum() <= DustValue)
 				throw new DustException();
 
