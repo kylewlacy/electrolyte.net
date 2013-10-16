@@ -55,6 +55,7 @@
     <Compile Include="Helpers\MoneyTest.cs" />
     <Compile Include="Portable\Cryptography\DigestTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="AddressCollectionTest.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
