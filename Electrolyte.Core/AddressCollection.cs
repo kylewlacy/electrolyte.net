@@ -38,7 +38,10 @@ namespace Electrolyte {
 
 		public AddressDetails this[int i] {
 			get { return Details[i]; }
-			set { Details[i] = value; }
+			set {
+				Addresses[i] = value.Address;
+				Details[i] = value;
+			}
 		}
 
 		public AddressDetails this[Address address] {
@@ -164,7 +167,7 @@ namespace Electrolyte {
 		}
 
 		public void CopyTo(KeyValuePair<Address, AddressDetails>[] pairs, int index) {
-			Details.Select(d => new KeyValuePair<Address, AddressDetails>(d.Address, d)).ToList().CopyTo(pairs, index);
+			Dictionary.Select(p => p).ToList().CopyTo(pairs, index);
 		}
 
 		public void Clear() {
