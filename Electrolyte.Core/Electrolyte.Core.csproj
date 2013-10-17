@@ -82,6 +82,7 @@
     <Compile Include="Extensions\DictionaryExtensions.cs" />
     <Compile Include="Extensions\ListExtensions.cs" />
     <Compile Include="AddressCollection.cs" />
+    <Compile Include="PrivateKeyDetails.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <ItemGroup>
