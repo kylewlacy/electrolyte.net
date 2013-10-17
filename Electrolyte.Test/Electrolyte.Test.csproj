@@ -56,6 +56,7 @@
     <Compile Include="Portable\Cryptography\DigestTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="AddressCollectionTest.cs" />
+    <Compile Include="PrivateKeyCollectionTest.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
