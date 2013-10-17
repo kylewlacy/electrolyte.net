@@ -3,9 +3,10 @@ using System.Collections.Generic;
 
 namespace Electrolyte {
 	public class AddressDetails : IEquatable<AddressDetails> {
-		public Address Address;
-		public string Label;
+		public virtual Address Address { get; set; }
+		public virtual string Label { get; set; }
 
+		protected AddressDetails() { }
 		public AddressDetails(string address, string label = null) : this(new Address(address), label) { }
 		public AddressDetails(Address address, string label = null) {
 			Address = address;
