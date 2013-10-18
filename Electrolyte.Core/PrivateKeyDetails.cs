@@ -12,6 +12,10 @@ namespace Electrolyte {
 			}
 		}
 
+		public AddressDetails AddressDetails {
+			get { return new AddressDetails(this); }
+		}
+
 		public PrivateKeyDetails(string key, string label = null) : this(ECKey.FromWalletImportFormat(key), label) { }
 		public PrivateKeyDetails(byte[] key, string label = null) : this(new ECKey(key), label) { }
 		public PrivateKeyDetails(ECKey key, string label = null) {
@@ -20,13 +24,7 @@ namespace Electrolyte {
 		}
 
 		public override string ToString() {
-			return ToString(false);
-		}
-
-		public string ToString(bool wif) {
-			if(wif)
-				return String.Format(String.IsNullOrEmpty(Label) ? "{0}" : "{0} - {1}", PrivateKey.ToWalletImportFormat(), Label);
-			return base.ToString();
+			return String.Format(String.IsNullOrEmpty(Label) ? "{0}" : "{0} - {1}", PrivateKey.ToWalletImportFormat(), Label);
 		}
 	}
 }
