@@ -63,88 +63,56 @@ namespace Electrolyte {
 			set { _aes = value; }
 		}
 
-		public Dictionary<Address, ECKey> PrivateKeys {
-			get {
-				return PrivateKeyDetails.ToDictionary(p => p.Key.Address, p => p.Value);
-			}
-		}
-
-		Dictionary<AddressDetails, ECKey>_privateKeyDetails { get; set; }
-		public Dictionary<AddressDetails, ECKey> PrivateKeyDetails {
+		PrivateKeyCollection _privateKeys { get; set; }
+		public PrivateKeyCollection PrivateKeys {
 			get {
 				if(IsLocked) { throw new LockedException(); }
-				return _privateKeyDetails;
+				return _privateKeys;
 			}
 			set {
 				if(IsLocked) { throw new LockedException(); }
-				_privateKeyDetails = value;
+				_privateKeys = value;
 			}
 		}
 
-		public List<AddressDetails> WatchAddressDetails { get; set; }
-		public List<Address> WatchAddresses {
-			get { return WatchAddressDetails.Select(a => a.Address).ToList(); }
-		}
+		public AddressCollection WatchAddresses { get; set; }
 
-		public List<AddressDetails> PublicAddressDetails { get; set; }
-		public List<Address> PublicAddresses {
-			get { return PublicAddressDetails.Select(a => a.Address).ToList(); }
-		}
+		public AddressCollection PublicAddresses { get; set; }
 
-		public List<AddressDetails> PrivateAddressDetails {
+		public AddressCollection PrivateAddresses {
 			get {
 				if(IsLocked) { throw new LockedException(); }
-				return AddressDetails.Where(a => !PublicAddressDetails.Select(p => p.Address).Contains(a.Address)).ToList();
+				return new AddressCollection(Addresses.ToList().Except(PublicAddresses.ToList()).ToList());
 			}
 		}
 
-		public List<Address> PrivateAddresses {
-			get {
-				if(IsLocked) { throw new LockedException(); }
-				return Addresses.Except(PublicAddresses).ToList();
-			}
-		}
-
-		public List<AddressDetails> AddressDetails {
-			get {
-				if(IsLocked)
-					return PublicAddressDetails;
-				var addresses = PrivateKeyDetails.Keys.ToList();
-				foreach(var addressDetails in PublicAddressDetails) {
-					if(!addresses.Any(a => a.Address == addressDetails.Address))
-						addresses.Add(addressDetails);
-				}
-
-				return addresses;
-			}
-		}
-
-		public List<Address> Addresses {
+		public AddressCollection Addresses {
 			get {
 				if(IsLocked)
 					return PublicAddresses;
 
-				var addresses = PrivateKeys.Keys.ToList();
+				var addresses = PrivateKeys.AddressDetails.ToList();
 				foreach(var address in PublicAddresses) {
 					if(!addresses.Contains(address))
 						addresses.Add(address);
 				}
-				return addresses;
+				return new AddressCollection(addresses);
 			}
 		}
 
-		protected Wallet(FileInfo file = null, Dictionary<AddressDetails, ECKey> keys = null, List<AddressDetails> publicAddresses = null, List<AddressDetails> watchAddresses = null) {
-			PrivateKeyDetails = keys ?? new Dictionary<AddressDetails, ECKey>();
-			WatchAddressDetails = watchAddresses ?? new List<AddressDetails>();
-			PublicAddressDetails = publicAddresses ?? new List<AddressDetails>();
+		protected Wallet(FileInfo file = null, PrivateKeyCollection keys = null, AddressCollection publicAddresses = null, AddressCollection watchAddresses = null) {
+			PrivateKeys = keys ?? new PrivateKeyCollection();
+			WatchAddresses = watchAddresses ?? new AddressCollection();
+			PublicAddresses = publicAddresses ?? new AddressCollection();
+
 			File = file;
 		}
 
-		public static async Task<Wallet> CreateAsync(string passphrase, FileInfo file = null, Dictionary<AddressDetails, ECKey> keys = null, List<AddressDetails> publicAddresses = null, List<AddressDetails> watchAddresses = null) {
+		public static async Task<Wallet> CreateAsync(string passphrase, FileInfo file = null, PrivateKeyCollection keys = null, AddressCollection publicAddresses = null, AddressCollection watchAddresses = null) {
 			return await CreateAsync(Encoding.UTF8.GetBytes(passphrase), file, keys, publicAddresses, watchAddresses);
 		}
 
-		public static async Task<Wallet> CreateAsync(byte[] passphrase, FileInfo file = null, Dictionary<AddressDetails, ECKey> keys = null, List<AddressDetails> publicAddresses = null, List<AddressDetails> watchAddresses = null) {
+		public static async Task<Wallet> CreateAsync(byte[] passphrase, FileInfo file = null, PrivateKeyCollection keys = null, AddressCollection publicAddresses = null, AddressCollection watchAddresses = null) {
 			var wallet = new Wallet(file, keys, publicAddresses, watchAddresses);
 			await wallet.LockAsync(passphrase);
 			await wallet.UnlockAsync(passphrase);
@@ -154,10 +122,12 @@ namespace Electrolyte {
 
 
 
-		public async Task<AddressDetails> GenerateAddressAsync(string label = null, bool isPublic = true) {
+		public async Task<PrivateKeyDetails> GenerateAddressAsync(string label = null, bool isPublic = true) {
 			var key = new ECKey();
-			await ImportKeyAsync(key, label, isPublic);
-			return new AddressDetails(key.ToAddress(), label);
+			var details = new PrivateKeyDetails(key, label);
+			await ImportKeyAsync(details);
+//			return new PrivateKeyDetails(key, label);
+			return details;
 		}
 
 		public async Task ImportKeyAsync(string key, string label = null, bool isPublic = true) {
@@ -165,9 +135,13 @@ namespace Electrolyte {
 		}
 
 		public async Task ImportKeyAsync(ECKey key, string label, bool isPublic = true) {
+			await ImportKeyAsync(new PrivateKeyDetails(key, label), isPublic);
+		}
+
+		public async Task ImportKeyAsync(PrivateKeyDetails key, bool isPublic = true) {
 			if(IsLocked) throw new LockedException();
-			if(isPublic) await ImportReadOnlyAddressAsync(key.ToAddress());
-			PrivateKeyDetails.Add(new AddressDetails(key.ToAddress(), label), key);
+			if(isPublic) await ImportReadOnlyAddressAsync(key);
+			PrivateKeys.Add(key);
 			await SaveAsync();
 		}
 
@@ -181,7 +155,7 @@ namespace Electrolyte {
 
 		public async Task ImportReadOnlyAddressAsync(AddressDetails addressDetails) {
 			if(IsLocked) throw new LockedException();
-			PublicAddressDetails.Add(addressDetails);
+			PublicAddresses.Add(addressDetails);
 			await SaveAsync();
 		}
 
@@ -195,7 +169,7 @@ namespace Electrolyte {
 
 		public async Task ImportWatchAddressAsync(AddressDetails addressDetails) {
 			if(IsLocked) throw new LockedException();
-			WatchAddressDetails.Add(addressDetails);
+			WatchAddresses.Add(addressDetails);
 			await SaveAsync();
 		}
 
@@ -207,8 +181,8 @@ namespace Electrolyte {
 
 		public async Task ShowAddressAsync(Address address) {
 			if(IsLocked) throw new LockedException();
-			if(PrivateKeys.ContainsKey(address) && !PublicAddresses.Contains(address)) {
-				PublicAddressDetails.Add(PrivateKeyDetails.First(k => k.Key.Address == address).Key);
+			if(PrivateKeys.Contains(address) && !PublicAddresses.Contains(address)) {
+				PublicAddresses.Add(PrivateKeys[address]);
 				await SaveAsync();
 			}
 			else {
@@ -224,8 +198,8 @@ namespace Electrolyte {
 		public async Task HideAddressAsync(Address address) {
 			if(IsLocked)
 				throw new LockedException();
-			if(PrivateKeys.ContainsKey(address) && PublicAddresses.Contains(address)) {
-				PublicAddressDetails.Remove(PublicAddressDetails.First(k => k.Address == address));
+			if(PrivateKeys.Contains(address) && PublicAddresses.Contains(address)) {
+				PublicAddresses.Remove(address);
 				await SaveAsync();
 			}
 			else {
@@ -247,13 +221,13 @@ namespace Electrolyte {
 			bool wasUpdated = false;
 			if(!isPublic || !IsLocked) {
 				if(PrivateAddresses.Contains(address)) {
-					PrivateKeyDetails.First(k => k.Key.Address == address).Key.Label = label;
+					PrivateKeys[address].Label = label;
 					wasUpdated = true;
 				}
 			}
 
 			if(PublicAddresses.Contains(address)) {
-				PublicAddressDetails.First(a => a.Address == address).Label = label;
+				PublicAddresses[address].Label = label;
 				wasUpdated = true;
 			}
 
@@ -274,7 +248,7 @@ namespace Electrolyte {
 				destinationsWithChange.Add(changeAddress, change);
 			}
 
-			Transaction tx = Transaction.Create(inpoints, destinationsWithChange, PrivateKeys);
+			Transaction tx = Transaction.Create(inpoints, destinationsWithChange, PrivateKeys.ToDictionary(k => k.Address, k => k.PrivateKey));
 			if(!tx.IncludesStandardFee)
 				throw new OperationException("Transaction generated without proper fee!");
 
@@ -291,10 +265,10 @@ namespace Electrolyte {
 			if(IsLocked) throw new LockedException();
 
 			if(Addresses.Contains(address)) {
-				if(PrivateKeys.ContainsKey(address))
-					PrivateKeyDetails.Remove(PrivateKeyDetails.First(k => k.Key.Address == address).Key);
+				if(PrivateKeys.Contains(address))
+					PrivateKeys.Remove(address);
 				if(PublicAddresses.Contains(address))
-					PublicAddressDetails.Remove(PublicAddressDetails.First(a => a.Address == address));
+					PublicAddresses.Remove(address);
 
 				await SaveAsync();
 			}
@@ -311,7 +285,7 @@ namespace Electrolyte {
 			if(IsLocked) throw new LockedException();
 
 			if(WatchAddresses.Contains(address))
-				WatchAddressDetails.Remove(WatchAddressDetails.First(a => a.Address == address));
+				WatchAddresses.Remove(address);
 			else
 				throw new OperationException(String.Format("You aren't watching the address '{0}'", address));
 
@@ -321,24 +295,24 @@ namespace Electrolyte {
 
 
 		public async Task<Money> GetBalanceAsync(ulong startHeight = 0) {
-			return await Network.GetAddressBalancesAsync(Addresses.ToList(), startHeight);
+			return await Network.GetAddressBalancesAsync(Addresses.Addresses, startHeight);
 		}
 
 		public async Task<Money> GetCachedBalanceAsync(ulong startHeight = 0) {
-			return await Network.GetCachedBalancesAsync(Addresses.ToList(), startHeight);
+			return await Network.GetCachedBalancesAsync(Addresses.Addresses, startHeight);
 		}
 
 		public async Task<Money> GetSpendableBalanceAsync(ulong startHeight = 0) {
-			return await Network.GetAddressBalancesAsync(PrivateKeys.Keys.ToList(), startHeight);
+			return await Network.GetAddressBalancesAsync(PrivateKeys.Addresses, startHeight);
 		}
 
 		public async Task<List<Transaction.Output>> GetSpendableOutputsAsync(ulong startHeight = 0) {
-			return await Network.GetUnspentOutputsAsync(PrivateKeys.Keys.ToList(), startHeight);
+			return await Network.GetUnspentOutputsAsync(PrivateKeys.Addresses, startHeight);
 		}
 
 
 		public async Task<List<Transaction.Delta>> GetTransactionDeltasAsync(ulong startHeight = 0) {
-			return await Network.GetDeltasForAddressesAsync(Addresses.ToList(), startHeight);
+			return await Network.GetDeltasForAddressesAsync(Addresses.Addresses, startHeight);
 		}
 
 
@@ -365,7 +339,7 @@ namespace Electrolyte {
 				Array.Clear(EncryptionKey, 0, EncryptionKey.Length);
 				EncryptionKey = new byte[] { };
 
-				PrivateKeyDetails = new Dictionary<AddressDetails, ECKey>(); // TODO: Is the garbage collector fast and reliable enough to make this secure?
+				PrivateKeys.Clear(); // TODO: Is this safe?
 				LockTimer.Stop();
 
 				IsLocked = true;
@@ -454,12 +428,12 @@ namespace Electrolyte {
 
 			if(data["watch_addresses"] != null) {
 				foreach(JToken key in data["watch_addresses"])
-					WatchAddressDetails.Add(new AddressDetails(key["addr"].Value<string>(), key["label"] != null ? key["label"].Value<string>() : null));
+					WatchAddresses.Add(key["addr"].Value<string>(), key["label"] != null ? key["label"].Value<string>() : null);
 			}
 
 			if(data["public_addresses"] != null) {
 				foreach(JToken key in data["public_addresses"])
-					PublicAddressDetails.Add(new AddressDetails(key["addr"].Value<string>(), key["label"] != null ? key["label"].Value<string>() : null));
+					PublicAddresses.Add(key["addr"].Value<string>(), key["label"] != null ? key["label"].Value<string>() : null);
 			}
 
 			EncryptedData = Base58.DecodeWithChecksum(data["encrypted"]["data"].Value<string>());
@@ -467,9 +441,8 @@ namespace Electrolyte {
 
 		void LoadPrivateDataFromJson(string json) {
 			JObject data = JObject.Parse(json);
-			foreach(JToken key in data["keys"]) {
-				_privateKeyDetails.Add(new AddressDetails(key["addr"].Value<string>(), key["label"] != null ? key["label"].Value<string>() : null), ECKey.FromWalletImportFormat(key["priv"].Value<string>()));
-			}
+			foreach(JToken key in data["keys"])
+				_privateKeys.Add(key["priv"].Value<string>(), key["label"] != null ? key["label"].Value<string>() : null);
 		}
 
 		public async Task ReadAsync(TextReader reader) {
@@ -540,14 +513,14 @@ namespace Electrolyte {
 				} }
 			};
 
-			foreach(var address in WatchAddressDetails) {
+			foreach(var address in WatchAddresses) {
 				var addressJson = new JObject { { "addr", address.Address.ToString() } };
 				if(!String.IsNullOrWhiteSpace(address.Label))
 					addressJson.Add("label", address.Label);
 				data["watch_addresses"].Value<JArray>().Add(addressJson);
 			}
 
-			foreach(var address in PublicAddressDetails) {
+			foreach(var address in PublicAddresses) {
 				var addressJson = new JObject { { "addr", address.Address.ToString() } };
 				if(!String.IsNullOrWhiteSpace(address.Label))
 					addressJson.Add("label", address.Label);
@@ -560,13 +533,13 @@ namespace Electrolyte {
 		string PrivateDataAsJson() {
 			var data = new JObject { { "keys", new JArray() } };
 
-			foreach(var privateKeyDetails in PrivateKeyDetails) {
+			foreach(var privateKey in PrivateKeys) {
 				var privateKeyJson = new JObject {
-					{ "addr", privateKeyDetails.Key.Address.ToString() },
-					{ "priv", privateKeyDetails.Value.ToWalletImportFormat() }
+					{ "addr", privateKey.Address.ToString() },
+					{ "priv", privateKey.PrivateKey.ToWalletImportFormat() }
 				};
-				if(!String.IsNullOrEmpty(privateKeyDetails.Key.Label))
-					privateKeyJson.Add("label", privateKeyDetails.Key.Label);
+				if(!String.IsNullOrEmpty(privateKey.Label))
+					privateKeyJson.Add("label", privateKey.Label);
 
 				data["keys"].Value<JArray>().Add(privateKeyJson);
 			}

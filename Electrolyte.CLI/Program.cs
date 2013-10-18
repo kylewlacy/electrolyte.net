@@ -86,7 +86,7 @@ namespace Electrolyte.CLI {
 					break;
 
 				case "listaddresses":
-					foreach(var addressDetails in Wallet.AddressDetails)
+					foreach(var addressDetails in Wallet.Addresses)
 						Console.WriteLine(addressDetails);
 					break;
 				case "listprivateaddresses":
@@ -97,23 +97,23 @@ namespace Electrolyte.CLI {
 					break;
 				case "listpublicaddresses":
 				case "listpubaddresses":
-					foreach(var addressDetails in Wallet.PublicAddressDetails)
+					foreach(var addressDetails in Wallet.PublicAddresses)
 						Console.WriteLine(addressDetails);
 					break;
 				case "listusableaddresses":
 				case "listspendableaddresses":
 				case "listknownkeyaddresses":
-					foreach(var addressDetails in Wallet.PrivateKeyDetails.Keys)
+					foreach(var addressDetails in Wallet.PrivateKeys.AddressDetails)
 						Console.WriteLine(addressDetails);
 					break;
 				case "listwatchaddresses":
-					foreach(var addressDetails in Wallet.WatchAddressDetails)
+					foreach(var addressDetails in Wallet.WatchAddresses)
 						Console.WriteLine(addressDetails);
 					break;
 
 				case "dumpprivkey":
-					if(Wallet.PrivateKeys.ContainsKey(new Address(commands[1])) && Confirm("Are you sure you want to show your private key?"))
-						Console.WriteLine(Wallet.PrivateKeys[new Address(commands[1])].ToWalletImportFormat());
+					if(Wallet.PrivateKeys.Contains(new Address(commands[1])) && Confirm("Are you sure you want to show your private key?"))
+						Console.WriteLine(Wallet.PrivateKeys[new Address(commands[1])].PrivateKey.ToWalletImportFormat());
 					else
 						Console.WriteLine("Sorry, you don't have the key to that address in your wallet!");
 					break;
