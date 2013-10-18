@@ -13,6 +13,8 @@ namespace Electrolyte {
 			Label = label;
 		}
 
+		public AddressDetails(AddressDetails details) : this(details.Address, details.Label) { }
+
 		public override string ToString() {
 			return String.Format(String.IsNullOrEmpty(Label) ? "{0}" : "{0} - {1}", Address, Label);
 		}
