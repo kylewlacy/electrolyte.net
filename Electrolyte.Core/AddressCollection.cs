@@ -5,24 +5,20 @@ using System.Linq;
 using Electrolyte.Extensions;
 
 namespace Electrolyte {
-	public class AddressCollection : IList<AddressDetails>, IDictionary<Address, AddressDetails> {
-		List<Address> Addresses;
-		List<AddressDetails> Details;
+	public class AddressCollection : IList<AddressDetails> {
+		List<Address> _addresses;
+		List<AddressDetails> _details;
 
-		public ICollection<Address> Keys {
-			get { return Addresses.AsReadOnly(); }
+		public ICollection<Address> Addresses {
+			get { return _addresses.AsReadOnly(); }
 		}
 
-		public ICollection<AddressDetails> Values {
-			get { return Details.AsReadOnly(); }
-		}
-
-		Dictionary<Address, AddressDetails> Dictionary {
-			get { return Details.ToDictionary(d => d.Address, d => d); }
+		public ICollection<AddressDetails> AddressDetails {
+			get { return _details.AsReadOnly(); }
 		}
 
 		public int Count {
-			get { return Details.Count; }
+			get { return _details.Count; }
 		}
 
 		public bool IsReadOnly {
@@ -31,42 +27,52 @@ namespace Electrolyte {
 
 
 
+		public AddressCollection(IEnumerable<AddressDetails> addresses) {
+			_addresses = addresses.Select(a => a.Address).ToList();
+			_details = addresses.ToList();
+		}
+
+		public AddressCollection(IEnumerable<Address> addresses) {
+			_addresses = addresses.ToList();
+			_details = addresses.Select(a => new AddressDetails(a)).ToList();
+		}
+
 		public AddressCollection() {
-			Addresses = new List<Address>();
-			Details = new List<AddressDetails>();
+			_addresses = new List<Address>();
+			_details = new List<AddressDetails>();
 		}
 
 		public AddressDetails this[int i] {
-			get { return Details[i]; }
+			get { return _details[i]; }
 			set {
-				Addresses[i] = value.Address;
-				Details[i] = value;
+				_addresses[i] = value.Address;
+				_details[i] = value;
 			}
 		}
 
 		public AddressDetails this[Address address] {
 			get {
-				return Details[Addresses.IndexOf(address)];
+				return _details[_addresses.IndexOf(address)];
 			}
 
 			set {
-				int i = Addresses.IndexOf(address);
-				Addresses[i] = value.Address;
-				Details[i] = value;
+				int i = _addresses.IndexOf(address);
+				_addresses[i] = value.Address;
+				_details[i] = value;
 			}
 		}
 
 		public int IndexOf(AddressDetails details) {
-			return Details.IndexOf(details);
+			return _details.IndexOf(details);
 		}
 
 		public int IndexOf(Address address) {
-			return Addresses.IndexOf(address);
+			return _addresses.IndexOf(address);
 		}
 
 		public void Insert(int i, AddressDetails details) {
-			Details.Insert(i, details);
-			Addresses.Insert(i, details.Address);
+			_details.Insert(i, details);
+			_addresses.Insert(i, details.Address);
 		}
 
 		public void Insert(int i, Address address, string label = null) {
@@ -78,19 +84,13 @@ namespace Electrolyte {
 		}
 
 		public void RemoveAt(int i) {
-			Details.RemoveAt(i);
-			Addresses.RemoveAt(i);
+			_details.RemoveAt(i);
+			_addresses.RemoveAt(i);
 		}
 
 		public void Add(AddressDetails details) {
-			Details.Add(details);
-			Addresses.Add(details.Address);
-		}
-
-		public void Add(Address address, AddressDetails details) {
-			if(details.Address != address)
-				throw new ArgumentException("Provided key did not match details", "address");
-			Add(details);
+			_details.Add(details);
+			_addresses.Add(details.Address);
 		}
 
 		public void Add(Address address, string label = null) {
@@ -101,13 +101,9 @@ namespace Electrolyte {
 			Add(new Address(address), label);
 		}
 
-		public void Add(KeyValuePair<Address, AddressDetails> pair) {
-			Add(pair.Key, pair.Value);
-		}
-
 		public bool Remove(Address address) {
 			try {
-				RemoveAt(Addresses.IndexOf(address));
+				RemoveAt(_addresses.IndexOf(address));
 				return true;
 			}
 			catch {
@@ -117,7 +113,7 @@ namespace Electrolyte {
 
 		public bool Remove(AddressDetails details) {
 			try {
-				RemoveAt(Details.IndexOf(details));
+				RemoveAt(_details.IndexOf(details));
 				return true;
 			}
 			catch {
@@ -125,30 +121,12 @@ namespace Electrolyte {
 			}
 		}
 
-		public bool Remove(KeyValuePair<Address, AddressDetails> pair) {
-			try {
-				int i = Addresses.IndexOf(pair.Key);
-				if(Addresses[i] == pair.Key && Details[i] == pair.Value) {
-					RemoveAt(i);
-					return true;
-				}
-				return false;
-			}
-			catch {
-				return false;
-			}
-		}
-
-		public bool ContainsKey(Address address) {
-			return Addresses.Contains(address);
+		public bool Contains(Address address) {
+			return _addresses.Contains(address);
 		}
 
 		public bool Contains(AddressDetails details) {
-			return Details.Contains(details);
-		}
-
-		public bool Contains(KeyValuePair<Address, AddressDetails> pair) {
-			return ContainsKey(pair.Key) && Details[Addresses.IndexOf(pair.Key)] == pair.Value;
+			return _details.Contains(details);
 		}
 
 		public bool TryGetValue(Address address, out AddressDetails details) {
@@ -163,37 +141,29 @@ namespace Electrolyte {
 		}
 
 		public void CopyTo(AddressDetails[] details, int index) {
-			Details.CopyTo(details, index);
-		}
-
-		public void CopyTo(KeyValuePair<Address, AddressDetails>[] pairs, int index) {
-			Dictionary.Select(p => p).ToList().CopyTo(pairs, index);
+			_details.CopyTo(details, index);
 		}
 
 		public void Clear() {
-			Addresses.Clear();
-			Details.Clear();
+			_addresses.Clear();
+			_details.Clear();
 		}
 
 		IEnumerator IEnumerable.GetEnumerator() {
-			return Details.GetEnumerator();
+			return _details.GetEnumerator();
 		}
 
 		IEnumerator<AddressDetails> IEnumerable<AddressDetails>.GetEnumerator() {
-			return Details.GetEnumerator();
+			return _details.GetEnumerator();
 		}
 
-		IEnumerator<KeyValuePair<Address, AddressDetails>> IEnumerable<KeyValuePair<Address, AddressDetails>>.GetEnumerator() {
-			return Dictionary.GetEnumerator();
+		public List<AddressDetails> ToList() {
+			return _details.ToList();
 		}
 
-//		IEnumerator IEnumerable<AddressDetails>.GetEnumerator() {
-//			return Details.GetEnumerator();
-//		}
-
-//		IEnumerator IEnumerable<AddressDetails>.GetEnumerator() {
-//			return Details.GetEnumerator();
-//		}
+		public Dictionary<Address, AddressDetails> ToDictionary() {
+			return _details.ToDictionary(d => d.Address, d => d);
+		}
 	}
 }
 

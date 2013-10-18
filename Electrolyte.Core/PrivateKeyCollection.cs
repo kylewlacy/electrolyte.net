@@ -5,24 +5,28 @@ using System.Collections.Generic;
 using Electrolyte.Extensions;
 
 namespace Electrolyte {
-	public class PrivateKeyCollection : IList<PrivateKeyDetails>, IDictionary<Address, PrivateKeyDetails> {
-		List<Address> Addresses;
-		List<PrivateKeyDetails> PrivateKeys;
+	public class PrivateKeyCollection : IList<PrivateKeyDetails> {
+		List<Address> _addresses;
+		List<PrivateKeyDetails> _privateKeys;
 
-		public ICollection<Address> Keys {
-			get { return Addresses.AsReadOnly(); }
+		public ICollection<Address> Addresses {
+			get { return _addresses.AsReadOnly(); }
 		}
 
-		public ICollection<PrivateKeyDetails> Values {
-			get { return PrivateKeys.AsReadOnly(); }
+		public ICollection<PrivateKeyDetails> PrivateKeyDetails {
+			get { return _privateKeys.AsReadOnly(); }
 		}
 
-		Dictionary<Address, PrivateKeyDetails> Dictionary {
-			get { return PrivateKeys.ToDictionary(k => k.Address, k => k); }
+		public ICollection<ECKey> PrivateKeys {
+			get { return PrivateKeyDetails.Select(k => k.PrivateKey).ToList(); }
+		}
+
+		public AddressCollection AddressDetails {
+			get { return new AddressCollection(PrivateKeyDetails.Select(k => k.AddressDetails)); }
 		}
 
 		public int Count {
-			get { return PrivateKeys.Count; }
+			get { return _privateKeys.Count; }
 		}
 
 		public bool IsReadOnly {
@@ -31,22 +35,32 @@ namespace Electrolyte {
 
 
 
+		public PrivateKeyCollection(IList<PrivateKeyDetails> keys) {
+			_addresses = keys.Select(k => k.Address).ToList();
+			_privateKeys = keys.ToList();
+		}
+
+		public PrivateKeyCollection(IList<ECKey> keys) {
+			_addresses = keys.Select(k => k.ToAddress()).ToList();
+			_privateKeys = keys.Select(k => new PrivateKeyDetails(k)).ToList();
+		}
+
 		public PrivateKeyCollection() {
-			Addresses = new List<Address>();
-			PrivateKeys = new List<PrivateKeyDetails>();
+			_addresses = new List<Address>();
+			_privateKeys = new List<PrivateKeyDetails>();
 		}
 
 		public PrivateKeyDetails this[int i] {
-			get { return PrivateKeys[i]; }
-			set { PrivateKeys[i] = value; }
+			get { return _privateKeys[i]; }
+			set { _privateKeys[i] = value; }
 		}
 
 		public PrivateKeyDetails this[Address address] {
-			get { return PrivateKeys[Addresses.IndexOf(address)]; }
+			get { return _privateKeys[_addresses.IndexOf(address)]; }
 			set {
 				// TODO: Is this setter really necessary?
-				int i = Addresses.IndexOf(address);
-				if(PrivateKeys[i] != value)
+				int i = _addresses.IndexOf(address);
+				if(_privateKeys[i] != value)
 					throw new ArgumentException("Provided key does not match address");
 			}
 		}
@@ -54,7 +68,7 @@ namespace Electrolyte {
 
 
 		public int IndexOf(PrivateKeyDetails key) {
-			return PrivateKeys.IndexOf(key);
+			return _privateKeys.IndexOf(key);
 		}
 
 		public void Insert(int i, ECKey key) {
@@ -62,38 +76,32 @@ namespace Electrolyte {
 		}
 
 		public void Insert(int i, PrivateKeyDetails key) {
-			Addresses.Insert(i, key.Address);
-			PrivateKeys.Insert(i, key);
+			_addresses.Insert(i, key.Address);
+			_privateKeys.Insert(i, key);
 		}
 
 		public void RemoveAt(int i) {
-			Addresses.RemoveAt(i);
-			PrivateKeys.RemoveAt(i);
+			_addresses.RemoveAt(i);
+			_privateKeys.RemoveAt(i);
 		}
 
-		public void Add(KeyValuePair<Address, PrivateKeyDetails> pair) {
-			Add(pair.Key, pair.Value);
+		public void Add(string key, string label = null) {
+			Add(new PrivateKeyDetails(key, label));
 		}
 
-		public void Add(Address address, PrivateKeyDetails key) {
-			if(key.Address != address)
-				throw new ArgumentException("Provided key did not match address", "key");
-			Add(key);
-		}
-
-		public void Add(ECKey key) {
-			Add(new PrivateKeyDetails(key));
+		public void Add(ECKey key, string label = null) {
+			Add(new PrivateKeyDetails(key, label));
 		}
 
 		public void Add(PrivateKeyDetails details) {
-			Addresses.Add(details.Address);
-			PrivateKeys.Add(details);
+			_addresses.Add(details.Address);
+			_privateKeys.Add(details);
 		}
 
 		public bool Remove(KeyValuePair<Address, PrivateKeyDetails> pair) {
 			try {
-				int i = Addresses.IndexOf(pair.Key);
-				if(Addresses[i] == pair.Key && PrivateKeys[i] == pair.Value) {
+				int i = _addresses.IndexOf(pair.Key);
+				if(_addresses[i] == pair.Key && _privateKeys[i] == pair.Value) {
 					RemoveAt(i);
 					return true;
 				}
@@ -106,7 +114,7 @@ namespace Electrolyte {
 
 		public bool Remove(PrivateKeyDetails key) {
 			try {
-				RemoveAt(PrivateKeys.IndexOf(key));
+				RemoveAt(_privateKeys.IndexOf(key));
 				return true;
 			}
 			catch {
@@ -116,7 +124,7 @@ namespace Electrolyte {
 
 		public bool Remove(Address address) {
 			try {
-				RemoveAt(Addresses.IndexOf(address));
+				RemoveAt(_addresses.IndexOf(address));
 				return true;
 			}
 			catch {
@@ -124,16 +132,12 @@ namespace Electrolyte {
 			}
 		}
 
-		public bool ContainsKey(Address address) {
-			return Addresses.Contains(address);
+		public bool Contains(Address address) {
+			return _addresses.Contains(address);
 		}
 
 		public bool Contains(PrivateKeyDetails key) {
-			return PrivateKeys.Contains(key);
-		}
-
-		public bool Contains(KeyValuePair<Address, PrivateKeyDetails> pair) {
-			return ContainsKey(pair.Key) && PrivateKeys[Addresses.IndexOf(pair.Key)] == pair.Value;
+			return _privateKeys.Contains(key);
 		}
 
 		public bool TryGetValue(Address address, out PrivateKeyDetails key) {
@@ -148,28 +152,24 @@ namespace Electrolyte {
 		}
 
 		public void CopyTo(PrivateKeyDetails[] keys, int index) {
-			PrivateKeys.CopyTo(keys, index);
-		}
-
-		public void CopyTo(KeyValuePair<Address, PrivateKeyDetails>[] pairs, int index) {
-			Dictionary.Select(p => p).ToList().CopyTo(pairs, index);
+			_privateKeys.CopyTo(keys, index);
 		}
 
 		public void Clear() {
-			Addresses.Clear();
-			PrivateKeys.Clear();
+			_addresses.Clear();
+			_privateKeys.Clear();
 		}
 
 		IEnumerator IEnumerable.GetEnumerator() {
-			return PrivateKeys.GetEnumerator();
+			return _privateKeys.GetEnumerator();
 		}
 
 		IEnumerator<PrivateKeyDetails> IEnumerable<PrivateKeyDetails>.GetEnumerator() {
-			return PrivateKeys.GetEnumerator();
+			return _privateKeys.GetEnumerator();
 		}
 
-		IEnumerator<KeyValuePair<Address, PrivateKeyDetails>> IEnumerable<KeyValuePair<Address, PrivateKeyDetails>>.GetEnumerator() {
-			return Dictionary.GetEnumerator();
+		public Dictionary<Address, PrivateKeyDetails> ToDictionary() {
+			return _privateKeys.ToDictionary(k => k.Address, k => k);
 		}
 	}
 }
