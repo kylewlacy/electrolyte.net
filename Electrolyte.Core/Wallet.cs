@@ -49,6 +49,8 @@ namespace Electrolyte {
 		public event EventHandler DidFailToUnlock = delegate { };
 		
 		static readonly SemaphoreLite lockLock = new SemaphoreLite();
+		static readonly SemaphoreLite privateKeyLock = new SemaphoreLite();
+
 		public bool IsLocked { get; private set; }
 
 		public byte[] EncryptionKey = { };
@@ -126,7 +128,6 @@ namespace Electrolyte {
 			var key = new ECKey();
 			var details = new PrivateKeyDetails(key, label);
 			await ImportKeyAsync(details);
-//			return new PrivateKeyDetails(key, label);
 			return details;
 		}
 
@@ -141,7 +142,14 @@ namespace Electrolyte {
 		public async Task ImportKeyAsync(PrivateKeyDetails key, bool isPublic = true) {
 			if(IsLocked) throw new LockedException();
 			if(isPublic) await ImportReadOnlyAddressAsync(key);
-			PrivateKeys.Add(key);
+
+			await privateKeyLock.WaitAsync();
+			try {
+				PrivateKeys.Add(key);
+			}
+			finally {
+				privateKeyLock.Release();
+			}
 			await SaveAsync();
 		}
 
@@ -265,10 +273,18 @@ namespace Electrolyte {
 			if(IsLocked) throw new LockedException();
 
 			if(Addresses.Contains(address)) {
-				if(PrivateKeys.Contains(address))
-					PrivateKeys.Remove(address);
-				if(PublicAddresses.Contains(address))
+				if(PrivateKeys.Contains(address)) {
+					await privateKeyLock.WaitAsync();
+					try {
+						PrivateKeys.Remove(address);
+					}
+					finally {
+						privateKeyLock.Release();
+					}
+				}
+				if(PublicAddresses.Contains(address)) {
 					PublicAddresses.Remove(address);
+				}
 
 				await SaveAsync();
 			}
@@ -339,7 +355,14 @@ namespace Electrolyte {
 				Array.Clear(EncryptionKey, 0, EncryptionKey.Length);
 				EncryptionKey = new byte[] { };
 
-				PrivateKeys.Clear(); // TODO: Is this safe?
+				await privateKeyLock.WaitAsync();
+				try {
+					PrivateKeys.Clear(); // TODO: Is this safe?
+				}
+				finally {
+					privateKeyLock.Release();
+				}
+
 				LockTimer.Stop();
 
 				IsLocked = true;
@@ -439,10 +462,17 @@ namespace Electrolyte {
 			EncryptedData = Base58.DecodeWithChecksum(data["encrypted"]["data"].Value<string>());
 		}
 
-		void LoadPrivateDataFromJson(string json) {
+		async Task LoadPrivateDataFromJsonAsync(string json) {
 			JObject data = JObject.Parse(json);
-			foreach(JToken key in data["keys"])
-				_privateKeys.Add(key["priv"].Value<string>(), key["label"] != null ? key["label"].Value<string>() : null);
+			foreach(JToken key in data["keys"]) {
+				await privateKeyLock.WaitAsync();
+				try {
+					await Task.Run(() => _privateKeys.Add(key["priv"].Value<string>(), key["label"] != null ? key["label"].Value<string>() : null));
+				}
+				finally {
+					privateKeyLock.Release();
+				}
+			}
 		}
 
 		public async Task ReadAsync(TextReader reader) {
@@ -451,26 +481,10 @@ namespace Electrolyte {
 		}
 
 		public async Task ReadPrivateAsync(TextReader reader) {
-			LoadPrivateDataFromJson(await reader.ReadToEndAsync());
+			await LoadPrivateDataFromJsonAsync(await reader.ReadToEndAsync());
 		}
 
 		public async Task DecryptAsync(byte[] passphrase) {
-//			Aes aes = Aes.Create();
-//			aes.Mode = CipherMode.CBC;
-//			aes.IV = IV;
-//			aes.Key = await PassphraseToKeyAsync(passphrase, Salt);
-//
-//			try {
-//				using(var stream = new MemoryStream(EncryptedData)) {
-//					using(var cryptoStream = new CryptoStream(stream, aes.CreateDecryptor(), CryptoStreamMode.Read))
-//						using(var streamReader = new StreamReader(cryptoStream))
-//							await ReadPrivateAsync(streamReader);
-//				}
-//			}
-//			catch(CryptographicException) {
-//				throw new InvalidPassphraseException();
-//			}
-
 			byte[] decryptedData;
 			try {
 				decryptedData = await AES.DecryptAsync(EncryptedData, await PassphraseToKeyAsync(passphrase, Salt), IV);
