@@ -71,6 +71,8 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Resources\" />
+    <Folder Include="Portable\" />
+    <Folder Include="Portable\IO\" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Main.cs" />
@@ -107,6 +109,7 @@
       <DependentUpon>AddressWindow.cs</DependentUpon>
     </Compile>
     <Compile Include="AddressTableData.cs" />
+    <Compile Include="Portable\IO\PathInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <InterfaceDefinition Include="MainMenu.xib" />
