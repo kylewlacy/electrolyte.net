@@ -13,10 +13,21 @@ namespace Electrolyte.OSX
 	partial class AddressWindowController
 	{
 		[Outlet]
+		MonoMac.AppKit.NSSegmentedControl addControl { get; set; }
+
+		[Outlet]
 		MonoMac.AppKit.NSTableView addressTable { get; set; }
+
+		[Action ("AddNewAddress:")]
+		partial void AddNewAddress (MonoMac.AppKit.NSSegmentedControl sender);
 		
 		void ReleaseDesignerOutlets ()
 		{
+			if (addControl != null) {
+				addControl.Dispose ();
+				addControl = null;
+			}
+
 			if (addressTable != null) {
 				addressTable.Dispose ();
 				addressTable = null;

@@ -7,6 +7,7 @@
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="AddressWindowController">
             <connections>
+                <outlet property="addControl" destination="EBm-RB-xjY" id="cMY-3m-edH"/>
                 <outlet property="addressTable" destination="x57-yk-gs0" id="8vn-d9-xW0"/>
                 <outlet property="window" destination="2" id="6"/>
             </connections>
@@ -24,7 +25,7 @@
                 <subviews>
                     <scrollView autohidesScrollers="YES" horizontalLineScroll="19" horizontalPageScroll="10" verticalLineScroll="19" verticalPageScroll="10" usesPredominantAxisScrolling="NO" id="6Gr-WG-KAn">
                         <rect key="frame" x="20" y="49" width="572" height="285"/>
-                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <clipView key="contentView" id="aSc-Tz-mCc">
                             <rect key="frame" x="1" y="17" width="570" height="267"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -82,14 +83,17 @@
                     </scrollView>
                     <segmentedControl verticalHuggingPriority="750" id="EBm-RB-xjY">
                         <rect key="frame" x="519" y="18" width="75" height="24"/>
-                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                        <segmentedCell key="cell" alignment="left" style="rounded" trackingMode="momentary" id="A4R-Yg-SYL">
+                        <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
+                        <segmentedCell key="cell" alignment="left" identifier="quickAdd" style="rounded" trackingMode="momentary" id="A4R-Yg-SYL">
                             <font key="font" metaFont="system"/>
                             <segments>
-                                <segment label="Add" width="48"/>
-                                <segment label="+" width="20" tag="1"/>
+                                <segment label="Add" width="48" tag="1"/>
+                                <segment label="+" width="20" tag="2"/>
                             </segments>
                         </segmentedCell>
+                        <connections>
+                            <action selector="AddNewAddress:" target="-2" id="mOb-BJ-u2H"/>
+                        </connections>
                     </segmentedControl>
                 </subviews>
             </view>

@@ -17,12 +17,26 @@ namespace Electrolyte.OSX {
 			protected set { _addressTableData = value; }
 		}
 
+		enum AddSegment {
+			AddPrompt = 1,
+			QuickAdd = 2
+		}
+
 		public Wallet Wallet {
-			get { return AddressTableData.Wallet; }
-			set { AddressTableData.Wallet = value; }
+			get {
+				return AddressTableData.Wallet;
+			}
+			set {
+				Console.WriteLine("Setup did lock");
+				Wallet.DidLock += LockToggled;
+				Wallet.DidUnlock += LockToggled;
+				AddressTableData.Wallet = value;
+			}
 		}
 
 		void Initialize(Wallet wallet = null) {
+			wallet.DidLock += LockToggled;
+			wallet.DidUnlock += LockToggled;
 			AddressTableData = new AddressTableData(wallet);
 		}
 
@@ -34,6 +48,30 @@ namespace Electrolyte.OSX {
 			AddressTableData.TableView = addressTable;
 			addressTable.DataSource = AddressTableData.DataSource;
 			addressTable.Delegate = AddressTableData.Delegate;
+
+			LockToggled();
+		}
+
+		void LockToggled() {
+			InvokeOnMainThread(() => LockToggled(null, null));
+		}
+
+		void LockToggled(object sender, EventArgs e) {
+			addControl.Enabled = !Wallet.IsLocked;
+		}
+
+		async partial void AddNewAddress(NSSegmentedControl sender) {
+			int tag = sender.Cell.GetTag(sender.SelectedSegment);
+			if(!Wallet.IsLocked && Enum.IsDefined(typeof(AddSegment), tag)) {
+				switch((AddSegment)tag) {
+				case AddSegment.AddPrompt:
+					break;
+				case AddSegment.QuickAdd:
+					var newAddress = await Wallet.GenerateAddressAsync();
+					AddressTableData.Reload();
+					break;
+				}
+			}
 		}
 	}
 }
