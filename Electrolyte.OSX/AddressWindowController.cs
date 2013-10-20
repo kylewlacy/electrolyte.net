@@ -31,7 +31,9 @@ namespace Electrolyte.OSX {
 		}
 
 		public override void WindowDidLoad() {
+			AddressTableData.TableView = addressTable;
 			addressTable.DataSource = AddressTableData.DataSource;
+			addressTable.Delegate = AddressTableData.Delegate;
 		}
 	}
 }
