@@ -59,9 +59,9 @@ namespace Electrolyte.OSX {
 			passphraseField.Changed += PassphraseChanged;
 		}
 
-		public override void CloseSheet(NSObject sender = null) {
+		public override void CloseSheet(NSObject sender, EventArgs e) {
 			passphraseField.Changed -= PassphraseChanged;
-			base.CloseSheet(sender);
+			base.CloseSheet(sender, e);
 		}
 	}
 }

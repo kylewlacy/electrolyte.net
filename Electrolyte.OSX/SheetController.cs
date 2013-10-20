@@ -18,7 +18,7 @@ namespace Electrolyte.OSX {
 			DidOpen(this, new EventArgs());
 		}
 
-		protected void CloseSheet(NSObject sender, EventArgs e) {
+		public virtual void CloseSheet(NSObject sender, EventArgs e) {
 			NSApplication.SharedApplication.EndSheet(Window);
 			Window.Close();
 			Window.Dispose();
@@ -26,7 +26,7 @@ namespace Electrolyte.OSX {
 			DidClose(this, e);
 		}
 
-		public virtual void CloseSheet(NSObject sender = null) {
+		public void CloseSheet(NSObject sender = null) {
 			CloseSheet(sender, new EventArgs());
 		}
 	}

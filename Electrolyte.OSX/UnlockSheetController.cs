@@ -25,9 +25,9 @@ namespace Electrolyte.OSX {
 
 		public new UnlockSheet Window { get { return (UnlockSheet)base.Window; } }
 
-		public override void CloseSheet(NSObject sender = null) {
-			base.CloseSheet(sender);
+		public override void CloseSheet(NSObject sender, EventArgs e) {
 			walletPassphraseField.StringValue = "";
+			base.CloseSheet(sender, e);
 		}
 
 		partial void Unlock(NSObject sender) {
