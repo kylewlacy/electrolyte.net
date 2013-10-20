@@ -50,6 +50,7 @@ namespace Electrolyte {
 		
 		static readonly SemaphoreLite lockLock = new SemaphoreLite();
 		static readonly SemaphoreLite privateKeyLock = new SemaphoreLite();
+		static readonly SemaphoreLite saveLock = new SemaphoreLite();
 
 		public bool IsLocked { get; private set; }
 
@@ -92,13 +93,7 @@ namespace Electrolyte {
 			get {
 				if(IsLocked)
 					return PublicAddresses;
-
-				var addresses = PrivateKeys.AddressDetails.ToList();
-				foreach(var address in PublicAddresses) {
-					if(!addresses.Contains(address))
-						addresses.Add(address);
-				}
-				return new AddressCollection(addresses);
+				return new AddressCollection(PrivateKeys.Concat(PublicAddresses).Distinct().ToList());
 			}
 		}
 
@@ -226,22 +221,26 @@ namespace Electrolyte {
 			if(IsLocked)
 				throw new LockedException();
 
-			bool wasUpdated = false;
-			if(!isPublic || !IsLocked) {
+			await privateKeyLock.WaitAsync();
+			try {
+				bool wasUpdated = false;
 				if(PrivateAddresses.Contains(address)) {
 					PrivateKeys[address].Label = label;
 					wasUpdated = true;
 				}
-			}
 
-			if(PublicAddresses.Contains(address)) {
-				PublicAddresses[address].Label = label;
-				wasUpdated = true;
-			}
+				if(isPublic && PublicAddresses.Contains(address)) {
+					PublicAddresses[address].Label = label;
+					wasUpdated = true;
+				}
 
-			if(!wasUpdated)
-				throw new OperationException(String.Format("Could not find address '{0}' in your wallet", address));
-			await SaveAsync();
+				if(!wasUpdated)
+					throw new OperationException(String.Format("Could not find address '{0}' in your wallet", address));
+			}
+			finally {
+				privateKeyLock.Release();
+			}
+			SaveAsync();
 		}
 
 
@@ -604,25 +603,31 @@ namespace Electrolyte {
 		}
 
 		public async Task SaveAsync(FileInfo file) {
-			if(IsLocked) { throw new LockedException(); }
+			await saveLock.WaitAsync();
+			try {
+				if(IsLocked) { throw new LockedException(); }
 
-			if(file != null) {
-				FileInfo backup = file.WithExtension("bak");
-				FileInfo temp = file.WithExtension("new");
+				if(file != null) {
+					FileInfo backup = file.WithExtension("bak");
+					FileInfo temp = file.WithExtension("new");
 
-				temp.Delete();
-				backup.Delete();
-				file.MoveTo(backup);
+					temp.Delete();
+					backup.Delete();
+					file.MoveTo(backup);
 
-				if(!IsLocked)
-					await EncryptAsync(EncryptionKey);
+					if(!IsLocked)
+						await EncryptAsync(EncryptionKey);
 
-				// TODO: Set proper file permissions
-				using(var stream = FileStream.Create(file, FileMode.CreateNew)) {
-					using(var writer = new StreamWriter(stream)) {
-						await WriteAsync(writer);
+					// TODO: Set proper file permissions
+					using(var stream = FileStream.Create(file, FileMode.CreateNew)) {
+						using(var writer = new StreamWriter(stream)) {
+							await WriteAsync(writer);
+						}
 					}
 				}
+			}
+			finally {
+				saveLock.Release();
 			}
 		}
 
