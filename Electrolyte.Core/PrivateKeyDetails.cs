@@ -2,13 +2,23 @@ using System;
 
 namespace Electrolyte {
 	public class PrivateKeyDetails : AddressDetails {
-		public ECKey PrivateKey { get; set; }
-
-		public override Address Address {
-			get { return PrivateKey.ToAddress(); }
+		protected ECKey _privateKey;
+		public ECKey PrivateKey {
+			get {
+				return _privateKey;
+			}
 			set {
-				if(PrivateKey.ToAddress() != value)
-					throw new ArgumentException("Provided address does not match private key");
+				_privateKey = value;
+				_address = _privateKey.ToAddress();
+			}
+		}
+
+		protected Address _address;
+		public override Address Address {
+			get { return _address; }
+			set {
+				if(_address != value)
+					throw new ArgumentException("Address does not match private key");
 			}
 		}
 
