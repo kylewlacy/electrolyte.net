@@ -1,5 +1,5 @@
 using System;
-using System.Drawing;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using MonoMac.Foundation;
@@ -101,10 +101,7 @@ namespace Electrolyte.OSX {
 		}
 
 		public async Task UpdateHistoryAsync() {
-			List<Transaction.Delta> deltas = (await wallet.GetTransactionDeltasAsync());
-			deltas.Sort((a, b) => a.Transaction.Height.Value.CompareTo(b.Transaction.Height.Value));
-
-			transactionTableData.TransactionDeltas = deltas;
+			transactionTableData.TransactionDeltas = (await wallet.GetTransactionDeltasAsync()).OrderByDescending(d => d.Transaction.Height).ToList();
 			transactionTable.ReloadData();
 		}
 
