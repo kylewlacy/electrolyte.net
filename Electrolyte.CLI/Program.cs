@@ -17,7 +17,7 @@ namespace Electrolyte.CLI {
 		public static Wallet Wallet;
 
 		public static int Main(string[] args) {
-			FileInfo file = (FileInfo)Wallet.DefaultWalletPath;
+			FileInfo file = (FileInfo)Wallet.DefaultWalletFile;
 			Wallet = Wallet.LoadAsync(file).Result;
 
 			while(true) {

@@ -30,7 +30,7 @@ namespace Electrolyte.OSX {
 		public WalletCreationSheetController() : base("WalletCreationSheet") { Initialize(); }
 		public WalletCreationSheetController(FileInfo walletFile) : base("WalletCreationSheet") { Initialize(walletFile); }
 
-		void Initialize() { Initialize((FileInfo)Wallet.DefaultWalletPath); }
+		void Initialize() { Initialize((FileInfo)Wallet.DefaultWalletFile); }
 		void Initialize(FileInfo walletFile) {
 			WalletFile = walletFile;
 		}

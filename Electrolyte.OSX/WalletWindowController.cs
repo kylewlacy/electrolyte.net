@@ -67,7 +67,7 @@ namespace Electrolyte.OSX {
 		public override async void WindowDidLoad() {
 			sendButton.Enabled = false;
 
-			var walletFile = (FileInfo)Wallet.DefaultWalletPath;
+			var walletFile = (FileInfo)Wallet.DefaultWalletFile;
 			if(walletFile.Exists)
 				wallet = await Wallet.LoadAsync();
 			else

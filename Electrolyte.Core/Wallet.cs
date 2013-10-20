@@ -424,7 +424,7 @@ namespace Electrolyte {
 
 
 		public async static Task<Wallet> LoadAsync() {
-			return await Wallet.LoadAsync(DefaultWalletPath);
+			return await Wallet.LoadAsync(DefaultWalletFile);
 		}
 
 		public async static Task<Wallet> LoadAsync(FileInfo fileInfo) {
@@ -651,7 +651,7 @@ namespace Electrolyte {
 
 
 
-		public static FileInfo DefaultWalletPath {
+		public static FileInfo DefaultWalletFile {
 			get { return FileInfo.Create(PathInfo.DefaultStoragePath, "wallet.json"); }
 		}
 	}
