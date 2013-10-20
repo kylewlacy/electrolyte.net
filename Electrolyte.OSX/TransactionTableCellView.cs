@@ -25,7 +25,6 @@ namespace Electrolyte.OSX {
 			set {
 				_delta = value;
 				Hash = _delta.Transaction.Hash;
-				// Time = DateTime.Now - _delta.Transaction.Time;
 				Value = _delta.ToString();
 
 				if(_delta.Value > Money.Zero("BTC"))
